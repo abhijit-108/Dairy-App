@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/main-screen.css">
+</head>
+<style>
+    .alert {
+        display: none;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid green;
+        color: green;
+    }
+
+    .alert.show {
+        display: block;
+    }
+</style>
+
+<body>
+    <div id="form-box">
+        <form action="" name="lol" method="post" id="registrationform">
+
+            <label for="customDate">Select Date:</label>
+            <input type="date" id="customDate" name="customDate" required><br><br>
+
+            <label for="customTime">Select Time:</label>
+            <input type="time" id="customTime" name="customTime" required><br><br>
+
+            <h3>
+                <label class="label" for="name">সদস্যর নাম</label>
+                <select class="select" id="name" name="NAME" required>
+                    <option value=""></option>
+                </select>
+            </h3>
+
+            <div id="little-box">
+                <label class="label" for="kg">KG:</label>
+                <input type="number" placeholder="Kg" value="" id="kg" step="any" required oninput="rateandtotal();" />
+                <br>
+                <label class="label" for="fat">FAT:</label>
+                <input type="number" placeholder="FAT" value="" id="fat" step="any" oninput="rateandtotal();" />
+                <br>
+                <label class="label" for="snf">SNF:</label>
+                <input type="number" placeholder="SNF" value="" id="snf" step="any" required
+                    oninput="rateandtotal();" />
+                <br>
+                <label for="rate">Rate:</label>
+                <input type="number" value="" id="rate" step="any" required />
+                <br>
+                <label for="total">Total:</label>
+                <input type="number" value="" id="total" step="any" required />
+                <br>
+                <button id="submit" class="submit-btn"
+                    onclick="if(validateInput()) { sendEmail();playSound();multiplyNumbers(); }">Calculate</button>
+                <audio id="myAudio">
+                    <source src="button.wav" type="audio/mp3">
+                </audio>
+            </div>
+        </form>
+    </div>
+    <div class="alert">Data submitted successfully!</div>
+    <br><button id="backtomain" class="submit-btn">Backtomain</button>
+    <script>
+        async function fetchNames() {
+            try {
+                const response = await fetch('names.md');
+                const data = await response.text();
+                const names = data.split('\n').map(line => line.split(' | ')[0].trim());
+
+                const nameSelect = document.getElementById('name');
+                names.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.text = name;
+                    nameSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching names:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchNames);
+    </script>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
+  authDomain: "dairy-app-abhijit.firebaseapp.com",
+  databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
+  projectId: "dairy-app-abhijit",
+  storageBucket: "dairy-app-abhijit.appspot.com",
+  messagingSenderId: "196152880143",
+  appId: "1:196152880143:web:bec02170e30932a7d5877a"
+};
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase();
+
+        document.getElementById('registrationform').addEventListener('submit', formSubmit);
+
+        function formSubmit(e) {
+            e.preventDefault();
+            if (validateInput()) {
+                let name = document.querySelector('#name').value;
+                let rate = document.querySelector('#rate').value;
+                let total = document.querySelector('#total').value;
+                let fat = document.querySelector('#fat').value;
+                let snf = document.querySelector('#snf').value;
+                let kg = document.querySelector('#kg').value;
+                let customDate = document.querySelector('#customDate').value;
+                let customTime = document.querySelector('#customTime').value;
+
+                let selectedDate = new Date(customDate + 'T' + customTime);
+                checkAndSendMessage(name, rate, total, fat, snf, kg, selectedDate);
+            } else {
+                console.log("Form validation failed. Please correct errors.");
+            }
+        }
+
+        function validateInput() {
+            // Implement validation logic if necessary
+            return true;
+        }
+
+        function formatDateTime(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const meridiem = hours >= 12 ? 'pm' : 'am';
+            const formattedHours = hours % 12 || 12;
+            return `${day}/${month}/${year} ${formattedHours}:${minutes}${meridiem}`;
+        }
+
+        function getTimePeriod(hours) {
+            if (hours >= 3 && hours < 11) {
+                return "সকাল";
+            } else if (hours >= 12 && hours < 15) {
+                return "দুপুর";
+            } else {
+                return "সন্ধ্যা";
+            }
+        }
+
+        async function checkAndSendMessage(name, rate, total, fat, snf, kg, selectedDate) {
+            const formattedDate = `${selectedDate.getDate()}-${selectedDate.getMonth() + 1}-${selectedDate.getFullYear()}`;
+            const formattedTime = formatDateTime(selectedDate);
+            const personName = name.toLowerCase().replace(/\s+/g, '-');
+            const timePeriod = getTimePeriod(selectedDate.getHours());
+            const personRef = ref(database, `records/${formattedDate}/${personName}/${timePeriod}`);
+
+            try {
+                await set(personRef, {
+                    name: name,
+                    rate: rate,
+                    total: total,
+                    fat: fat,
+                    snf: snf,
+                    kg: kg,
+                    timestamp: formattedTime
+                });
+                document.querySelector('.alert').classList.add('show');
+                setTimeout(function () {
+                    document.querySelector('.alert').classList.remove('show');
+                }, 3000);
+            } catch (error) {
+                alert(error);
+            }
+        }
+    </script>
+
+    <script>
+        // Get the button element
+        var billButton = document.getElementById('backtomain');
+
+        // Add a click event listener to the button
+        billButton.addEventListener('click', function () {
+            // Redirect to bill.html
+            window.location.href = 'index.html';
+        });
+    </script>
+    <script src="js/rate.js?v=1.0.2"></script>
+
+</body>
+
+</html>

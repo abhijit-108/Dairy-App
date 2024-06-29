@@ -1,0 +1,84 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #a2a2a2;
+    display: block;
+    text-align: center;
+    height: 100vh;
+    margin: 0;
+}
+.login-container {
+    margin-top: 30px;
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 300px;
+    width: 80%;
+    border-radius: 7px;
+    box-shadow: 0 8px 32px 0;
+    background-color: rgb(196, 245, 191);
+    box-sizing: border-box;
+}
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+select, input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ed5e29;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+.btn:hover {
+    background-color: #45a049;
+}
+.guest-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #fee1f1;
+    color: rgb(10, 9, 12);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bolder;
+    transition: background-color 0.3s;
+    box-shadow: 0 8px 32px 0;
+
+}
+.guest-btn:hover {
+    background-color: #ec33e3;
+}
+
+
+.error {
+    color: red;
+    margin: 0.5rem 0;
+    text-align: center;
+    font-size: 0.9rem; /* Adjust font size */
+}

@@ -1,0 +1,216 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dairy CaL</title>
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@12.2.0/dist/markdown-it.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="css/main-screen.css?v=1.0.5">
+    <link rel="stylesheet" href="css/other-parts.css?v=1.0.2">
+    <link rel="stylesheet" href="css/databasepopup.css?v=1.0.2">
+    <link rel="stylesheet" href="css/navbar+sidebar.css?v=1.0.5">
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="menu-button" id="nav-menu">
+            <a href="#home" class="nav__link active-link">
+                <i class='bx bx-home-alt nav__icon'></i>
+        </div>
+
+        <div class="heading">Dairy App</div>
+
+        <div class="clock-button" id="clock-box">
+            <a href="#clock" class="clock">
+                <div id="clock"></div>
+                <div id="date"></div>
+        </div>
+        <div id="fixcurrentrate"></div>
+
+        <div class="update-button" id="update-menu">
+            <a href="#Update" class="nav__link active-link" id="reload-btn" onclick="showSplashScreen()">
+                <i class='bx bx-refresh nav__icon2'></i>
+        </div>
+    </header>
+
+    <div class="sidebar">
+        <nav>
+            <ul>
+                <li id="openPopup"><a href="#" class="perfromace_report_toggle">1.Data (All-Member)</a></li>
+                <br>
+                <li><a href="#" class="update-toggle" id="billvalidate">2. Bill Sending Page</a></li>
+                <br>
+                <li  id="fixDatabaseItem"><a href="rewrite Data.html">5. Fix Database</a></li>
+                <button id="logoutButton">Logout</button>
+                <li id="guest-info">
+                    
+                </li>
+                <div id="error" class="error"></div>           
+
+             </ul>
+        </nav>
+    </div>
+
+    <div id="offlinePopup" class="offline-popup">
+        <div class="popup-content100">
+            <h1>ইন্টারনেট বন্ধ! </h1>
+            <p>ইন্টারনেট বন্ধ হয়ে গেছে </p>
+        </div>
+    </div>
+    <div id="splash-screen">
+        <p>Updating....</p>
+        <div id="progress-bar">
+            <div id="progress-bar-inner"></div>
+        </div>
+        <div id="percentage-text">0%</div>
+    </div>
+    <div id="alert" class="alert">
+        <div class="tick">&#10003;</div>
+        Saved To Database <br>Email Sent</div>
+    <div id="form-box">
+        <form action="" name="lol" method="post" id="registrationform">
+            <h3 id="h3names">
+                <label class="label" for="name">সদস্যর নাম</label>
+                <select class="select" id="name" name="NAME" required>
+                    <option value=""></option>
+                </select>
+            </h3>
+            <div id="little-box">
+                <label class="label" for="kg">KG:</label>
+                <input type="number" placeholder="Kg" value="" id="kg" step="any" required oninput="rateandtotal();" />
+                <br>
+                <label class="label" for="fat">FAT:</label>
+                <input type="number" placeholder="FAT" value="" id="fat" step="any" oninput="rateandtotal();" />
+                <br>
+                <label class="label" for="snf">SNF:</label>
+                <input type="number" placeholder="SNF" value="" id="snf" step="any" required
+                    oninput="rateandtotal();" />
+                <br>
+                <input type="number" value="" id="rate" step="any" required hidden />
+                <input type="number" value="" id="total" step="any" required hidden />
+                <br>
+                <button id="submit" class="submit-btn">Calculate</button>
+                <audio id="myAudio">
+                    <source src="button.wav" type="audio/mp3">
+                </audio>
+            </div>
+        </form>
+        <input type="email" id="email" name="EMAIL" placeholder="Enter email" hidden>
+        <div class="ratetotalbox">
+            <div id="errorKg" class="errorinput"></div>
+            <div id="errorFat" class="errorinput"></div>
+            <div id="errorSnf" class="errorinput"></div>
+            <div id="ratedisplay"></div>
+            <div id="totaldisplay"></div>
+        </div>
+
+    </div>
+    <br>
+    <div id="popupWrapper" class="popup-wrapper">
+        <div id="popup" class="popup">
+            <div>
+                <button id="closePopup" class="close-btn">Close</button>
+                <button id="refreshdatabase" style="border-width: 5px;
+                  padding: 8px;
+                  top: 10px;
+                  color: black;
+                  background-color: rgb(251, 255, 138);
+                  font-size: large;
+                  font-weight: bold;
+                  right: 10px;
+                  cursor: pointer;">Refresh</button>
+            </div>
+           
+            <div class="filterbar">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <select id="nameFilter">
+                            <option value="all">All Names</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <select id="monthFilter">
+                            <option value="all">All Months</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <select id="dateRangeFilter">
+                            <option value="all">All Dates</option>
+                            <option value="01-07">1-7</option>
+                            <option value="08-15">8-15</option>
+                            <option value="16-23">16-23</option>
+                            <option value="24-end">24 onwards</option>
+                        </select>
+                        
+                    </div>
+                </div>
+            </div>
+            <table id="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time-Period</th>
+                        <th>Name</th>
+                        <th>FAT</th>
+                        <th>SNF</th>
+                        <th>RATE</th>
+                        <th>KG</th>
+                        <th>TOTAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Table rows will be dynamically added here -->
+                </tbody>
+            </table>
+            
+            
+            <div> <button id="calculateButton" class="submit-btn">Calculate</button>
+            </div>
+           <div class="colorboxfortotal">
+            <div id="total-Kg">0</div>
+            <div id="ultimate-total">0</div>
+           </div>
+
+        </div>
+    </div>
+    <div class="todaybox">
+        <table id="table2">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Name</th>
+                    <th>FAT</th>
+                    <th>SNF</th>
+                    <th>RATE</th>
+                    <th>KG</th>
+                    <th>TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table rows will be dynamically added here -->
+            </tbody>
+            <tfoot>
+                <!-- Table footer with sums will be dynamically added here -->
+            </tfoot>
+        </table>
+    </div>
+
+    <script>
+        // Get the button element
+        var billButton = document.getElementById('billvalidate');
+        // Add a click event listener to the button
+        billButton.addEventListener('click', function () {
+            // Redirect to bill.html
+            window.location.href = 'bill.html';
+        });
+    </script>
+    <script src="js/main-screen.js?v=1.0.4"></script>
+    <script type="module" src="js/database.js?v=1.0.6"></script>
+    <script src="js/email.js?v=1.0.2" id="emailscript"></script>
+    <script src="js/include_name_email.js?v=1.0.7"></script>
+    <script src="js/rate.js?v=1.0.5"></script>
+</body>
+</html>

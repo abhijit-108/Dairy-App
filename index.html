@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="css/loginpage.css?v=1.0.0">
+
+</head>
+
+<body>
+    <div class="guest-btn" id="guestlogin">Guest Login
+    </div>
+    <div class="login-container">
+        <h2>Login</h2>
+        <div class="form-group">
+            <label for="email">Select User:</label>
+            <select id="email">
+                <option value="abhijit722141@gmail.com">Abhijit</option>
+                <option value="guest722141@gmail.com">Guest</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="number" id="password" placeholder="Enter your password" autofocus>
+        </div>
+        <button class="btn" id="loginButton">Login</button>
+        <div id="error" class="error"></div>
+
+    </div>
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+        // Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
+            authDomain: "dairy-app-abhijit.firebaseapp.com",
+            databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
+            projectId: "dairy-app-abhijit",
+            storageBucket: "dairy-app-abhijit.appspot.com",
+            messagingSenderId: "196152880143",
+            appId: "1:196152880143:web:bec02170e30932a7d5877a"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+
+        // Function to handle login
+        function login() {
+            var email = document.getElementById('email').value;
+            var passwordpart2 = document.getElementById('password').value;
+            var passwordpart1 = "9775815681";
+            var password =passwordpart1 +passwordpart2 ;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Redirect to main.html after successful login
+                    window.location.href = 'main.html';
+                })
+                .catch((error) => {
+                    var errorMessage = error.message;
+                    var errorDisplay = document.getElementById('error');
+
+                    // Handle specific error messages
+                    if (errorMessage.includes('invalid')) {
+                        errorDisplay.innerText = 'Opps Wrong password ?';
+                    } else if (errorMessage.includes('missing')) {
+                        errorDisplay.innerText = 'Please enter password';
+                    } else if (errorMessage.includes('attempts')) {
+                        errorDisplay.innerText = 'Please Try Again Later';
+                    } else {
+                        errorDisplay.innerText = errorMessage;
+                    }
+                });
+        }
+
+        // Function to handle key press event (Enter key)
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                login();
+            }
+        }
+
+        // Attach event listener to password input field for key press event
+        document.getElementById('password').addEventListener('keypress', handleKeyPress);
+
+        // Attach event listener to login button
+        document.getElementById('loginButton').addEventListener('click', login);
+
+
+        // Event listener for Guest button
+        document.getElementById('guestlogin').addEventListener('click', function () {
+            // Redirect to main.html for guest login
+            window.location.href = 'main.html';
+        });
+
+
+
+
+    </script>
+</body>
+
+</html>

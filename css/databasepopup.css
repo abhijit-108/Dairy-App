@@ -1,0 +1,105 @@
+.popup-wrapper {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+}
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #c5c1c1;
+    padding: 10px;
+    border: 4px solid #2e1717;
+    box-shadow: 0 4px 8px rgba(0, 0, 10, 0.7);
+    width: 90%;
+    height: 90%;
+    overflow-y: auto;
+}
+
+.filter-row {
+    display: flex;
+}
+
+.filterbar {
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.filter-group {
+    margin-right: 6px;
+    /* Adjust spacing between filter groups */
+}
+
+.filter-group select {
+    padding: 5px;
+    width: fit-content;
+    height: 40px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 7px;
+    border-width: 2px;
+    /* Adjust select width as needed */
+}
+#table {
+    width: 100%;
+    background-color: #c6efe4;
+    display: relative;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    /* Add border for better readability */
+}
+#table td {
+    padding: 6px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+#table th {
+    background-color: #c6e890;
+    /* Light gray background for table headers */
+}
+#table tbody tr:nth-child(even) {
+    background-color: #f3e7e7;
+    /* Alternate row colors for better readability */
+}
+#table tbody tr:hover {
+    background-color: #ddd;
+    /* Hover effect */
+}
+#table td:nth-child(7),
+td:nth-child(8) {
+    color: #890c46;
+}
+
+.colorboxfortotal{
+    margin-top: 20px;
+    background-color: #f3e1f7;
+    color: #000000;
+    padding: 10px;
+    width: 200px;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: bolder;
+}
+
+.close-btn {
+    position: absolute;
+    border-width: 5px;
+    padding: 8px;
+    top: 10px;
+    color: rgb(255, 255, 255);
+    background-color: rgb(202, 38, 26);
+    font-size: large;
+    font-weight: bold;
+    right: 10px;
+    cursor: pointer;
+
+}
