@@ -47,7 +47,7 @@
     border-width: 2px;
     /* Adjust select width as needed */
 }
-#table {
+#table  {
     width: 100%;
     background-color: #c6efe4;
     display: relative;
@@ -75,7 +75,9 @@
 }
 #table td:nth-child(7),
 td:nth-child(8) {
-    color: #890c46;
+    color: #5b12c1;
+    font-weight: bolder;
+    font-size: 15px;
 }
 
 .colorboxfortotal{
@@ -102,4 +104,39 @@ td:nth-child(8) {
     right: 10px;
     cursor: pointer;
 
+}
+#table3  {
+    width: 100%;
+    background-color: #c6efe4;
+    display: relative;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    /* Add border for better readability */
+}
+#table3 td {
+    padding: 6px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+#table3 th {
+    background-color: #c6e890;
+    /* Light gray background for table headers */
+}
+#table3 tbody tr:nth-child(even) {
+    background-color: #f3e7e7;
+    /* Alternate row colors for better readability */
+}
+#table3 tbody tr:hover {
+    background-color: #ddd;
+    /* Hover effect */
+}
+#table3 td:nth-child(2),
+td:nth-child(4) {
+    font-size: 15px;
+    font-weight: bolder;
+}
+#table3 tfoot{
+    color: #d9204cd5;
+    background-color: #a2eba6;
 }

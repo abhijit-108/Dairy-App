@@ -323,20 +323,89 @@ function getCurrentDateRange() {
     return "all";
 }
 
+
+function populateTable3() {
+    const tableBody = document.getElementById('table').getElementsByTagName('tbody')[0];
+    const rows = tableBody.getElementsByTagName('tr');
+
+    const table3Body = document.getElementById('table3').getElementsByTagName('tbody')[0];
+    table3Body.innerHTML = ''; // Clear previous data
+
+    const dataMap = new Map();
+    let totalKGSum = 0;
+    let totalModifiedSum = 0;
+    let totalTakaSum = 0;
+
+    for (const row of rows) {
+        if (row.style.display !== 'none') {
+            const nameCell = row.cells[2];
+            const kgCell = row.cells[6];
+            const totalCell = row.cells[7];
+
+            const name = nameCell.textContent;
+            const kg = parseFloat(kgCell.textContent) || 0;
+            const total = parseFloat(totalCell.textContent) || 0;
+
+            if (dataMap.has(name)) {
+                const existingData = dataMap.get(name);
+                existingData.totalKG += kg;
+                existingData.totalTaka += total;
+            } else {
+                dataMap.set(name, { totalKG: kg, totalTaka: total });
+            }
+        }
+    }
+
+    dataMap.forEach((data, name) => {
+        const row = table3Body.insertRow();
+        const nameCell = row.insertCell(0);
+        const totalKGCell = row.insertCell(1);
+        const totalModifiedCell = row.insertCell(2);
+        const totalTakaCell = row.insertCell(3);
+
+        const totalModified = data.totalTaka * 0.75;
+
+        nameCell.textContent = name;
+        totalKGCell.textContent = data.totalKG.toFixed(1);
+        totalModifiedCell.textContent = totalModified.toFixed(2);
+        totalTakaCell.textContent = data.totalTaka.toFixed(2);
+
+        totalKGSum += data.totalKG;
+        totalModifiedSum += totalModified;
+        totalTakaSum += data.totalTaka;
+    });
+
+    // Update the footer with the totals
+    document.getElementById('totalKGFooter').textContent = totalKGSum.toFixed(1);
+    document.getElementById('totalModifiedFooter').textContent = totalModifiedSum.toFixed(2);
+    document.getElementById('totalTakaFooter').textContent = totalTakaSum.toFixed(2);
+}
+
 window.addEventListener('load', () => {
-    displayEntries();
+    displayEntries().then(() => {
+        populateTable3(); // Populate table3 after the initial data load
+    });
 });
 
 document.getElementById('nameFilter').addEventListener('change', (e) => {
     filterEntries();
+    populateTable3();
 });
 
 document.getElementById('monthFilter').addEventListener('change', (e) => {
     filterEntries();
+    populateTable3();
 });
 
 document.getElementById('dateRangeFilter').addEventListener('change', (e) => {
     filterEntries();
+    populateTable3();
+});
+
+document.getElementById('refreshdatabase').addEventListener('click', () => {
+    displayEntries().then(() => {
+        populateTable3();
+    });
 });
 
 function filterEntries() {
@@ -378,8 +447,11 @@ function filterEntries() {
 
         row.style.display = showRow ? '' : 'none';
     }
+
     calculateSums();
+    populateTable3(); // Update table3 after filtering entries
 }
+
 
 function calculateSums() {
     const tableBody = document.getElementById('table').getElementsByTagName('tbody')[0];
@@ -510,6 +582,9 @@ displayTodayEntriesInTable2();
 document.getElementById('submit').addEventListener('click', () => {
     setTimeout(displayTodayEntriesInTable2, 4000); // Fetch data after 4 seconds
 });
+document.getElementById('submit').addEventListener('click', () => {
+    setTimeout(displayEntries, 4000); // Fetch data after 4 seconds
+});
 
 
 
@@ -552,3 +627,8 @@ onAuthStateChanged(auth, (user) => {
         h3names.classList.add('disabled');
     }
 });
+
+
+
+
+
