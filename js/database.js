@@ -331,21 +331,42 @@ function populateTable3() {
     const table3Body = document.getElementById('table3').getElementsByTagName('tbody')[0];
     table3Body.innerHTML = ''; // Clear previous data
 
+    const nameOrder = [
+        "চন্দনা ঘোষ",
+        "রাজেন্দ্র প্রসাদ ঘোষ",
+        "সুজাতা ঘোষ",
+        "রজিনা শেখ",
+        "মামনি চক্রবর্তী",
+        "ঝর্না চচ্চড়ি",
+        "বিকাশ কুমার ঘোষ",
+        "সুলোচনা ঘোষ",
+        "নেড়া",
+        "নিবেদিতা মন্ডল",
+        "রাহেলা শেখ",
+        "মধুমিতা মন্ডল",
+        "কল্যাণী চক্রবর্তী",
+        "কাশেম খা",
+        "Abhijit",
+        "শফিক খা",
+        "সবরিয়াদ খান",
+        "ফিরোজ খা"
+    ];
+
     const dataMap = new Map();
     let totalKGSum = 0;
     let totalModifiedSum = 0;
     let totalTakaSum = 0;
 
     for (const row of rows) {
-        if (row.style.display !== 'none') {
-            const nameCell = row.cells[2];
-            const kgCell = row.cells[6];
-            const totalCell = row.cells[7];
+        const nameCell = row.cells[2];
+        const kgCell = row.cells[6];
+        const totalCell = row.cells[7];
 
-            const name = nameCell.textContent;
-            const kg = parseFloat(kgCell.textContent) || 0;
-            const total = parseFloat(totalCell.textContent) || 0;
+        const name = nameCell.textContent.trim();
+        const kg = parseFloat(kgCell.textContent) || 0;
+        const total = parseFloat(totalCell.textContent) || 0;
 
+        if (nameOrder.includes(name) && row.style.display !== 'none') {
             if (dataMap.has(name)) {
                 const existingData = dataMap.get(name);
                 existingData.totalKG += kg;
@@ -356,23 +377,26 @@ function populateTable3() {
         }
     }
 
-    dataMap.forEach((data, name) => {
-        const row = table3Body.insertRow();
-        const nameCell = row.insertCell(0);
-        const totalKGCell = row.insertCell(1);
-        const totalModifiedCell = row.insertCell(2);
-        const totalTakaCell = row.insertCell(3);
+    nameOrder.forEach(name => {
+        if (dataMap.has(name)) {
+            const data = dataMap.get(name);
+            const row = table3Body.insertRow();
+            const nameCell = row.insertCell(0);
+            const totalKGCell = row.insertCell(1);
+            const totalModifiedCell = row.insertCell(2);
+            const totalTakaCell = row.insertCell(3);
 
-        const totalModified = data.totalTaka * 0.75;
+            const totalModified = data.totalTaka * 0.75;
 
-        nameCell.textContent = name;
-        totalKGCell.textContent = data.totalKG.toFixed(1);
-        totalModifiedCell.textContent = totalModified.toFixed(2);
-        totalTakaCell.textContent = data.totalTaka.toFixed(2);
+            nameCell.textContent = name;
+            totalKGCell.textContent = data.totalKG.toFixed(1);
+            totalModifiedCell.textContent = totalModified.toFixed(2);
+            totalTakaCell.textContent = data.totalTaka.toFixed(2);
 
-        totalKGSum += data.totalKG;
-        totalModifiedSum += totalModified;
-        totalTakaSum += data.totalTaka;
+            totalKGSum += data.totalKG;
+            totalModifiedSum += totalModified;
+            totalTakaSum += data.totalTaka;
+        }
     });
 
     // Update the footer with the totals
@@ -387,17 +411,17 @@ window.addEventListener('load', () => {
     });
 });
 
-document.getElementById('nameFilter').addEventListener('change', (e) => {
+document.getElementById('nameFilter').addEventListener('change', () => {
     filterEntries();
     populateTable3();
 });
 
-document.getElementById('monthFilter').addEventListener('change', (e) => {
+document.getElementById('monthFilter').addEventListener('change', () => {
     filterEntries();
     populateTable3();
 });
 
-document.getElementById('dateRangeFilter').addEventListener('change', (e) => {
+document.getElementById('dateRangeFilter').addEventListener('change', () => {
     filterEntries();
     populateTable3();
 });
@@ -425,7 +449,7 @@ function filterEntries() {
 
         let showRow = true;
 
-        if (nameFilter !== 'all' && nameCell.textContent !== nameFilter) {
+        if (nameFilter !== 'all' && nameCell.textContent.trim() !== nameFilter) {
             showRow = false;
         }
 
