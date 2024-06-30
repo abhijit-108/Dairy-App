@@ -1,5 +1,5 @@
-const fatvaluedairy=3.76
-const snfvaluedairy=2.6
+const fatvaluedairy=3.81
+const snfvaluedairy=2.689
 const ratevaluedairy=(4.5 * fatvaluedairy) + (8.5* snfvaluedairy);
 document.getElementById("fixcurrentrate").innerHTML =  "Rate " +ratevaluedairy.toFixed(2);
 
