@@ -25,7 +25,7 @@
              total: total
          };
 
-         emailjs.send("service_l6qktcl", "template_ww0ukuh", templateParams)
+         emailjs.send("service_l", "template_", templateParams)
              .then(function (response) {
                  console.log('Email sent successfully:', response);
                  // Display success message or perform other actions
