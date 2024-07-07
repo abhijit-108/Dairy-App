@@ -9,16 +9,28 @@
 </head>
 <style>
     .alert {
-        display: none;
+        position: fixed;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #b00e0e;
+        color: rgb(148, 242, 233);
         padding: 10px;
-        margin: 10px 0;
-        border: 1px solid green;
-        color: green;
+        width: 310px;
+        height: 310px;
+        font-size: 20px;
+        font-weight: bolder;
+        border-radius: 50%;
+        z-index: 1;
+        display: none;
+        justify-content: center;
+        align-items: center;
     }
 
     .alert.show {
-        display: block;
+        display: flex;
     }
+  
 </style>
 
 <body>
