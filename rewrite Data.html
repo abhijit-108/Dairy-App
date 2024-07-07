@@ -91,18 +91,22 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
 
         const firebaseConfig = {
             apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
-  authDomain: "dairy-app-abhijit.firebaseapp.com",
-  databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
-  projectId: "dairy-app-abhijit",
-  storageBucket: "dairy-app-abhijit.appspot.com",
-  messagingSenderId: "196152880143",
-  appId: "1:196152880143:web:bec02170e30932a7d5877a"
-};
+            authDomain: "dairy-app-abhijit.firebaseapp.com",
+            databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
+            projectId: "dairy-app-abhijit",
+            storageBucket: "dairy-app-abhijit.appspot.com",
+            messagingSenderId: "196152880143",
+            appId: "1:196152880143:web:bec02170e30932a7d5877a"
+        };
         const app = initializeApp(firebaseConfig);
         const database = getDatabase();
+        const auth = getAuth();
+
 
         document.getElementById('registrationform').addEventListener('submit', formSubmit);
 
