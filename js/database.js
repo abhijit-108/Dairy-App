@@ -546,8 +546,9 @@ async function displayTodayEntriesInTable2() {
                     const entry = records[personName][timePeriod];
                     if (entry.timestamp) {
                         const timestamp = parseTimestamp(entry.timestamp); // Parse the timestamp correctly
+                        const formattedTime = timestamp.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
                         const timePeriodLabel = getTimePeriod(timestamp.getHours()); // Get the time period label
-                        todayEntries.push({ ...entry, timePeriodLabel, timestamp });
+                        todayEntries.push({ ...entry, timePeriodLabel, timestamp ,formattedTime});
                     } else {
                         console.warn("Timestamp missing for entry:", entry);
                     }
@@ -565,9 +566,12 @@ async function displayTodayEntriesInTable2() {
 
             // Populate table2 with today's entries
             todayEntries.forEach(entry => {
+                // Determine the class based on formattedTime (assuming formattedTime is in "h:mm am/pm" format)
+                const timePeriodClass = entry.formattedTime.toLowerCase().indexOf('pm') !== -1 ? 'pm-row' : 'am-row';
+            
                 const newRow = `
-                    <tr>
-                        <td>${entry.timePeriodLabel}</td>
+                    <tr class="${timePeriodClass}">
+                        <td>${entry.formattedTime}</td>
                         <td>${entry.name}</td>
                         <td>${entry.fat}</td>
                         <td>${entry.snf}</td>
@@ -577,11 +581,12 @@ async function displayTodayEntriesInTable2() {
                     </tr>
                 `;
                 tableBody.insertAdjacentHTML('beforeend', newRow);
-
+            
                 // Accumulate total KG and total Amount
                 totalKG += parseFloat(entry.kg);
                 totalAmount += parseFloat(entry.total);
             });
+            
 
             // Populate table footer with sum
             const tableFooter = document.querySelector('#table2 tfoot');

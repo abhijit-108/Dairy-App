@@ -124,12 +124,11 @@ input {
 #table2 {
     display: relative;
     background-color: #000000;
-    border-collapse: collapse;
+    border-collapse:collapse;
     border-radius: 10px;
     overflow-y: auto;
     width: 100%;
     padding: 10px;
-    color: rgb(204, 197, 197);
     /* Add border for better readability */
 }
 
@@ -141,15 +140,13 @@ input {
 }
 
 #table2 th {
-    background-color: #031a77;
     font-size: 11px;
+    color: #fffeff;
+    background-color: #2a0f7b;
     /* Light gray background for table headers */
 }
 
-#table2 tbody tr:nth-child(even) {
-    background-color: #342020;
-    /* Alternate row colors for better readability */
-}
+
 
 #table2 tfoot {
     color: #c1f41a;
@@ -159,15 +156,16 @@ input {
 }
 
 #table2 tfoot td:first-child {
-    text-align: left;
-    padding-left: 40px;
-    font-size: 15px;
+    text-align: center;
+    font-size: 16px;
 }
 
 /* CSS for columns 4 and 5 */
 #table2 td:nth-child(6),
 td:nth-child(7) {
-    color: #c4f7fc;
+    color: hsl(0, 100%, 44%);
+    font-size: 15px;
+    font-weight: bolder;
 }
 
 .todaybox {

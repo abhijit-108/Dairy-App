@@ -1,3 +1,14 @@
+.pm-row {
+    background-color: rgb(4, 4, 20); /* Adjust the background color for pm rows */
+    color: rgb(196, 193, 193);
+}
+
+.am-row {
+    background-color: rgb(187, 187, 187); /* Adjust the background color for am rows */
+    color: #383838;
+}
+
+
 .popup-wrapper {
     display: none;
     position: fixed;
@@ -51,7 +62,7 @@
     width: 100%;
     background-color: #c6efe4;
     display: relative;
-    border-collapse: collapse;
+    column-rule-color: #2e1717;
     border: 1px solid #ddd;
     /* Add border for better readability */
 }
