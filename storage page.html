@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Upload to Firebase Storage</title>
+    <style>
+        
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    width: 100vw;
+    padding: 0;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f3f3f3;
+}
+.content {
+    flex: 1;
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+input[type="file"], input[type="text"], button {
+    margin: 10px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+button:hover {
+    background-color: #45a049;
+}
+#status {
+    color: #f44336;
+    margin-top: 10px;
+}
+#progressBar {
+    width: 100%;
+    height: 15px;
+    background-color: #e35c5c;
+    margin-top: 10px;
+    display: none;
+    border-radius: 5px;
+    overflow: hidden;
+}
+#progress {
+    height: 100%;
+    background-color: #4CAF50;
+    width: 0%;
+    transition: width 0.3s;
+}
+#photoContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    padding: 0px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.display-box {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    margin-top: 20px;
+}
+.photoBox {
+    width:100%;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #fff;
+    border-radius: 4px;
+    transition: transform 0.3s;
+}
+.photoBox:hover {
+    transform: translateY(-5px);
+}
+.photoBox img {
+    width: 100%; /* 90% width for mobile screens */
+    height: auto;
+    border-radius: 4px;
+
+}
+.comment {
+    margin-top: 5px;
+    font-size: 25px;
+    font-weight: bolder;
+    color: #666;
+}
+.downloadButton {
+    margin-top: 0px;
+    margin-bottom: 100px;
+    padding: 12px 14px;
+    font-size: 15px;
+    background-color: #ac3a05;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+.downloadButton:hover {
+    background-color: #45a049;
+}
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #f1f1f1;
+    margin-top: 20px;
+}
+
+
+
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <br><button id="backtomain" class="submit-btn">Backtomain</button>
+        <h1>Upload Photo to Firebase Storage</h1>
+        <input type="file" id="fileInput">
+        <select id="commentInput">
+            <option value="01_currentmonth_currentyear-07_currentmonth_currentyear">1 to 7</option>
+            <option value="08_currentmonth_currentyear-15_currentmonth_currentyear">8 to 15</option>
+            <option value="16_currentmonth_currentyear-23_currentmonth_currentyear">16 to 23</option>
+            <option value="24_currentmonth_currentyear-rest">24 to rest</option>
+        </select>
+        <select id="monthSelect">
+            <option value="current">Current Month</option>
+            <option value="previous">Previous Month</option>
+        </select>
+        
+        <button id="uploadButton">Upload</button>
+        <p id="status"></p>
+        <div id="progressBar" class="progress-bar">
+            <div id="progress" class="progress"></div>
+        </div>
+    </div>
+
+    <div id="photoContainer">
+        <div class="display-box" id="displayBox">
+            <!-- Photos and comments will be displayed here -->
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script>
+        // Get the button element
+        var billButton = document.getElementById('backtomain');
+
+        // Add a click event listener to the button
+        billButton.addEventListener('click', function () {
+            // Redirect to bill.html
+            window.location.href = 'main.html';
+        });
+    </script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
+        import { getStorage, ref, uploadBytesResumable, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-storage.js";
+
+         const firebaseConfig = {
+            apiKey: "AIzaSyCE0EeoU9PbB5Ylfy7ew3rdP46Cq2iQYQY",
+            authDomain: "fir-authentication-adf8b.firebaseapp.com",
+            databaseURL: "https://fir-authentication-adf8b-default-rtdb.firebaseio.com",
+            projectId: "fir-authentication-adf8b",
+            storageBucket: "fir-authentication-adf8b.appspot.com",
+            messagingSenderId: "33641860307",
+            appId: "1:33641860307:web:9f60a891bc22827b885826"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+        async function uploadFile() {
+    const fileInput = document.getElementById('fileInput');
+    const commentInput = document.getElementById('commentInput');
+    const monthSelect = document.getElementById('monthSelect');
+    const file = fileInput.files[0];
+    const commentOption = commentInput.value.trim();
+    const monthOption = monthSelect.value; // Get the selected month option
+
+    if (!file) {
+        document.getElementById('status').textContent = 'No file selected!';
+        return;
+    }
+
+    // Generate comment based on selected option
+    const currentDate = new Date();
+    let targetDate = new Date(); // Default to current month
+
+    if (monthOption === 'previous') {
+        targetDate.setMonth(currentDate.getMonth() - 1); // Set to previous month
+    }
+
+    const targetMonth = ('0' + (targetDate.getMonth() + 1)).slice(-2); // Zero-padded month
+    const targetYear = targetDate.getFullYear();
+
+    let comment;
+    switch (commentOption) {
+        case '01_currentmonth_currentyear-07_currentmonth_currentyear':
+            comment = `01-${targetMonth}-${targetYear} 07-${targetMonth}-${targetYear}`;
+            break;
+        case '08_currentmonth_currentyear-15_currentmonth_currentyear':
+            comment = `08-${targetMonth}-${targetYear} 15-${targetMonth}-${targetYear}`;
+            break;
+        case '16_currentmonth_currentyear-23_currentmonth_currentyear':
+            comment = `16-${targetMonth}-${targetYear} 23-${targetMonth}-${targetYear}`;
+            break;
+        case '24_currentmonth_currentyear-rest':
+            comment = `24-${targetMonth}-${targetYear} rest`;
+            break;
+        default:
+            comment = ''; // Handle default case if necessary
+            break;
+    }
+
+    if (!comment) {
+        document.getElementById('status').textContent = 'Invalid comment option!';
+        return;
+    }
+
+    // Append comment to file name
+    const fileName = `${comment}_${file.name}`;
+    const fileRef = ref(storage, `uploads/${fileName}`);
+
+    // Upload the file with progress tracking
+    const uploadTask = uploadBytesResumable(fileRef, file);
+
+    const progressBar = document.getElementById('progressBar');
+    const progress = document.getElementById('progress');
+    progressBar.style.display = 'block'; // Show progress bar
+
+    uploadTask.on('state_changed',
+        (snapshot) => {
+            // Progress function
+            const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            progress.style.width = percentage + '%';
+        },
+        (error) => {
+            // Error function
+            document.getElementById('status').textContent = 'Upload failed: ' + error.message;
+            console.error('Upload failed:', error);
+        },
+        () => {
+            // Completion function
+            document.getElementById('status').textContent = 'Upload successful!';
+            displayPhotos(); // Refresh the displayed photos after a new upload
+
+            // Reset progress bar
+            progress.style.width = '0%';
+            progressBar.style.display = 'none'; // Hide progress bar
+        }
+    );
+}
+
+        async function displayPhotos() {
+    const displayBox = document.getElementById('displayBox');
+    displayBox.innerHTML = ''; // Clear the display box
+
+    // List all files in the 'uploads' folder
+    const listRef = ref(storage, 'uploads/');
+    const listResult = await listAll(listRef);
+
+    // Custom sorting function based on date range
+    const sortByDateRange = (fileName) => {
+        const dateRangeString = fileName.split('_')[0]; // Assuming date range is at the beginning of the file name
+        const startDateString = dateRangeString.split(' ')[0]; // Get the start date part
+        const [day, month, year] = startDateString.split('-'); // Split by '-' assuming "DD-MM-YYYY" format
+        return new Date(year, month - 1, day); // Return Date object for sorting
+    };
+
+    // Sort files based on date range
+    listResult.items.sort((a, b) => {
+        const dateA = sortByDateRange(a.name);
+        const dateB = sortByDateRange(b.name);
+        return dateB - dateA; // Descending order (latest date first)
+    });
+
+    // Display sorted files
+    for (let i = 0; i < listResult.items.length; i++) {
+        const itemRef = listResult.items[i];
+        try {
+            const url = await getDownloadURL(itemRef);
+
+            const photoBox = document.createElement('div');
+            photoBox.classList.add('photoBox');
+
+            const imgElement = document.createElement('img');
+            imgElement.src = url;
+
+            const fileName = document.createElement('p');
+            fileName.classList.add('comment');
+            fileName.textContent = itemRef.name.split('_')[0].replace(/_/g, ' '); // Display comment as formatted string
+
+            const downloadButton = document.createElement('button');
+            downloadButton.classList.add('downloadButton');
+            downloadButton.textContent = 'Download';
+            downloadButton.addEventListener('click', () => {
+                downloadFile(url, itemRef.name);
+            });
+
+            photoBox.appendChild(imgElement);
+            photoBox.appendChild(fileName);
+            photoBox.appendChild(downloadButton);
+            displayBox.appendChild(photoBox);
+        } catch (error) {
+            console.error('Error getting download URL:', error);
+        }
+    }
+}
+
+
+        function downloadFile(url, fileName) {
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
+
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = blobUrl;
+                    a.download = fileName; // Set the file name for download
+                    document.body.appendChild(a);
+                    a.click(); // Simulate click on the anchor tag
+                    document.body.removeChild(a); // Clean up
+                    URL.revokeObjectURL(blobUrl); // Clean up the Blob URL
+                })
+                .catch(error => {
+                    console.error('Error downloading file:', error);
+                });
+        }
+
+        // Event listener for the upload button
+        const uploadButton = document.getElementById('uploadButton');
+        uploadButton.addEventListener('click', uploadFile);
+
+        // Display photos on initial load
+        window.onload = displayPhotos;
+    </script>
+</body>
+
+</html>
