@@ -179,20 +179,23 @@ footer {
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
         import { getStorage, ref, uploadBytesResumable, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-storage.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
-         const firebaseConfig = {
-            apiKey: "AIzaSyCE0EeoU9PbB5Ylfy7ew3rdP46Cq2iQYQY",
-            authDomain: "fir-authentication-adf8b.firebaseapp.com",
-            databaseURL: "https://fir-authentication-adf8b-default-rtdb.firebaseio.com",
-            projectId: "fir-authentication-adf8b",
-            storageBucket: "fir-authentication-adf8b.appspot.com",
-            messagingSenderId: "33641860307",
-            appId: "1:33641860307:web:9f60a891bc22827b885826"
-        };
+        const firebaseConfig = {
+    apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
+    authDomain: "dairy-app-abhijit.firebaseapp.com",
+    databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
+    projectId: "dairy-app-abhijit",
+    storageBucket: "dairy-app-abhijit.appspot.com",
+    messagingSenderId: "196152880143",
+    appId: "1:196152880143:web:bec02170e30932a7d5877a"
+};
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const storage = getStorage(app);
+        const auth = getAuth();
+
 
         async function uploadFile() {
     const fileInput = document.getElementById('fileInput');
