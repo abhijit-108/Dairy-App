@@ -3,7 +3,7 @@ body {
     text-align: center;
     padding: 0;
     margin: 0;
-    background-color: rgb(121, 123, 119);
+    background-color: rgb(122, 131, 132);
 }
 
 #form-box {
@@ -28,17 +28,17 @@ option {
     margin-right: auto;
     font-weight: bold;
     border-radius: 8px;
-    color: #000000;
+    color: #540a0a;
     width: fit-content;
     background-color: #d6d6d6;
-    border: 2px solid rgb(10, 23, 254)
+    border: 2px solid rgb(200, 145, 145)
 }
 #little-box {
     margin-top: 20px;
     padding: 20px;
     border-radius: 7px;
     box-shadow: 0 8px 32px 0;
-    background-color: rgb(116, 193, 212);
+    background-color: rgb(76, 152, 170);
     box-sizing: border-box;
 
 }

@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     menuButton.addEventListener('click', function (event) {
         event.stopPropagation(); // Prevent event bubbling
-        sidebar.style.left = sidebar.style.left === '0px' ? '-250px' : '0px';
+        sidebar.style.left = sidebar.style.left === '0px' ? '-100%' : '0px';
     });
 
     document.addEventListener('click', function (event) {
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const isSidebar = target.closest('.sidebar');
 
         if (!isMenuButton && !isSidebar) {
-            sidebar.style.left = '-250px';
+            sidebar.style.left = '-100%';
         }
     });
 });
