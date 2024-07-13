@@ -57,7 +57,7 @@ a {
     text-decoration: none;
 }
 .sidebar {
-    position: fixed;
+    position: absolute;
     left: -250px;
     top: 0;
     bottom: 0;
@@ -65,7 +65,7 @@ a {
     width: 230px;
     margin-top: 55px;
     margin-left: 20px;
-    height: fit-content;
+    height: 90%;
     box-shadow: 0 8px 32px 0;
     /* Add shadow to the right */
     z-index: 1;
@@ -80,12 +80,12 @@ a {
 }
 
 .sidebar ul {
-    list-style-type: none;
+    list-style-type: square;
     padding: 0;
 }
 
 .sidebar ul li {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     margin-top: 10px;
     margin-left: 15px;
 }
@@ -99,7 +99,9 @@ a {
 
 
 .sidebar ul li a:hover {
-    text-decoration: underline;
+    text-decoration:underline red;
+    color: rgb(94, 6, 38);
+   
 }
 
 .nav {
@@ -121,36 +123,32 @@ a {
 }
 #fixcurrentrate{
   
-    color: rgb(54, 233, 153);
+    color: rgb(38, 225, 141);
     font-weight: bolder;
     font-size: 13px;
 }
 #logoutButton {
     display: block;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 20px;
-    padding: 10px 20px;
+    padding: 8px 12px;
     background-color: #fee1f1;
     color: rgb(10, 9, 12);
     border: none;
-    border-radius: 4px;
+    border-radius: 3px;
     cursor: pointer;
     font-size: 18px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
     font-weight: bolder;
     transition: background-color 0.3s;
     box-shadow: 0 8px 32px 0;
 
 }
 #logoutButton:hover {
-    background-color: #ea740c;
+    background-color: #f92596;
 }
-#userInfo{
-    margin: 15px;
-    color: rgb(240, 44, 155);
-    font-size: 20px;
-    padding: 5px;
-    background-color: rgb(221, 245, 235);
+#guest-info{
+    margin-top: 30px;
+    font-size: 13px;
     text-align: center;
-    width: 120px;
 }
