@@ -38,7 +38,7 @@ option {
     padding: 20px;
     border-radius: 7px;
     box-shadow: 0 8px 32px 0;
-    background-color: rgb(76, 152, 170);
+    background-color: rgb(167, 200, 245);
     box-sizing: border-box;
 
 }
@@ -142,7 +142,7 @@ input {
 #table2 th {
     font-size: 11px;
     color: #fffeff;
-    background-color: #2a0f7b;
+    background-color: #080c82;
     /* Light gray background for table headers */
 }
 
