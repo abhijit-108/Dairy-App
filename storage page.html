@@ -44,7 +44,20 @@
             max-width: 300px;
         }
 
-        button {
+        #backtomain {
+            position: fixed;
+            right: 10px;
+            top: 10px;
+            padding:10px 18px;
+            background-color: #d21919;
+            font-weight: bold;
+            color: #f1f1f1;
+            border:1.2px solid rgb(72, 148, 46)
+
+
+        }
+
+        #uploadButton {
             background-color: #4CAF50;
             color: white;
             border: none;
@@ -181,7 +194,7 @@
 
 <body>
     <div class="content">
-        <br><button id="backtomain" class="submit-btn">Backtomain</button>
+        <br><button id="backtomain">Main Page</button>
         <h1>Upload Photo to Firebase Storage</h1>
         <input type="file" id="fileInput">
         <select id="commentInput">

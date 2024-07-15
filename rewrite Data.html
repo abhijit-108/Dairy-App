@@ -5,46 +5,124 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="css/main-screen.css">
 </head>
 <style>
-    .alert {
-        position: fixed;
-        top: 10%;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #b00e0e;
-        color: rgb(148, 242, 233);
-        padding: 10px;
-        width: 310px;
-        height: 310px;
-        font-size: 20px;
-        font-weight: bolder;
-        border-radius: 50%;
-        z-index: 1;
-        display: none;
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #a19b9b;
+        margin: 0;
+        padding: 0;
+        display: flex;
         justify-content: center;
         align-items: center;
+        height: 100vh;
+        flex-direction: column;
     }
-
+    #form-box {
+        background-color: #d7d7d7;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 65%;
+        max-width: 250px;
+        position: absolute;
+        top: 65px;
+    
+    }
+    .title{
+        margin-bottom: 15px;
+        font-size: 30px;
+        font-weight: bolder;
+        color: rgb(122, 40, 40);
+        text-decoration: underline rgb(200, 32, 32);
+    }
+    form{
+        text-align: center;
+    }
+    select{
+        padding: 8px;
+        font-size: 15px;
+        font-weight: bold;
+        color: rgb(103, 27, 27);
+    }
+    .labelname{
+        font-size: 14px;
+    }
+    .label {
+        margin-bottom: 5px;
+        font-weight: bolder;
+        margin-right:5px;
+        
+    }
+    input[type="number"] {
+        width: 80px;
+        padding: 10px;
+        font-size: 20px;
+        margin-bottom: 15px;
+        font-weight: bold;
+        border: 1.3px solid #8b8a8a;
+        border-radius: 4px;
+    }
+    input[type="date"],input[type="time"] {
+        padding: 6px;
+        background-color: rgb(248, 249, 232);
+        width: 120px;
+        font-weight: bolder;
+        font-size: 15px;
+    }
+    .submit-btn {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width:120px;
+        font-size: 18px;
+    }
+    .submit-btn:hover {
+        background-color: #218838;
+    }
+    .alert {
+        display: none;
+        background-color: #e0340d;
+        color: #d3ffdd;
+        padding: 20px;
+        border-radius: 4px;
+        margin-top: 10px;
+        text-align: center;
+        position: relative;
+    }
     .alert.show {
-        display: flex;
+        display: block;
     }
-  
+    #backtomain {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        padding: 6px;
+        background-color: brown;
+        color: aliceblue;
+        font-size: 16px;
+    }
 </style>
 
 <body>
+    <br><button id="backtomain">Backtomain</button>
     <div id="form-box">
         <form action="" name="lol" method="post" id="registrationform">
+            <div class="title">
+                Fix Database
+            </div>
 
             <label for="customDate">Select Date:</label>
             <input type="date" id="customDate" name="customDate" required><br><br>
 
             <label for="customTime">Select Time:</label>
             <input type="time" id="customTime" name="customTime" required><br><br>
-
+            <div class="alert">Data submitted successfully!</div>
             <h3>
-                <label class="label" for="name">সদস্যর নাম</label>
+                <label class="labelname" for="name">সদস্যর নাম</label>
                 <select class="select" id="name" name="NAME" required>
                     <option value=""></option>
                 </select>
@@ -75,8 +153,7 @@
             </div>
         </form>
     </div>
-    <div class="alert">Data submitted successfully!</div>
-    <br><button id="backtomain" class="submit-btn">Backtomain</button>
+   
     <script>
         async function fetchNames() {
             try {

@@ -38,7 +38,7 @@ option {
     padding: 20px;
     border-radius: 7px;
     box-shadow: 0 8px 32px 0;
-    background-color: rgb(167, 200, 245);
+    background-color: rgba(224, 248, 222, 0.641);
     box-sizing: border-box;
 
 }
