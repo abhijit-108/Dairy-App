@@ -1,7 +1,7 @@
-const CACHE_NAME = 'my-site-cache-v7';
+const CACHE_NAME = 'my-site-cache-v8';
 const urlsToCache = [
   '/Dairy-App/',
-  '/Dairy-App/css/main-screen.css?v=1.1.10',
+  '/Dairy-App/css/main-screen.css?v=1.2.1',
   '/Dairy-App/js/include_name_email.js?v=1.1.2'
 ];
 
