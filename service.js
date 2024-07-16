@@ -1,6 +1,6 @@
-const CACHE_NAME = 'my-site-cache-v3';
+const CACHE_NAME = 'my-site-cache-v4';
 const urlsToCache = [ 
-  'css/main-screen.css?v=1.1.7',
+  'css/main-screen.css?v=1.1.8',
   'js/include_name_email.js?v=1.1.2'
 ];
 
