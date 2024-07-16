@@ -1,8 +1,8 @@
 const CACHE_NAME = 'my-site-cache-v1';
 const urlsToCache = [
   '/', 
-  'css/main-screen.css?v=1.1.4',
-  'js/include_name_email.js?v=1.1.0'
+  'css/main-screen.css?v=1.1.5',
+  'js/include_name_email.js?v=1.1.1'
 ];
 
 self.addEventListener('install', function(event) {
