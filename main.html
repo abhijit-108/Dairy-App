@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dairy CaL</title>
@@ -6,10 +7,10 @@
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@12.2.0/dist/markdown-it.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
     <link rel="icon" href="logo.png" type="image/png">
-    <link rel="stylesheet" href="css/main-screen.css?v=1.2.2">
-    <link rel="stylesheet" href="css/other-parts.css?v=1.0.3">
-    <link rel="stylesheet" href="css/databasepopup.css?v=1.0.6">
-    <link rel="stylesheet" href="css/navbar+sidebar.css?v=1.1.0">
+    <link rel="stylesheet" href="css/main-screen.css">
+    <link rel="stylesheet" href="css/other-parts.css">
+    <link rel="stylesheet" href="css/databasepopup.css">
+    <link rel="stylesheet" href="css/navbar+sidebar.css">
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
 
@@ -35,19 +36,19 @@
             <ul>
                 <li id="openPopup"><a href="#" class="perfromace_report_toggle">সমস্ত সদস্য</a></li>
                 <br>
-                <li  id="storagepage"><a href="storage page.html">পুরনো Bills</a></li>
+                <li id="storagepage"><a href="storage page.html">পুরনো Bills</a></li>
 
                 <br>
                 <li><a href="#" class="update-toggle" id="billvalidate">নতুন Bill </a></li>
                 <br>
-                <li  id="fixDatabaseItem"><a href="rewrite Data.html">Fix Database</a></li>
+                <li id="fixDatabaseItem"><a href="rewrite Data.html">Fix Database</a></li>
                 <button id="logoutButton">Logout</button>
                 <div id="guest-info">
-                    
-                </div>
-                <div id="error" class="error"></div>           
 
-             </ul>
+                </div>
+                <div id="error" class="error"></div>
+
+            </ul>
         </nav>
     </div>
 
@@ -57,10 +58,11 @@
             <p>ইন্টারনেট বন্ধ হয়ে গেছে </p>
         </div>
     </div>
-    
+
     <div id="alert" class="alert">
         <div class="tick">&#10003;</div>
-        Saved To Database <br>Email Sent</div>
+        Saved To Database <br>Email Sent
+    </div>
     <div id="form-box">
         <form action="" name="lol" method="post" id="registrationform">
             <h3 id="h3names">
@@ -109,7 +111,7 @@
                 <button id="refreshdatabase" hidden>Refresh</button>
                 <button id="closePopup" class="close-btn">Close</button>
             </div>
-           
+
             <div class="filterbar">
                 <div class="filter-row">
                     <div class="filter-group">
@@ -119,7 +121,7 @@
                     </div>
 
                     <div class="filter-group">
-                        
+
                     </div>
                     <div class="filter-group">
                         <select id="dateRangeFilter">
@@ -129,7 +131,7 @@
                             <option value="16-23">16-23</option>
                             <option value="24-end">24 onwards</option>
                         </select>
-                        
+
                     </div>
                 </div>
             </div>
@@ -140,7 +142,7 @@
                             <th>Date</th>
                             <th>Time-Period</th>
                             <th>Name</th>
-                            <th >FAT <br>SNF <br> RATE</th>
+                            <th>FAT <br>SNF <br> RATE</th>
                             <th>KG</th>
                             <th>TOTAL</th>
                         </tr>
@@ -150,34 +152,34 @@
                     </tbody>
                 </table>
             </div>
-           <div class="colorboxfortotal">
-            <div id="total-Kg">0</div>
-            <div id="ultimate-total">0</div>
-           </div>
+            <div class="colorboxfortotal">
+                <div id="total-Kg">0</div>
+                <div id="ultimate-total">0</div>
+            </div>
 
-<br>
-           <table id="table3" border="1">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Total KG</th>
-                    <th>Rupees (29)</th>
-                    <th>Original Rupees</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Rows will be populated dynamically -->
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td>Total</td>
-                    <td id="totalKGFooter">0</td>
-                    <td id="totalModifiedFooter">0</td>
-                    <td id="totalTakaFooter">0</td>
-                </tr>
-            </tfoot>
-        </table>
-        
+            <br>
+            <table id="table3" border="1">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Total KG</th>
+                        <th>Rupees (29)</th>
+                        <th>Original Rupees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be populated dynamically -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Total</td>
+                        <td id="totalKGFooter">0</td>
+                        <td id="totalModifiedFooter">0</td>
+                        <td id="totalTakaFooter">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+
 
         </div>
     </div>
@@ -202,19 +204,23 @@
             </tfoot>
         </table>
     </div>
+    <!-- Register service worker -->
     <script>
         if ('serviceWorker' in navigator) {
-          window.addEventListener('load', function() {
-            navigator.serviceWorker.register('/Dairy-App/service.js')
-              .then(function(registration) {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-              })
-              .catch(function(err) {
-                console.log('ServiceWorker registration failed: ', err);
-              });
-          });
+            window.addEventListener('load', () => {
+                console.log('Registering service worker...');
+                navigator.serviceWorker.register('/Dairy-App/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.error('ServiceWorker registration failed: ', err);
+                    });
+            });
+        } else {
+            console.log('Service workers are not supported.');
         }
-      </script>
+    </script>
     <script>
         // Get the button element
         var billButton = document.getElementById('billvalidate');
@@ -224,10 +230,11 @@
             window.location.href = 'bill.html';
         });
     </script>
-    <script src="js/main-screen.js?v=1.0.5"></script>
-    <script type="module" src="js/database.js?v=1.1.4"></script>
-    <script src="js/email.js?v=1.0.3" id="emailscript"></script>
-    <script src="js/include_name_email.js?v=1.1.2"></script>
-    <script  src="js/rate.js?v=1.0.6"></script>
+    <script src="js/main-screen.js"></script>
+    <script type="module" src="js/database.js"></script>
+    <script src="js/email.js" id="emailscript"></script>
+    <script src="js/include_name_email.js"></script>
+    <script src="js/rate.js"></script>
 </body>
+
 </html>
