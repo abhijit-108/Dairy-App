@@ -15,11 +15,13 @@ body {
     width: 290px;
     align-items: center;
 }
+
 option {
     font-size: 18px;
     background-color: #fff2f2;
     color: #000000;
 }
+
 .select {
     font-size: 20px;
     padding: 10px;
@@ -30,15 +32,16 @@ option {
     border-radius: 8px;
     color: #540a0a;
     width: fit-content;
-    background-color: #d6d6d6;
+    background-color: #ffffff;
     border: 2px solid rgb(200, 145, 145)
 }
+
 #little-box {
     margin-top: 20px;
     padding: 20px;
     border-radius: 7px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
-    background-color: rgba(197, 245, 191, 0.942);
+    background-color: #52ffcb;
     box-sizing: border-box;
     transition: box-shadow 0.3s ease-in-out;
 }
@@ -46,8 +49,9 @@ option {
 .label {
     font-size: 20px;
     font-weight: bold;
-    color: rgba(0, 0, 0, 0.715);
+    color: rgba(0, 0, 0, 0.837);
 }
+
 input {
     padding: 8px;
     margin: 5px;
@@ -57,6 +61,7 @@ input {
     border-radius: 13px;
     background-color: rgb(221, 252, 252);
 }
+
 #fat {
     color: rgb(220, 46, 46);
     border: 2px solid rgb(243, 86, 2);
@@ -71,6 +76,7 @@ input {
     color: rgb(8, 11, 1);
     border: 2px solid rgb(0, 0, 0);
 }
+
 .submit-btn {
     padding: 10px;
     background-color: #73260af1;
@@ -97,11 +103,10 @@ input {
 #ratedisplay {
     margin-top: 10px;
     color: rgb(38, 13, 178);
-  
+
 }
 
 #totaldisplay {
-    margin-top: 15px;
     text-align: center;
     color: rgb(55, 0, 128);
     background-color: rgb(241, 245, 249);
@@ -115,8 +120,7 @@ input {
     padding: 10px;
     border-radius: 7px;
     width: 270px;
-    background-color: #bef4e5;
-    margin: auto;
+    background-color: #52ffcb;
     font-weight: bold;
     font-size: 25px;
 }
@@ -124,12 +128,12 @@ input {
 /* Style For Today Table */
 #table2 {
     display: relative;
-    background-color: #000000;
-    border-collapse:collapse;
+    border-collapse: collapse;
     border-radius: 10px;
     overflow-y: auto;
     width: 100%;
     padding: 10px;
+    color: #000000d4;
     /* Add border for better readability */
 }
 
@@ -141,24 +145,32 @@ input {
 }
 
 #table2 th {
-    font-size: 11px;
+    font-size: 12px;
     color: #fffeff;
     background-color: #080c82;
     /* Light gray background for table headers */
 }
 
-
-
 #table2 tfoot {
     color: #c1f41a;
     font-weight: bold;
-
+    background-color: #000000;
 
 }
 
 #table2 tfoot td:first-child {
     text-align: center;
     font-size: 16px;
+}
+
+#table2 tbody tr:nth-child(1) {
+    color: #2316db;
+    /* Alternate row colors for better readability */
+}
+
+#table2 tbody td:nth-child(2) {
+    font-size: 13px;
+    /* Alternate row colors for better readability */
 }
 
 /* CSS for columns 4 and 5 */
@@ -170,19 +182,38 @@ td:nth-child(7) {
 }
 
 .todaybox {
-    width: 90%;
+    width: 96%;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 50px;
     box-shadow: 0 8px 32px 0;
     border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.todaybox:hover {
+    transform: scale(1.02);
+}
+
+/* make a media break point for bigger screens */
+
+@media only screen and (min-width: 600px) {
+    .todaybox {
+        width: 500px;
+        transition: transform 0.3s ease;
+    }
+
+    .todaybox:hover {
+        transform: scale(1.1);
+    }
 }
 
 
-#customDate{
+#customDate {
     width: 180px;
 }
-#customTime{
+
+#customTime {
     width: 180px;
 }
 
@@ -190,7 +221,7 @@ td:nth-child(7) {
     display: none;
 }
 
-#guest-info{
+#guest-info {
     color: #9d1607;
     font-weight: bolder;
 }

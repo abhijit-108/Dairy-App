@@ -327,8 +327,6 @@ function getCurrentDateRange() {
     }
     return "all";
 }
-// Ensure this script runs after rate.js
- // Use the constant
 
 function populateTable3() {
     const tableBody = document.getElementById('table').getElementsByTagName('tbody')[0];
@@ -568,8 +566,13 @@ async function displayTodayEntriesInTable2() {
             // Clear existing table rows
             const tableBody = document.querySelector('#table2 tbody');
             tableBody.innerHTML = '';
+
             let totalKG = 0;
             let totalAmount = 0;
+            let amTotalKG = 0;
+            let amTotalAmount = 0;
+            let pmTotalKG = 0;
+            let pmTotalAmount = 0;
 
             // Populate table2 with today's entries
             todayEntries.forEach(entry => {
@@ -589,15 +592,32 @@ async function displayTodayEntriesInTable2() {
                 `;
                 tableBody.insertAdjacentHTML('beforeend', newRow);
 
-                // Accumulate total KG and total Amount
+                // Accumulate totals
                 totalKG += parseFloat(entry.kg);
                 totalAmount += parseFloat(entry.total);
+
+                if (timePeriodClass === 'am-row') {
+                    amTotalKG += parseFloat(entry.kg);
+                    amTotalAmount += parseFloat(entry.total);
+                } else {
+                    pmTotalKG += parseFloat(entry.kg);
+                    pmTotalAmount += parseFloat(entry.total);
+                }
             });
 
-
-            // Populate table footer with sum
+            // Populate table footer with AM and PM totals before the overall sum
             const tableFooter = document.querySelector('#table2 tfoot');
             tableFooter.innerHTML = `
+                <tr>
+                    <td colspan="5">সকালের মোট দুধ</td>
+                    <td>${amTotalKG.toFixed(1)}</td>
+                    <td>${amTotalAmount.toFixed(0)}</td>
+                </tr>
+                <tr>
+                    <td colspan="5">সন্ধ্যার মোট দুধ</td>
+                    <td>${pmTotalKG.toFixed(1)}</td>
+                    <td>${pmTotalAmount.toFixed(0)}</td>
+                </tr>
                 <tr>
                     <td colspan="5">Total</td>
                     <td>${totalKG.toFixed(1)}</td>
@@ -611,6 +631,7 @@ async function displayTodayEntriesInTable2() {
         console.error("Error fetching today's entries:", error);
     }
 }
+
 
 // Call the function to fetch and display today's entries in table2
 displayTodayEntriesInTable2();

@@ -11,7 +11,6 @@
      var kg = document.getElementById('kg').value;
      var total = document.getElementById('total').value;
 
-
      // Check if email is not empty
      if (email.trim() !== '') {
          // Prepare email parameters
