@@ -1,4 +1,4 @@
-const CACHE_NAME = 'my-site-cache-v8';
+const CACHE_NAME = 'my-site-cache-v9';
 const urlsToCache = [
   '/Dairy-App/',
   '/Dairy-App/css/main-screen.css?v=1.2.1',
