@@ -169,20 +169,18 @@ function populateTable(entries) {
         const timePeriodCell = row.insertCell(1);
         const nameCell = row.insertCell(2);
         const fatCell = row.insertCell(3);
-        const snfCell = row.insertCell(4);
-        const rateCell = row.insertCell(5);
-        const kgCell = row.insertCell(6);
-        const totalCell = row.insertCell(7);
-        const actionCell = row.insertCell(8); // Add a new cell for action buttons
+        const kgCell = row.insertCell(4);
+        const totalCell = row.insertCell(5);
+        const actionCell = row.insertCell(6); // Add a new cell for action buttons
 
         dateCell.textContent = entry.date;
         timePeriodCell.textContent = entry.timePeriod;
         nameCell.textContent = entry.name;
-        fatCell.textContent = entry.fat;
-        snfCell.textContent = entry.snf;
-        rateCell.textContent = entry.rate;
+        fatCell.textContent = entry.fat + '\n' + entry.snf + '\n' + entry.rate;
         kgCell.textContent = entry.kg;
         totalCell.textContent = entry.total;
+        fatCell.style.whiteSpace = 'pre';
+
 
         // Create Delete button
         const deleteButton = document.createElement('button');
@@ -364,8 +362,8 @@ function populateTable3() {
 
     for (const row of rows) {
         const nameCell = row.cells[2];
-        const kgCell = row.cells[6];
-        const totalCell = row.cells[7];
+        const kgCell = row.cells[4];
+        const totalCell = row.cells[5];
 
         const name = nameCell.textContent.trim();
         const kg = parseFloat(kgCell.textContent) || 0;
@@ -491,8 +489,8 @@ function calculateSums() {
 
     for (const row of rows) {
         if (row.style.display !== 'none') {
-            const kgCell = row.cells[6];
-            const totalCell = row.cells[7];
+            const kgCell = row.cells[4];
+            const totalCell = row.cells[5];
             totalKg += parseFloat(kgCell.textContent) || 0;
             ultimateTotal += parseFloat(totalCell.textContent) || 0;
         }

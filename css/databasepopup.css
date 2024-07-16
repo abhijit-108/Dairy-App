@@ -28,6 +28,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 10, 0.7);
     width: 90%;
     height: 90%;
+    margin: 0;
     overflow-y: auto;
 }
 
@@ -39,6 +40,51 @@
     margin-bottom: 10px;
     padding: 5px;
 }
+#monthFilter{
+    padding: 5px;
+    width: fit-content;
+    height: 40px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 7px;
+    border-width: 2px;
+    /* Adjust select width as needed */
+}
+.titlebar{
+    display: flex;
+    justify-content: space-between;
+    padding: 0px;
+    margin: 5px;
+}
+
+.close-btn {
+    border-width: 3px;
+    padding: 6px 20px;
+    color: rgb(255, 255, 255);
+    background-color: rgb(202, 38, 26);
+    font-size: large;
+    font-weight: bold;
+    height: 40px;
+    cursor: pointer;
+    border-radius: 6px;}
+
+#refreshdatabase    {
+    border-width: 3px;
+    padding: 6px 20px;
+    height: 40px;
+    margin-bottom: 10px;
+    top: 10px;
+    color: black;
+    background-color: rgb(251, 255, 138);
+    font-size: normal;
+    font-weight: bold;
+    cursor: pointer;
+}
+#refreshdatabase:hover {
+    background-color: rgb(53, 195, 13);
+}
+
+
 
 .filter-group {
     margin-right: 6px;
@@ -57,12 +103,22 @@
 }
 #table  {
     width: 100%;
+    border-collapse: collapse;
     background-color: #c6efe4;
     display: relative;
     column-rule-color: #2e1717;
     border: 1px solid #ddd;
     /* Add border for better readability */
 }
+.table_box{
+    overflow-y: auto;
+    height: 500px;
+    margin: 0;
+}
+.table_box::-webkit-scrollbar {
+    display: none;
+}
+
 #table td {
     padding: 6px;
     text-align: center;
@@ -71,6 +127,7 @@
 }
 #table th {
     background-color: #c6e890;
+    font-size: 11px;
     /* Light gray background for table headers */
 }
 #table tbody tr:nth-child(even) {
@@ -81,38 +138,43 @@
     background-color: #ddd;
     /* Hover effect */
 }
-#table td:nth-child(7),
-td:nth-child(8) {
-    color: #5b12c1;
+#table tbody td:nth-child(5),
+td:nth-child(6) {
+    color: #6208de;
     font-weight: bolder;
     font-size: 15px;
+}
+@media screen and (min-width: 600px) {
+    .table_box{
+        overflow-y: auto;
+        margin: 0;
+        height: auto;
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #table td {
+        padding: 0px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
 }
 
 .colorboxfortotal{
     margin-top: 20px;
-    background-color: #f3e1f7;
+    background-color: #ddffe5;
     color: #000000;
-    padding: 10px;
-    width: 200px;
+    padding: 14px;
+    width: 250px;
     border-radius: 10px;
     margin-left: auto;
     margin-right: auto;
     font-weight: bolder;
 }
+/* Table 3 Styles */
 
-.close-btn {
-    position: absolute;
-    border-width: 5px;
-    padding: 8px;
-    top: 10px;
-    color: rgb(255, 255, 255);
-    background-color: rgb(202, 38, 26);
-    font-size: large;
-    font-weight: bold;
-    right: 10px;
-    cursor: pointer;
-
-}
 #table3  {
     width: 100%;
     background-color: #c6efe4;
