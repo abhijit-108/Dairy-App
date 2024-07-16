@@ -1,3 +1,5 @@
+window.convertion_ratio_29taka=(29/40.5);
+
 const fatvaluedairy=3.81
 const snfvaluedairy=2.689
 const ratevaluedairy=(4.5 * fatvaluedairy) + (8.5* snfvaluedairy);

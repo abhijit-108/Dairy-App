@@ -113,7 +113,14 @@ async function displayEntries() {
                 }
             }
 
-            entries.sort((a, b) => new Date(b.date.split('-').reverse().join('-')) - new Date(a.date.split('-').reverse().join('-')));
+            // Sort entries by date, and within the same date and person, sort by timePeriod with the custom order
+            entries.sort((a, b) => {
+                const dateComparison = new Date(b.date.split('-').reverse().join('-')) - new Date(a.date.split('-').reverse().join('-'));
+                if (dateComparison !== 0) return dateComparison;
+
+                const timeOrder = { "সন্ধ্যা": 0, "সকাল": 1, "দুপুর": 2 };
+                return timeOrder[a.timePeriod] - timeOrder[b.timePeriod];
+            });
 
             const nameFilterMenu = document.getElementById('nameFilter');
             nameFilterMenu.innerHTML = '<option value="all">All Names</option>';
@@ -320,7 +327,8 @@ function getCurrentDateRange() {
     }
     return "all";
 }
-
+// Ensure this script runs after rate.js
+ // Use the constant
 
 function populateTable3() {
     const tableBody = document.getElementById('table').getElementsByTagName('tbody')[0];
@@ -351,6 +359,7 @@ function populateTable3() {
     ];
 
     const dataMap = new Map();
+    const ratio_rate_29=window.convertion_ratio_29taka=(29/40.5);
     let totalKGSum = 0;
     let totalModifiedSum = 0;
     let totalTakaSum = 0;
@@ -383,8 +392,8 @@ function populateTable3() {
             const totalKGCell = row.insertCell(1);
             const totalModifiedCell = row.insertCell(2);
             const totalTakaCell = row.insertCell(3);
-
-            const totalModified = data.totalTaka * 0.75;
+            // Calculate the modified total
+            const totalModified = data.totalTaka * ratio_rate_29;
 
             nameCell.textContent = name;
             totalKGCell.textContent = data.totalKG.toFixed(1);
