@@ -2,7 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebas
 import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
-
 const firebaseConfig = {
     apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
     authDomain: "dairy-app-abhijit.firebaseapp.com",
@@ -15,7 +14,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase();
 const auth = getAuth();
-
 
 document.getElementById('registrationform').addEventListener('submit', formSubmit);
 
@@ -548,7 +546,7 @@ async function displayTodayEntriesInTable2() {
                         const timestamp = parseTimestamp(entry.timestamp); // Parse the timestamp correctly
                         const formattedTime = timestamp.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
                         const timePeriodLabel = getTimePeriod(timestamp.getHours()); // Get the time period label
-                        todayEntries.push({ ...entry, timePeriodLabel, timestamp ,formattedTime});
+                        todayEntries.push({ ...entry, timePeriodLabel, timestamp, formattedTime });
                     } else {
                         console.warn("Timestamp missing for entry:", entry);
                     }
@@ -568,7 +566,7 @@ async function displayTodayEntriesInTable2() {
             todayEntries.forEach(entry => {
                 // Determine the class based on formattedTime (assuming formattedTime is in "h:mm am/pm" format)
                 const timePeriodClass = entry.formattedTime.toLowerCase().indexOf('pm') !== -1 ? 'pm-row' : 'am-row';
-            
+
                 const newRow = `
                     <tr class="${timePeriodClass}">
                         <td>${entry.formattedTime}</td>
@@ -581,12 +579,12 @@ async function displayTodayEntriesInTable2() {
                     </tr>
                 `;
                 tableBody.insertAdjacentHTML('beforeend', newRow);
-            
+
                 // Accumulate total KG and total Amount
                 totalKG += parseFloat(entry.kg);
                 totalAmount += parseFloat(entry.total);
             });
-            
+
 
             // Populate table footer with sum
             const tableFooter = document.querySelector('#table2 tfoot');
@@ -639,8 +637,6 @@ onAuthStateChanged(auth, (user) => {
 
     const fixDatabaseItem = document.getElementById('fixDatabaseItem');
     const h3names = document.getElementById('h3names');
-
-
 
     if (user) {
         // User is authenticated, show user name

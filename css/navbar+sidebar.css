@@ -72,7 +72,6 @@ a {
     margin-left: 3px;
     height: 90%;
     box-shadow: 0 8px 32px 0;
-    /* Add shadow to the right */
     z-index: 1;
     text-align: left;
     background-color: hsl(208, 55%, 91%);
@@ -92,7 +91,6 @@ a {
     margin-bottom: 20px;
     margin-top: 10px;
     margin-left: 15px;
-    box-shadow: 0 5px 15px 0 rgb(141, 139, 134);
     padding:8px;
     border-radius: 3px;
 

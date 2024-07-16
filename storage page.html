@@ -6,30 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photo Upload to Firebase Storage</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f5f5f5;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            margin: 0;
-            width: 100vw;
-            padding: 0;
-            margin: 0;
-            font-family: 'Arial', sans-serif;
-            background-color: #f3f3f3;
-        }
-
-        .content {
-            flex: 1;
             text-align: center;
-            padding: 20px;
-            background-color: #fff;
-            border-bottom: 1px solid #ddd;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+
+        .content-box {
+            width: 310px;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #838181;
+            border-radius: 4px;
+            display: grid;
+        }
+        .disabled{
+            display: none;
+        }
         h1 {
-            font-size: 28px;
-            margin-bottom: 20px;
+            font-size: 25px;
+            margin-top: 15px;
             color: #333;
         }
 
@@ -48,13 +55,18 @@
             position: fixed;
             right: 10px;
             top: 10px;
-            padding:10px 18px;
-            background-color: #d21919;
+            padding: 10px 18px;
+            background-color: #dfdf14;
             font-weight: bold;
-            color: #f1f1f1;
-            border:1.2px solid rgb(72, 148, 46)
+            color: #4e1d87;
+            border: 1.2px solid rgb(72, 148, 46);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-
+        #backtomain:hover {
+            background-color: #dd4b0d;
         }
 
         #uploadButton {
@@ -62,15 +74,18 @@
             color: white;
             border: none;
             cursor: pointer;
-            padding: 10px;
-            width: 150px;
+            padding: 10px 15px;
+            width: 140px;
+            margin-top: 15px;
             font-size: 16px;
-            margin: 10px;
+            margin-left: auto;
+            margin-right: auto;
             transition: background-color 0.3s;
+            border-radius: 5px;
         }
 
-        button:hover {
-            background-color: #dd4b0d;
+        #uploadButton:hover {
+            background-color: #cf4848;
         }
 
         #status {
@@ -124,14 +139,14 @@
             margin: 10px;
             margin-bottom: 80px;
             overflow: hidden;
+            transition: 0.3s ease-in-out ;
         }
 
         .photoBox:hover {
             transform: scale(1.05);
-            /* Zoom in by 10% */
+            /* Zoom in by 5% */
 
         }
-
 
         @media (min-width: 768px) {
             .photoBox {
@@ -193,9 +208,9 @@
 </head>
 
 <body>
-    <div class="content">
-        <br><button id="backtomain">Main Page</button>
-        <h1>Upload Photo to Firebase Storage</h1>
+    <h1>Upload Photo to Firebase Storage</h1>
+    <br><button id="backtomain">Main Page</button>
+    <div id="content_box" class="content-box" >
         <input type="file" id="fileInput">
         <select id="commentInput">
             <option value="01_currentmonth_currentyear-07_currentmonth_currentyear">1 to 7</option>
@@ -220,7 +235,6 @@
             <!-- Photos and comments will be displayed here -->
         </div>
     </div>
-
     <!-- Firebase SDKs -->
     <script>
         // Get the button element
@@ -236,7 +250,7 @@
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getStorage, ref, uploadBytesResumable, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
@@ -252,6 +266,7 @@
         const app = initializeApp(firebaseConfig);
         const storage = getStorage(app);
         const auth = getAuth();
+
         async function uploadFile() {
             const fileInput = document.getElementById('fileInput');
             const commentInput = document.getElementById('commentInput');
@@ -417,6 +432,18 @@
 
         // Display photos on initial load
         window.onload = displayPhotos;
+
+        onAuthStateChanged(auth, (user) => {
+             const content_box = document.getElementById('content_box');
+
+            if (user) {
+                content_box.classList.remove('disabled');
+
+            } else {
+                content_box.classList.add('disabled');
+            }
+        });
+
     </script>
 </body>
 

@@ -37,15 +37,16 @@ option {
     margin-top: 20px;
     padding: 20px;
     border-radius: 7px;
-    box-shadow: 0 8px 32px 0;
-    background-color: rgba(224, 248, 222, 0.641);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
+    background-color: rgba(197, 245, 191, 0.942);
     box-sizing: border-box;
-
+    transition: box-shadow 0.3s ease-in-out;
 }
 
 .label {
-    font-size: 22px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: lighter;
+    color: rgba(0, 0, 0, 0.715);
 }
 input {
     padding: 8px;
@@ -54,15 +55,15 @@ input {
     font-size: 23px;
     font-weight: bolder;
     border-radius: 13px;
-    background-color: rgb(211, 216, 216);
+    background-color: rgb(221, 252, 252);
 }
 #fat {
-    color: rgb(163, 42, 42);
+    color: rgb(220, 46, 46);
     border: 2px solid rgb(243, 86, 2);
 }
 
 #snf {
-    color: rgb(41, 41, 147);
+    color: rgb(55, 55, 201);
     border: 2px solid rgb(27, 17, 208);
 }
 

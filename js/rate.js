@@ -16,11 +16,7 @@ function rateandtotal() {
 
     document.getElementById('rate').value = fixedrate;
     document.getElementById('total').value = fixtedotal;
-   
-
 }
-
-
 
 //after button click multiply numbers
 function multiplyNumbers() {

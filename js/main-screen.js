@@ -42,14 +42,24 @@ updateDate();
 
 
 
-//Trigger Sidebar 
 document.addEventListener('DOMContentLoaded', function () {
     const menuButton = document.querySelector('.menu-button');
     const sidebar = document.querySelector('.sidebar');
+    const formBox = document.getElementById('form-box');
+    const todaybox = document.getElementById('todaybox');
+
 
     menuButton.addEventListener('click', function (event) {
         event.stopPropagation(); // Prevent event bubbling
         sidebar.style.left = sidebar.style.left === '0px' ? '-100%' : '0px';
+        if (sidebar.style.left === '0px') {
+            formBox.style.filter = 'blur(3px)';
+            todaybox.style.filter = 'blur(3px)';
+        } else {
+            formBox.style.filter = 'none';
+            todaybox.style.filter = 'none';
+
+        }
     });
 
     document.addEventListener('click', function (event) {
@@ -59,33 +69,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!isMenuButton && !isSidebar) {
             sidebar.style.left = '-100%';
+            formBox.style.filter = 'none';
+            todaybox.style.filter = 'none';
+
         }
     });
 });
-
 function playSound() {
     var audio = document.getElementById("myAudio");
     audio.play();
-}
-
-function showSplashScreen() {
-    var splashScreen = document.getElementById('splash-screen');
-    splashScreen.style.display = 'flex';
-
-    var progressBarInner = document.getElementById('progress-bar-inner');
-    var percentageText = document.getElementById('percentage-text');
-
-    var width = 1;
-    var interval = setInterval(function () {
-        if (width >= 100) {
-            clearInterval(interval);
-            reloadWebView();
-        } else {
-            width++;
-            progressBarInner.style.width = width + '%';
-            percentageText.innerText = width + '%';
-        }
-    }, 50);
 }
 
 function reloadWebView() {
@@ -114,13 +106,13 @@ function validateInput() {
     var error = "";
 
     if (fat < 1.1 || fat > 12.1) {
-        errorBoxFat.innerText = "Fat Wrong (1.1-12.1)";
+        errorBoxFat.innerText = "Fat Wrong (1.1-12.5)";
     } else {
         errorBoxFat.innerText = "";
     }
 
     if (snf < 3.1 || snf > 12.1) {
-        errorBoxSnf.innerText = "SNF Wrong (3.1 - 12.1)";
+        errorBoxSnf.innerText = "SNF Wrong (3.1 - 12.5)";
     } else {
         errorBoxSnf.innerText = "";
     }
@@ -179,8 +171,7 @@ function hideOfflinePopup() {
     document.getElementById('offlinePopup').style.display = 'none';
 }
 
-
-
+// Event listener for the submit button
 document.getElementById('submit').addEventListener('click', function () {
     if (validateInput()) {
         checkConnectivity(function (isOnline) {
