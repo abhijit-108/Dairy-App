@@ -7,6 +7,7 @@ const urlsToCache = [
   '/Dairy-App/logo.png',
   '/Dairy-App/main.html',
   '/Dairy-App/names.md',
+  '/Dairy-App/effect.ogg',
   '/Dairy-App/rewrite Data.html',
   '/Dairy-App/storage page.html',
 
@@ -22,7 +23,7 @@ const urlsToCache = [
   '/Dairy-App/js/main-screen.js',
   '/Dairy-App/js/rate.js',
   '/Dairy-App/js/rate.md',
-  '/Dairy-App/js/email.js',
+  '/Dairy-App/js/email.js'
 
 ];
 

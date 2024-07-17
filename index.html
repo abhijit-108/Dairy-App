@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="css/loginpage.css?v=1.0.0">
 
 </head>
@@ -28,6 +30,66 @@
         <div id="error" class="error"></div>
 
     </div>
+    <div class="keybox">
+        <button class="key" data-number="1">1</button>
+        <button class="key" data-number="2">2</button>
+        <button class="key" data-number="3">3</button>
+        <button class="key" data-number="4">4</button>
+        <button class="key" data-number="5">5</button>
+        <button class="key" data-number="6">6</button>
+        <button class="key" data-number="7">7</button>
+        <button class="key" data-number="8">8</button>
+        <button class="key" data-number="9">9</button>
+        <button class="key" id="clear" ><i class="fas fa-backspace" ></i></button>
+        <button class="key" data-number="0">0</button>
+        <button class="key" id="enter" ><i class="fas fa-check"></i></button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const passwordInput = document.getElementById('password');
+            const keys = document.querySelectorAll('.key');
+            const clearButton = document.getElementById('clear');
+
+
+            keys.forEach(key => {
+                key.addEventListener('click', () => {
+                    const number = key.getAttribute('data-number');
+                    if (number) {
+                        passwordInput.value += number;
+                    }
+                    playSound();
+                });
+            });
+
+            clearButton.addEventListener('click', () => {
+                passwordInput.value = '';
+                playSound();
+            });
+        });
+         // Web Audio API setup
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    let audioBuffer;
+
+    // Load the sound
+    fetch('effect.ogg')
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+        .then(buffer => {
+            audioBuffer = buffer;
+        })
+        .catch(e => console.error('Error with decoding audio data', e));
+
+    const playSound = () => {
+        if (audioBuffer) {
+            const source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioContext.destination);
+            source.start(0);
+        }
+    };
+
+    </script>
 
     <!-- Firebase App (the core Firebase SDK) -->
     <script type="module">
@@ -54,7 +116,7 @@
             var email = document.getElementById('email').value;
             var passwordpart2 = document.getElementById('password').value;
             var passwordpart1 = "9775815681";
-            var password =passwordpart1 +passwordpart2 ;
+            var password = passwordpart1 + passwordpart2;
 
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
@@ -90,7 +152,7 @@
 
         // Attach event listener to login button
         document.getElementById('loginButton').addEventListener('click', login);
-
+        document.getElementById('enter').addEventListener('click', login);
 
         // Event listener for Guest button
         document.getElementById('guestlogin').addEventListener('click', function () {
