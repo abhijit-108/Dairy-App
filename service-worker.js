@@ -1,4 +1,4 @@
-const CACHE_NAME = 'my-site-cache-v1';
+const CACHE_NAME = 'my-site-cache-v3';
 const urlsToCache = [
   '/Dairy-App/',
   '/Dairy-App/bill.html',
