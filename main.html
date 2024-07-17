@@ -7,10 +7,10 @@
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@12.2.0/dist/markdown-it.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
     <link rel="icon" href="logo.png" type="image/png">
-    <link rel="stylesheet" href="css/main-screen.css">
-    <link rel="stylesheet" href="css/other-parts.css">
-    <link rel="stylesheet" href="css/databasepopup.css">
-    <link rel="stylesheet" href="css/navbar+sidebar.css">
+    <link rel="stylesheet" href="css/main-screen.css?v=3.0.0">
+    <link rel="stylesheet" href="css/other-parts.css?v=3.0.0">
+    <link rel="stylesheet" href="css/databasepopup.css?v=3.0.0">
+    <link rel="stylesheet" href="css/navbar+sidebar.css?v=3.0.0">
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
 
@@ -99,7 +99,6 @@
             <div id="ratedisplay"></div>
             <div id="totaldisplay"></div>
         </div>
-
     </div>
     <br>
     <div id="popupWrapper" class="popup-wrapper">
@@ -204,23 +203,6 @@
             </tfoot>
         </table>
     </div>
-    <!-- Register service worker -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                console.log('Registering service worker...');
-                navigator.serviceWorker.register('/Dairy-App/service-worker.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    })
-                    .catch(err => {
-                        console.error('ServiceWorker registration failed: ', err);
-                    });
-            });
-        } else {
-            console.log('Service workers are not supported.');
-        }
-    </script>
     <script>
         // Get the button element
         var billButton = document.getElementById('billvalidate');
@@ -230,11 +212,11 @@
             window.location.href = 'bill.html';
         });
     </script>
-    <script src="js/main-screen.js"></script>
-    <script type="module" src="js/database.js"></script>
-    <script src="js/email.js" id="emailscript"></script>
-    <script src="js/include_name_email.js"></script>
-    <script src="js/rate.js"></script>
+    <script src="js/main-screen.js?v=3.0.0"></script>
+    <script type="module" src="js/database.js?v=3.0.0"></script>
+    <script src="js/email.js" id="emailscript?v=3.0.0"></script>
+    <script src="js/include_name_email.js?v=3.0.0"></script>
+    <script src="js/rate.js?v=3.0.0"></script>
 </body>
 
 </html>

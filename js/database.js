@@ -531,7 +531,7 @@ function parseTimestamp(timestamp) {
     return new Date(year, month - 1, day, hours, minutes);
 }
 
-
+// Function to fetch and display today's entries in Home page
 async function displayTodayEntriesInTable2() {
     const currentDate = new Date();
     const formattedDate = `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`;
