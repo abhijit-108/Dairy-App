@@ -325,7 +325,6 @@ function getCurrentDateRange() {
     }
     return "all";
 }
-
 function populateTable3() {
     const tableBody = document.getElementById('table').getElementsByTagName('tbody')[0];
     const rows = tableBody.getElementsByTagName('tr');
@@ -408,32 +407,264 @@ function populateTable3() {
     document.getElementById('totalTakaFooter').textContent = totalTakaSum.toFixed(2);
 }
 
+
+
+
+
+function populateTable4() {
+    const tableBody = document.getElementById('table').getElementsByTagName('tbody')[0];
+    const rows = tableBody.getElementsByTagName('tr');
+
+    const table4Body = document.getElementById('table4').getElementsByTagName('tbody')[0];
+    table4Body.innerHTML = ''; // Clear previous data
+
+    const nameOrder = [
+        "চন্দনা-ঘোষ",
+        "রাজেন্দ্র ঘোষ",
+        "সুজাতা ঘোষ",
+        "রজিনা শেখ",
+        "মামনি চক্রবর্তী",
+        "ঝর্না চচ্চড়ি",
+        "বিকাশ কুমার ঘোষ",
+        "সুলোচনা ঘোষ",
+    ];
+
+    const dataMap = new Map();
+    const ratio_rate_29 = window.convertion_ratio_29taka = (29 / 40.5);
+    let totalKGSum = 0;
+    let totalModifiedSum = 0;
+    let totalTakaSum = 0;
+
+    // Input values
+    const inputTotalKG = parseFloat(document.getElementById('inputTotalKG').value) || 0;
+    const inputTotalTaka = parseFloat(document.getElementById('inputTotalTaka').value) || 0;
+
+    for (const row of rows) {
+        const nameCell = row.cells[2];
+        const kgCell = row.cells[4];
+        const totalCell = row.cells[5];
+
+        const name = nameCell.textContent.trim();
+        let kg = 0;
+        let totalModified = 0;
+        let total = 0;
+
+        if (name === "চন্দনা-ঘোষ") {
+            kg = (inputTotalKG - parseFloat(document.getElementById('totalKGFooter4').textContent)) * 0.4;
+            totalModified = (inputTotalTaka - parseFloat(document.getElementById('totalModifiedFooter4').textContent)) * 0.4;
+            total = totalModified * 1.396;
+        } else if (name === "রাজেন্দ্র ঘোষ") {
+            kg = (inputTotalKG - parseFloat(document.getElementById('totalKGFooter4').textContent)) * 0.6;
+            totalModified = (inputTotalTaka - parseFloat(document.getElementById('totalModifiedFooter4').textContent)) * 0.6;
+            total = totalModified * 1.396;
+        } else {
+            kg = parseFloat(kgCell.textContent) || 0;
+            totalModified = parseFloat(totalCell.textContent) || 0;
+            total = parseFloat(totalCell.textContent) || 0;
+        }
+
+        if (nameOrder.includes(name) && row.style.display !== 'none') {
+            if (dataMap.has(name)) {
+                const existingData = dataMap.get(name);
+                existingData.totalKG += kg;
+                existingData.totalTaka += total;
+            } else {
+                dataMap.set(name, { totalKG: kg, totalTaka: total });
+            }
+        }
+    }
+
+    nameOrder.forEach(name => {
+        const row = table4Body.insertRow();
+        const nameCell = row.insertCell(0);
+        const totalKGCell = row.insertCell(1);
+        const totalModifiedCell = row.insertCell(2);
+        const totalTakaCell = row.insertCell(3);
+
+        nameCell.textContent = name;
+
+        if (name === "চন্দনা-ঘোষ" || name === "রাজেন্দ্র ঘোষ") {
+            // Set non-editable values based on calculation
+            if (name === "চন্দনা-ঘোষ") {
+                const inputTotalKG = parseFloat(document.getElementById('inputTotalKG').value) || 0;
+                const inputTotalTaka = parseFloat(document.getElementById('inputTotalTaka').value) || 0;
+                const totalKGFooter4 = parseFloat(document.getElementById('totalKGFooter4').textContent) || 0;
+                const totalModifiedFooter4 = parseFloat(document.getElementById('totalModifiedFooter4').textContent) || 0;
+
+                totalKGCell.textContent = ((inputTotalKG - totalKGFooter4) * 0.4).toFixed(1);
+                totalModifiedCell.textContent = ((inputTotalTaka - totalModifiedFooter4) * 0.4).toFixed(0);
+                totalTakaCell.textContent = (((inputTotalTaka - totalModifiedFooter4) * 0.4) * 1.396).toFixed(0);
+            } else if (name === "রাজেন্দ্র ঘোষ") {
+                const inputTotalKG = parseFloat(document.getElementById('inputTotalKG').value) || 0;
+                const inputTotalTaka = parseFloat(document.getElementById('inputTotalTaka').value) || 0;
+                const totalKGFooter4 = parseFloat(document.getElementById('totalKGFooter4').textContent) || 0;
+                const totalModifiedFooter4 = parseFloat(document.getElementById('totalModifiedFooter4').textContent) || 0;
+
+                totalKGCell.textContent = ((inputTotalKG - totalKGFooter4) * 0.6).toFixed(1);
+                totalModifiedCell.textContent = ((inputTotalTaka - totalModifiedFooter4) * 0.6).toFixed(0);
+                totalTakaCell.textContent = (((inputTotalTaka - totalModifiedFooter4) * 0.6) * 1.396).toFixed(0);
+            }
+        } else {
+            if (dataMap.has(name)) {
+                const data = dataMap.get(name);
+
+                totalKGCell.textContent = data.totalKG.toFixed(1);
+                totalModifiedCell.textContent = (data.totalTaka*ratio_rate_29).toFixed(0);
+                totalTakaCell.textContent = (data.totalTaka ).toFixed(0);
+
+                totalKGSum += data.totalKG;
+                totalModifiedSum += data.totalTaka;
+                totalTakaSum += data.totalTaka * 1.396;
+            } else {
+                totalKGCell.textContent = '0';
+                totalModifiedCell.textContent = '0';
+                totalTakaCell.textContent = '0';
+            }
+        }
+    });
+
+    // Update the footer with the totals
+    document.getElementById('totalKGFooter4').textContent = totalKGSum.toFixed(1);
+    document.getElementById('totalModifiedFooter4').textContent = totalModifiedSum.toFixed(2);
+    document.getElementById('totalTakaFooter4').textContent = totalTakaSum.toFixed(2);
+}
+
+function validateBill() {
+    const table4Body = document.getElementById('table4').getElementsByTagName('tbody')[0];
+    const rows = table4Body.getElementsByTagName('tr');
+
+    let totalKGSum = 0;
+    let totalModifiedSum = 0;
+    let totalTakaSum = 0;
+
+    for (const row of rows) {
+        const totalKGCell = row.cells[1];
+        const totalModifiedCell = row.cells[2];
+        const totalTakaCell = row.cells[3];
+
+        const kg = parseFloat(totalKGCell.textContent) || 0;
+        const totalModified = parseFloat(totalModifiedCell.textContent) || 0;
+        const total = parseFloat(totalTakaCell.textContent) || 0;
+
+        totalKGSum += kg;
+        totalModifiedSum += totalModified;
+        totalTakaSum += total;
+    }
+
+    // Update the validated totals in the footer
+    document.getElementById('validatedTotalKGFooter4').textContent = totalKGSum.toFixed(1);
+    document.getElementById('validatedTotalModifiedFooter4').textContent = totalModifiedSum.toFixed(2);
+    document.getElementById('validatedTotalTakaFooter4').textContent = totalTakaSum.toFixed(2);
+}
+
+// Function to toggle editability of table4 cells and footer cells
+function toggleTable4Editable() {
+    const table4Body = document.getElementById('table4').getElementsByTagName('tbody')[0];
+    const footerCells = document.getElementById('table4').getElementsByTagName('tfoot')[0].getElementsByTagName('td');
+    const rows = table4Body.getElementsByTagName('tr');
+
+    // Toggle cells in tbody
+    for (const row of rows) {
+        const cells = row.cells;
+        for (const cell of cells) {
+            // Toggle contentEditable attribute
+            cell.contentEditable = !cell.isContentEditable;
+        }
+    }
+
+    // Toggle footer cells
+    for (const cell of footerCells) {
+        // Toggle contentEditable attribute
+        cell.contentEditable = !cell.isContentEditable;
+    }
+}
+
+// Attach event listener for Toggle Editable button
+document.getElementById('toggleEditButton').addEventListener('click', () => {
+    toggleTable4Editable();
+});
+
+// Validate button click event handler (assuming this function exists)
+document.getElementById('bill_validate').addEventListener('click', () => {
+    populateTable4();
+    validateBill();
+
+    // After validation, ensure cells remain editable if they were before
+    const table4Body = document.getElementById('table4').getElementsByTagName('tbody')[0];
+    const footerCells = document.getElementById('table4').getElementsByTagName('tfoot')[0].getElementsByTagName('td');
+    const rows = table4Body.getElementsByTagName('tr');
+
+    // Toggle cells in tbody
+    for (const row of rows) {
+        const cells = row.cells;
+        for (const cell of cells) {
+            // Check if cell was previously editable
+            if (cell.getAttribute('data-editable') === 'true') {
+                cell.contentEditable = true;
+            } else {
+                cell.contentEditable = false;
+            }
+        }
+    }
+
+    // Toggle footer cells
+    for (const cell of footerCells) {
+        // Check if cell was previously editable
+        if (cell.getAttribute('data-editable') === 'true') {
+            cell.contentEditable = true;
+        } else {
+            cell.contentEditable = false;
+        }
+    }
+});
+
+// Initial load - populate table and set initial cell editability
 window.addEventListener('load', () => {
     displayEntries().then(() => {
-        populateTable3(); // Populate table3 after the initial data load
+        populateTable3();
+        populateTable4();
+        
+        // Set initial editability state for cells in tbody
+        const table4Body = document.getElementById('table4').getElementsByTagName('tbody')[0];
+        const rows = table4Body.getElementsByTagName('tr');
+
+        for (const row of rows) {
+            const cells = row.cells;
+            for (const cell of cells) {
+                cell.setAttribute('data-editable', cell.contentEditable); // Store initial editability state
+            }
+        }
+
+        // Set initial editability state for footer cells
+        const footerCells = document.getElementById('table4').getElementsByTagName('tfoot')[0].getElementsByTagName('td');
+        for (const cell of footerCells) {
+            cell.setAttribute('data-editable', cell.contentEditable); // Store initial editability state
+        }
     });
 });
 
+// Other event listeners (filters, refresh) - populate table on change
 document.getElementById('nameFilter').addEventListener('change', () => {
     filterEntries();
     populateTable3();
+    populateTable4();
 });
 
 document.getElementById('monthFilter').addEventListener('change', () => {
     filterEntries();
     populateTable3();
+    populateTable4();
 });
 
 document.getElementById('dateRangeFilter').addEventListener('change', () => {
     filterEntries();
     populateTable3();
+    populateTable4();
 });
 
-document.getElementById('refreshdatabase').addEventListener('click', () => {
-    displayEntries().then(() => {
-        populateTable3();
-    });
-});
+
+
+
 
 function filterEntries() {
     const nameFilter = document.getElementById('nameFilter').value;
@@ -476,7 +707,8 @@ function filterEntries() {
     }
 
     calculateSums();
-    populateTable3(); // Update table3 after filtering entries
+    populateTable3();
+    populateTable4(); // Update table3 after filtering entries
 }
 
 
@@ -499,23 +731,6 @@ function calculateSums() {
     document.getElementById('total-Kg').textContent = "Quantity Kg =  " + totalKg.toFixed(1);
     document.getElementById('ultimate-total').textContent = "Taka =  " + ultimateTotal.toFixed(0);
 }
-
-document.getElementById('refreshdatabase').addEventListener('click', () => {
-    // Save current filter selections
-    const currentNameFilter = document.getElementById('nameFilter').value;
-    const currentMonthFilter = document.getElementById('monthFilter').value;
-    const currentDateRangeFilter = document.getElementById('dateRangeFilter').value;
-
-    // Refresh and reapply filters
-    displayEntries().then(() => {
-        document.getElementById('nameFilter').value = currentNameFilter;
-        document.getElementById('monthFilter').value = currentMonthFilter;
-        document.getElementById('dateRangeFilter').value = currentDateRangeFilter;
-        filterEntries();
-    });
-});
-
-
 // Function to fetch and display today's entries in table2
 
 function parseTimestamp(timestamp) {
@@ -680,8 +895,3 @@ onAuthStateChanged(auth, (user) => {
         h3names.classList.add('disabled');
     }
 });
-
-
-
-
-

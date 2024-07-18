@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
     <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="css/main-screen.css?v=3.0.0">
+    <link rel="stylesheet" href="css/autometicnewbill.css">
     <link rel="stylesheet" href="css/other-parts.css?v=3.0.0">
-    <link rel="stylesheet" href="css/databasepopup.css?v=3.0.0">
+    <link rel="stylesheet" href="css/databasepopup.css?v=3.0.1">
     <link rel="stylesheet" href="css/navbar+sidebar.css?v=3.0.0">
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
@@ -39,7 +40,7 @@
                 <li id="storagepage"><a href="storage page.html">পুরনো Bills</a></li>
 
                 <br>
-                <li><a href="#" class="update-toggle" id="billvalidate">নতুন Bill </a></li>
+                <li><a href="#" class="update-toggle" id="billvalidate">নতুন Bill Manual</a></li>
                 <br>
                 <li id="fixDatabaseItem"><a href="rewrite Data.html">Fix Database</a></li>
                 <button id="logoutButton">Logout</button>
@@ -106,7 +107,11 @@
                 <select id="monthFilter">
                     <option value="all">All Months</option>
                 </select>
-                <button id="refreshdatabase" hidden>Refresh</button>
+                <button id="autobill" class="bill-Section">Bill Section</button>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="toggleSwitch" class="toggle-switch-input" >
+                    <label for="toggleSwitch" class="toggle-switch-label"></label>
+                </div>
                 <button id="closePopup" class="close-btn">Close</button>
             </div>
 
@@ -133,54 +138,117 @@
                     </div>
                 </div>
             </div>
-            <div class="table_box">
-                <table id="table">
+            <div class="alltablebox">
+                <div class="table_box">
+                    <table id="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time-Period</th>
+                                <th>Name</th>
+                                <th>FAT <br>SNF <br> RATE</th>
+                                <th>KG</th>
+                                <th>TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                   
+                </div>
+                <div class="colorboxfortotal">
+                    <div id="total-Kg">0</div>
+                    <div id="ultimate-total">0</div>
+                </div>
+                <table id="table3" border="1">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Time-Period</th>
                             <th>Name</th>
-                            <th>FAT <br>SNF <br> RATE</th>
-                            <th>KG</th>
-                            <th>TOTAL</th>
+                            <th>Total KG</th>
+                            <th>Rupees (29)</th>
+                            <th>Original Rupees</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Table rows will be dynamically added here -->
+                        <!-- Rows will be populated dynamically -->
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>Total</td>
+                            <td id="totalKGFooter">0</td>
+                            <td id="totalModifiedFooter">0</td>
+                            <td id="totalTakaFooter">0</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
-            <div class="colorboxfortotal">
-                <div id="total-Kg">0</div>
-                <div id="ultimate-total">0</div>
+
+            <div class="bill_table_box">
+                <!-- Input fields for Total KG and Total Taka -->
+                <div class="billfinal" >
+                    <div class="input-group">
+                    <label for="inputTotalKG" class="inputTotalKGtaka">Total KG:</label>
+                    <input type="number" id="inputTotalKG" step="0.1">
+                    </div>
+                    <div class="input-group">
+                    <label for="inputTotalTaka" class="inputTotalKGtaka">Total Taka:</label>
+                    <input type="number" id="inputTotalTaka" step="0.1">
+                    </div>
+                </div>
+                <div class="select-container">
+                    <select id="dateselect"></select>
+                    <div class="select-arrow"></div>
+                </div>
+
+                <table id="table4" border="1">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Total KG</th>
+                            <th>Rupees (29)</th>
+                            <th>Original Rupees</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>চন্দনা-ঘোষ</td>
+                            <td contenteditable="true"></td>
+                            <td contenteditable="true"></td>
+                            <td contenteditable="true"></td>
+                        </tr>
+                        <tr>
+                            <td>রাজেন্দ্র ঘোষ</td>
+                            <td contenteditable="true"></td>
+                            <td contenteditable="true"></td>
+                            <td contenteditable="true"></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>Total</td>
+                            <td id="totalKGFooter4">0</td>
+                            <td id="totalModifiedFooter4">0</td>
+                            <td id="totalTakaFooter4">0</td>
+                        </tr>
+                        <tr>
+                            <td>Validated Total</td>
+                            <td id="validatedTotalKGFooter4">0</td>
+                            <td id="validatedTotalModifiedFooter4">0</td>
+                            <td id="validatedTotalTakaFooter4">0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="foot">
+                    <button id="toggleEditButton">Toggle Editable</button>
+                    <button id="bill_validate">Validate Bill</button>
+                </div>
             </div>
-
-            <br>
-            <table id="table3" border="1">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Total KG</th>
-                        <th>Rupees (29)</th>
-                        <th>Original Rupees</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Rows will be populated dynamically -->
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td>Total</td>
-                        <td id="totalKGFooter">0</td>
-                        <td id="totalModifiedFooter">0</td>
-                        <td id="totalTakaFooter">0</td>
-                    </tr>
-                </tfoot>
-            </table>
-
 
         </div>
     </div>
+
+
     <div class="todaybox" id="todaybox">
         <table id="table2">
             <thead>
@@ -203,6 +271,34 @@
         </table>
     </div>
     <script>
+  // Function to toggle between table_box and bill_table_box
+function toggleTableVisibility() {
+    const tableBox = document.querySelector('.alltablebox');
+    const billTableBox = document.querySelector('.bill_table_box');
+    const toggleSwitch = document.getElementById('toggleSwitch');
+
+    // Toggle visibility using CSS classes
+    if (tableBox.style.display !== 'none') {
+        tableBox.style.display = 'none';
+        billTableBox.style.display = 'block';
+        toggleSwitch.checked = true; // Update toggle switch state
+    } else {
+        tableBox.style.display = 'block';
+        billTableBox.style.display = 'none';
+        toggleSwitch.checked = false; // Update toggle switch state
+    }
+}
+
+// Event listener for Autobill button click
+document.getElementById('autobill').addEventListener('click', () => {
+    toggleTableVisibility();
+});
+
+// Event listener for toggle switch change
+document.getElementById('toggleSwitch').addEventListener('change', () => {
+    toggleTableVisibility();
+});
+
         // Get the button element
         var billButton = document.getElementById('billvalidate');
         // Add a click event listener to the button
@@ -211,8 +307,61 @@
             window.location.href = 'bill.html';
         });
     </script>
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+           const dateSelect = document.getElementById('dateselect');
+           const currentDate = new Date();
+           const currentDay = currentDate.getDate();
+           const currentMonth = currentDate.getMonth() + 1; // Months are zero-based
+           const currentYear = currentDate.getFullYear();
+           const lastDay = new Date(currentYear, currentMonth, 0).getDate(); // Last date of the current month
+
+           const dateOptions = [
+               `01/${currentMonth}/${currentYear} - 07/${currentMonth}/${currentYear}`,
+               `08/${currentMonth}/${currentYear} - 15/${currentMonth}/${currentYear}`,
+               `16/${currentMonth}/${currentYear} - 23/${currentMonth}/${currentYear}`,
+               `24/${currentMonth}/${currentYear} - ${lastDay}/${currentMonth}/${currentYear}`
+           ];
+
+           const currentDayMinusFive = currentDay - 5;
+
+           let preselectedOption;
+           if (currentDayMinusFive <= 0) {
+               // Calculate the previous month and year
+               const previousMonth = currentMonth - 1;
+               const previousYear = currentYear;
+               if (previousMonth === 0) {
+                   // If previous month is December of the previous year
+                   previousMonth = 12;
+                   previousYear -= 1;
+               }
+               const previousMonthLastDay = new Date(previousYear, previousMonth, 0).getDate();
+               preselectedOption = `24/${previousMonth}/${previousYear} - ${previousMonthLastDay}/${previousMonth}/${previousYear}`;
+               dateOptions.unshift(preselectedOption); // Add the previous month option at the beginning
+           } else if (currentDayMinusFive <= 7) {
+               preselectedOption = dateOptions[0];
+           } else if (currentDayMinusFive <= 15) {
+               preselectedOption = dateOptions[1];
+           } else if (currentDayMinusFive <= 23) {
+               preselectedOption = dateOptions[2];
+           } else {
+               preselectedOption = dateOptions[3];
+           }
+
+           dateOptions.forEach(option => {
+               const opt = document.createElement('option');
+               opt.value = option;
+               opt.innerHTML = option;
+               if (option === preselectedOption) {
+                   opt.selected = true;
+               }
+               dateSelect.appendChild(opt);
+           });
+       });
+
+   </script>
     <script src="js/main-screen.js?v=3.0.0"></script>
-    <script type="module" src="js/database.js?v=3.0.0"></script>
+    <script type="module" src="js/database.js?v=3.0.1"></script>
     <script src="js/email.js" id="emailscript?v=3.0.0"></script>
     <script src="js/include_name_email.js?v=3.0.1"></script>
     <script src="js/rate.js?v=3.0.0"></script>

@@ -59,15 +59,23 @@
 
 .close-btn {
     border-width: 3px;
-    padding: 6px 20px;
+    padding: 6px 16px;
     color: rgb(255, 255, 255);
     background-color: rgb(202, 38, 26);
     font-size: large;
     font-weight: bold;
     height: 40px;
+    margin-left: auto;
     cursor: pointer;
     border-radius: 6px;}
-
+.bill-Section{
+   margin-right: 0px;
+   background-color: rgb(70, 214, 109);
+   margin-left: auto;
+   font-weight: bolder;
+   border-radius: 6px;
+  
+}
 #refreshdatabase    {
     border-width: 3px;
     padding: 6px 20px;
@@ -114,6 +122,9 @@
     overflow-y: auto;
     height: 500px;
     margin: 0;
+}
+.alltablebox{
+    display: block;
 }
 .table_box::-webkit-scrollbar {
     display: none;
@@ -164,8 +175,9 @@ td:nth-child(6) {
 
 .colorboxfortotal{
     margin-top: 20px;
-    background-color: #ddffe5;
-    color: #000000;
+    margin-bottom: 20px;
+    background-color: #e5c3b5;
+    color: #2019a1;
     padding: 14px;
     width: 250px;
     border-radius: 10px;
