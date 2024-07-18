@@ -9,7 +9,7 @@ function updateClock() {
     const ampm = hours >= 12 ? 'PM' : 'AM';
 
     hours = hours % 12 || 12;
-
+    // Display the clock in the HTML element with the ID 'clock'
     const clock = document.getElementById('clock');
     clock.textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
 }
@@ -40,14 +40,11 @@ function updateDate() {
 }
 updateDate();
 
-
-
 document.addEventListener('DOMContentLoaded', function () {
     const menuButton = document.querySelector('.menu-button');
     const sidebar = document.querySelector('.sidebar');
     const formBox = document.getElementById('form-box');
     const todaybox = document.getElementById('todaybox');
-
 
     menuButton.addEventListener('click', function (event) {
         event.stopPropagation(); // Prevent event bubbling
