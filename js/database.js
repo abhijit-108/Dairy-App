@@ -333,24 +333,13 @@ function populateTable3() {
     table3Body.innerHTML = ''; // Clear previous data
 
     const nameOrder = [
-        "চন্দনা ঘোষ",
         "রাজেন্দ্র প্রসাদ ঘোষ",
         "সুজাতা ঘোষ",
         "রজিনা শেখ",
         "মামনি চক্রবর্তী",
         "ঝর্না চচ্চড়ি",
         "বিকাশ কুমার ঘোষ",
-        "সুলোচনা ঘোষ",
-        "নেড়া",
-        "নিবেদিতা মন্ডল",
-        "রাহেলা শেখ",
-        "মধুমিতা মন্ডল",
-        "কল্যাণী চক্রবর্তী",
-        "কাশেম খা",
-        "Abhijit",
-        "শফিক খা",
-        "সবরিয়াদ খান",
-        "ফিরোজ খা"
+        "সুলোচনা ঘোষ"
     ];
 
     const dataMap = new Map();
@@ -368,7 +357,7 @@ function populateTable3() {
         const kg = parseFloat(kgCell.textContent) || 0;
         const total = parseFloat(totalCell.textContent) || 0;
 
-        if (nameOrder.includes(name) && row.style.display !== 'none') {
+        if (row.style.display !== 'none') {
             if (dataMap.has(name)) {
                 const existingData = dataMap.get(name);
                 existingData.totalKG += kg;
@@ -379,7 +368,12 @@ function populateTable3() {
         }
     }
 
-    nameOrder.forEach(name => {
+    const orderedNames = nameOrder.filter(name => dataMap.has(name));
+    const otherNames = [...dataMap.keys()].filter(name => !nameOrder.includes(name) && !orderedNames.includes(name));
+
+    const allNames = [...orderedNames, ...otherNames];
+
+    allNames.forEach(name => {
         if (dataMap.has(name)) {
             const data = dataMap.get(name);
             const row = table3Body.insertRow();
@@ -406,7 +400,6 @@ function populateTable3() {
     document.getElementById('totalModifiedFooter').textContent = totalModifiedSum.toFixed(2);
     document.getElementById('totalTakaFooter').textContent = totalTakaSum.toFixed(2);
 }
-
 
 
 
