@@ -189,7 +189,7 @@
                 <div class="billfinal" >
                     <div class="input-group">
                     <label for="inputTotalKG" class="inputTotalKGtaka">Total KG:</label>
-                    <input type="number" id="inputTotalKG" step="0.1">
+                    <input type="number" id="inputTotalKG" step="0.1" >
                     </div>
                     <div class="input-group">
                     <label for="inputTotalTaka" class="inputTotalKGtaka">Total Taka:</label>
@@ -204,10 +204,10 @@
                 <table id="table4" border="1">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Total KG</th>
-                            <th>Rupees (29)</th>
-                            <th>Original Rupees</th>
+                            <th>নাম</th>
+                            <th>পরিমাণ<br>(Kg)</th>
+                            <th>29 টাকা</th>
+                            <th>40.5 টাকা</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -225,17 +225,18 @@
                         </tr>
                     </tbody>
                     <tfoot>
+                        
+                        <tr>
+                            <td>Bill Total</td>
+                            <td id="validatedTotalKGFooter4">0</td>
+                            <td id="validatedTotalModifiedFooter4">0</td>
+                            <td id="validatedTotalTakaFooter4">0</td>
+                        </tr>
                         <tr>
                             <td>Total</td>
                             <td id="totalKGFooter4">0</td>
                             <td id="totalModifiedFooter4">0</td>
                             <td id="totalTakaFooter4">0</td>
-                        </tr>
-                        <tr>
-                            <td>Validated Total</td>
-                            <td id="validatedTotalKGFooter4">0</td>
-                            <td id="validatedTotalModifiedFooter4">0</td>
-                            <td id="validatedTotalTakaFooter4">0</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -361,7 +362,7 @@ document.getElementById('toggleSwitch').addEventListener('change', () => {
 
    </script>
     <script src="js/main-screen.js?v=3.0.0"></script>
-    <script type="module" src="js/database.js?v=3.0.1"></script>
+    <script type="module" src="js/database.js?v=3.0.2"></script>
     <script src="js/email.js" id="emailscript?v=3.0.0"></script>
     <script src="js/include_name_email.js?v=3.0.1"></script>
     <script src="js/rate.js?v=3.0.0"></script>

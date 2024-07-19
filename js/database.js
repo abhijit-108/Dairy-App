@@ -468,8 +468,9 @@ function populateTable4() {
                 const existingData = dataMap.get(name);
                 existingData.totalKG += kg;
                 existingData.totalTaka += total;
+                existingData.totalModified += totalModified;  // Add totalModified to dataMap
             } else {
-                dataMap.set(name, { totalKG: kg, totalTaka: total });
+                dataMap.set(name, { totalKG: kg, totalTaka: total, totalModified: totalModified });
             }
         }
     }
@@ -486,8 +487,6 @@ function populateTable4() {
         if (name === "চন্দনা-ঘোষ" || name === "রাজেন্দ্র ঘোষ") {
             // Set non-editable values based on calculation
             if (name === "চন্দনা-ঘোষ") {
-                const inputTotalKG = parseFloat(document.getElementById('inputTotalKG').value) || 0;
-                const inputTotalTaka = parseFloat(document.getElementById('inputTotalTaka').value) || 0;
                 const totalKGFooter4 = parseFloat(document.getElementById('totalKGFooter4').textContent) || 0;
                 const totalModifiedFooter4 = parseFloat(document.getElementById('totalModifiedFooter4').textContent) || 0;
 
@@ -495,8 +494,6 @@ function populateTable4() {
                 totalModifiedCell.textContent = ((inputTotalTaka - totalModifiedFooter4) * 0.4).toFixed(0);
                 totalTakaCell.textContent = (((inputTotalTaka - totalModifiedFooter4) * 0.4) * 1.396).toFixed(0);
             } else if (name === "রাজেন্দ্র ঘোষ") {
-                const inputTotalKG = parseFloat(document.getElementById('inputTotalKG').value) || 0;
-                const inputTotalTaka = parseFloat(document.getElementById('inputTotalTaka').value) || 0;
                 const totalKGFooter4 = parseFloat(document.getElementById('totalKGFooter4').textContent) || 0;
                 const totalModifiedFooter4 = parseFloat(document.getElementById('totalModifiedFooter4').textContent) || 0;
 
@@ -509,11 +506,11 @@ function populateTable4() {
                 const data = dataMap.get(name);
 
                 totalKGCell.textContent = data.totalKG.toFixed(1);
-                totalModifiedCell.textContent = (data.totalTaka*ratio_rate_29).toFixed(0);
-                totalTakaCell.textContent = (data.totalTaka ).toFixed(0);
+                totalModifiedCell.textContent = (data.totalModified*ratio_rate_29).toFixed(0);
+                totalTakaCell.textContent = (data.totalTaka).toFixed(0);
 
                 totalKGSum += data.totalKG;
-                totalModifiedSum += data.totalTaka;
+                totalModifiedSum += data.totalModified;
                 totalTakaSum += data.totalTaka * 1.396;
             } else {
                 totalKGCell.textContent = '0';
@@ -525,8 +522,8 @@ function populateTable4() {
 
     // Update the footer with the totals
     document.getElementById('totalKGFooter4').textContent = totalKGSum.toFixed(1);
-    document.getElementById('totalModifiedFooter4').textContent = totalModifiedSum.toFixed(2);
-    document.getElementById('totalTakaFooter4').textContent = totalTakaSum.toFixed(2);
+    document.getElementById('totalModifiedFooter4').textContent = totalModifiedSum.toFixed(0);
+    document.getElementById('totalTakaFooter4').textContent = totalTakaSum.toFixed(0);
 }
 
 function validateBill() {
@@ -537,25 +534,46 @@ function validateBill() {
     let totalModifiedSum = 0;
     let totalTakaSum = 0;
 
+    // Input value
+    const inputTotalTaka = parseFloat(document.getElementById('inputTotalTaka').value) || 0;
+
+    // Sum modified values for চন্দনা-ঘোষ and রাজেন্দ্র ঘোষ
+    let specialModifiedSum = 0;
+
     for (const row of rows) {
+        const nameCell = row.cells[0].textContent.trim();
         const totalKGCell = row.cells[1];
         const totalModifiedCell = row.cells[2];
         const totalTakaCell = row.cells[3];
 
         const kg = parseFloat(totalKGCell.textContent) || 0;
-        const totalModified = parseFloat(totalModifiedCell.textContent) || 0;
+        let totalModified = parseFloat(totalModifiedCell.textContent) || 0;
         const total = parseFloat(totalTakaCell.textContent) || 0;
 
         totalKGSum += kg;
-        totalModifiedSum += totalModified;
         totalTakaSum += total;
+
+        if (nameCell === "চন্দনা-ঘোষ" || nameCell === "রাজেন্দ্র ঘোষ") {
+            if (nameCell === "চন্দনা-ঘোষ") {
+                totalModified = (inputTotalTaka * 0.4);
+            } else if (nameCell === "রাজেন্দ্র ঘোষ") {
+                totalModified = (inputTotalTaka * 0.6);
+            }
+            specialModifiedSum += totalModified;
+        } else {
+            totalModifiedSum += totalModified;
+        }
     }
+
+    // Ensure totalModifiedSum matches inputTotalTaka
+    totalModifiedSum = specialModifiedSum + (inputTotalTaka - specialModifiedSum);
 
     // Update the validated totals in the footer
     document.getElementById('validatedTotalKGFooter4').textContent = totalKGSum.toFixed(1);
-    document.getElementById('validatedTotalModifiedFooter4').textContent = totalModifiedSum.toFixed(2);
-    document.getElementById('validatedTotalTakaFooter4').textContent = totalTakaSum.toFixed(2);
+    document.getElementById('validatedTotalModifiedFooter4').textContent = totalModifiedSum.toFixed(0);
+    document.getElementById('validatedTotalTakaFooter4').textContent = totalTakaSum.toFixed(0);
 }
+
 
 // Function to toggle editability of table4 cells and footer cells
 function toggleTable4Editable() {
