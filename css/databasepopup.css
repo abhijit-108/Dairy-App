@@ -1,9 +1,11 @@
 .pm-row {
-    background-color: rgb(212, 212, 244); /* Adjust the background color for pm rows */
+    background-color: rgb(212, 212, 244);
+    /* Adjust the background color for pm rows */
 }
 
 .am-row {
-    background-color: rgb(242, 245, 227); /* Adjust the background color for am rows */
+    background-color: rgb(242, 245, 227);
+    /* Adjust the background color for am rows */
 }
 
 .popup-wrapper {
@@ -17,6 +19,7 @@
     backdrop-filter: blur(8px);
     z-index: 9999;
 }
+
 .popup {
     position: fixed;
     top: 50%;
@@ -40,7 +43,8 @@
     margin-bottom: 10px;
     padding: 5px;
 }
-#monthFilter{
+
+#monthFilter {
     padding: 5px;
     width: fit-content;
     height: 40px;
@@ -50,7 +54,8 @@
     border-width: 2px;
     /* Adjust select width as needed */
 }
-.titlebar{
+
+.titlebar {
     display: flex;
     justify-content: space-between;
     padding: 0px;
@@ -67,16 +72,19 @@
     height: 40px;
     margin-left: auto;
     cursor: pointer;
-    border-radius: 6px;}
-.bill-Section{
-   margin-right: 0px;
-   background-color: rgb(70, 214, 109);
-   margin-left: auto;
-   font-weight: bolder;
-   border-radius: 6px;
-  
+    border-radius: 6px;
 }
-#refreshdatabase    {
+
+.bill-Section {
+    margin-right: 0px;
+    background-color: rgb(70, 214, 109);
+    margin-left: auto;
+    font-weight: bolder;
+    border-radius: 6px;
+
+}
+
+#refreshdatabase {
     border-width: 3px;
     padding: 6px 20px;
     height: 40px;
@@ -88,6 +96,7 @@
     font-weight: bold;
     cursor: pointer;
 }
+
 #refreshdatabase:hover {
     background-color: rgb(53, 195, 13);
 }
@@ -109,7 +118,8 @@
     border-width: 2px;
     /* Adjust select width as needed */
 }
-#table  {
+
+#table {
     width: 100%;
     border-collapse: collapse;
     background-color: #c6efe4;
@@ -118,14 +128,17 @@
     border: 1px solid #ddd;
     /* Add border for better readability */
 }
-.table_box{
+
+.table_box {
     overflow-y: auto;
     height: 500px;
     margin: 0;
 }
-.alltablebox{
+
+.alltablebox {
     display: block;
 }
+
 .table_box::-webkit-scrollbar {
     display: none;
 }
@@ -136,27 +149,32 @@
     font-size: 12px;
     font-weight: bold;
 }
+
 #table th {
     background-color: #c6e890;
     font-size: 11px;
     /* Light gray background for table headers */
 }
+
 #table tbody tr:nth-child(even) {
     background-color: #f3e7e7;
     /* Alternate row colors for better readability */
 }
+
 #table tbody tr:hover {
     background-color: #ddd;
     /* Hover effect */
 }
+
 #table tbody td:nth-child(5),
 td:nth-child(6) {
     color: #6208de;
     font-weight: bolder;
     font-size: 15px;
 }
+
 @media screen and (min-width: 600px) {
-    .table_box{
+    .table_box {
         overflow-y: auto;
         margin: 0;
         height: auto;
@@ -164,6 +182,7 @@ td:nth-child(6) {
         margin-left: auto;
         margin-right: auto;
     }
+
     #table td {
         padding: 0px;
         text-align: center;
@@ -173,7 +192,7 @@ td:nth-child(6) {
 
 }
 
-.colorboxfortotal{
+.colorboxfortotal {
     margin-top: 20px;
     margin-bottom: 20px;
     background-color: #e5c3b5;
@@ -185,9 +204,10 @@ td:nth-child(6) {
     margin-right: auto;
     font-weight: bolder;
 }
+
 /* Table 3 Styles */
 
-#table3  {
+#table3 {
     width: 100%;
     background-color: #c6efe4;
     display: relative;
@@ -195,30 +215,36 @@ td:nth-child(6) {
     border: 1px solid #ddd;
     /* Add border for better readability */
 }
+
 #table3 td {
     padding: 6px;
     text-align: center;
     font-size: 12px;
     font-weight: bold;
 }
+
 #table3 th {
     background-color: #c6e890;
     /* Light gray background for table headers */
 }
+
 #table3 tbody tr:nth-child(even) {
     background-color: #f3e7e7;
     /* Alternate row colors for better readability */
 }
+
 #table3 tbody tr:hover {
     background-color: #ddd;
     /* Hover effect */
 }
+
 #table3 td:nth-child(2),
 td:nth-child(4) {
     font-size: 15px;
     font-weight: bolder;
 }
-#table3 tfoot{
+
+#table3 tfoot {
     color: #d20031;
     background-color: #a2eba6;
 }

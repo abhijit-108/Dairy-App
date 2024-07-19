@@ -9,7 +9,6 @@
     <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="css/loginpage.css?v=1.0.0">
-
 </head>
 
 <body>
@@ -42,9 +41,9 @@
         <button class="key" data-number="7">7</button>
         <button class="key" data-number="8">8</button>
         <button class="key" data-number="9">9</button>
-        <button class="key" id="clear" ><i class="fas fa-backspace" ></i></button>
+        <button class="key" id="clear"><i class="fas fa-backspace"></i></button>
         <button class="key" data-number="0">0</button>
-        <button class="key" id="enter" ><i class="fas fa-check"></i></button>
+        <button class="key" id="enter"><i class="fas fa-check"></i></button>
     </div>
 
     <script>
@@ -69,36 +68,34 @@
                 playSound();
             });
         });
-         // Web Audio API setup
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    let audioBuffer;
+        // Web Audio API setup
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let audioBuffer;
 
-    // Load the sound
-    fetch('effect.ogg')
-        .then(response => response.arrayBuffer())
-        .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-        .then(buffer => {
-            audioBuffer = buffer;
-        })
-        .catch(e => console.error('Error with decoding audio data', e));
+        // Load the sound
+        fetch('effect.ogg')
+            .then(response => response.arrayBuffer())
+            .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+            .then(buffer => {
+                audioBuffer = buffer;
+            })
+            .catch(e => console.error('Error with decoding audio data', e));
 
-    const playSound = () => {
-        if (audioBuffer) {
-            const source = audioContext.createBufferSource();
-            source.buffer = audioBuffer;
-            source.connect(audioContext.destination);
-            source.start(0);
-        }
-    };
+        const playSound = () => {
+            if (audioBuffer) {
+                const source = audioContext.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(audioContext.destination);
+                source.start(0);
+            }
+        };
 
     </script>
 
-    <!-- Firebase App (the core Firebase SDK) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
-        // Firebase configuration
         var firebaseConfig = {
             apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
             authDomain: "dairy-app-abhijit.firebaseapp.com",
@@ -109,11 +106,9 @@
             appId: "1:196152880143:web:bec02170e30932a7d5877a"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth();
 
-        // Function to handle login
         function login() {
             var email = document.getElementById('email').value;
             var passwordpart2 = document.getElementById('password').value;
@@ -122,14 +117,12 @@
 
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    // Redirect to main.html after successful login
                     window.location.href = 'main.html';
                 })
                 .catch((error) => {
                     var errorMessage = error.message;
                     var errorDisplay = document.getElementById('error');
 
-                    // Handle specific error messages
                     if (errorMessage.includes('invalid')) {
                         errorDisplay.innerText = 'Opps Wrong password ?';
                     } else if (errorMessage.includes('missing')) {
@@ -142,7 +135,6 @@
                 });
         }
 
-        // Function to handle key press event (Enter key)
         function handleKeyPress(event) {
             if (event.key === 'Enter') {
                 login();
@@ -161,10 +153,6 @@
             // Redirect to main.html for guest login
             window.location.href = 'main.html';
         });
-
-
-
-
     </script>
 </body>
 

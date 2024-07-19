@@ -354,7 +354,7 @@ function populateTable3() {
     ];
 
     const dataMap = new Map();
-    const ratio_rate_29=window.convertion_ratio_29taka=(29/40.5);
+    const ratio_rate_29 = window.convertion_ratio_29taka = (29 / 40.5);
     let totalKGSum = 0;
     let totalModifiedSum = 0;
     let totalTakaSum = 0;
@@ -506,7 +506,7 @@ function populateTable4() {
                 const data = dataMap.get(name);
 
                 totalKGCell.textContent = data.totalKG.toFixed(1);
-                totalModifiedCell.textContent = (data.totalModified*ratio_rate_29).toFixed(0);
+                totalModifiedCell.textContent = (data.totalModified * ratio_rate_29).toFixed(0);
                 totalTakaCell.textContent = (data.totalTaka).toFixed(0);
 
                 totalKGSum += data.totalKG;
@@ -641,7 +641,7 @@ window.addEventListener('load', () => {
     displayEntries().then(() => {
         populateTable3();
         populateTable4();
-        
+
         // Set initial editability state for cells in tbody
         const table4Body = document.getElementById('table4').getElementsByTagName('tbody')[0];
         const rows = table4Body.getElementsByTagName('tr');

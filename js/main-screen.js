@@ -18,23 +18,23 @@ updateClock();
 
 function updateDate() {
     const now = new Date();
-    
+
     // Define an array to map English day names to Bangla day names
     const banglaDays = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
-    
+
     // Get the English day index (0 for Sunday, 1 for Monday, etc.)
     const dayIndex = now.getDay();
-    
+
     // Get the Bangla day name
     const banglaDayName = banglaDays[dayIndex];
-    
+
     // Format the date string
     const options = { month: 'long', day: 'numeric' };
     const dateString = now.toLocaleDateString('en-US', options);
-    
+
     // Combine the Bangla day name with the formatted date string
     const banglaDateString = `${banglaDayName}, ${dateString}`;
-    
+
     // Update the date element with the Bangla date string
     document.getElementById('date').innerText = banglaDateString;
 }
