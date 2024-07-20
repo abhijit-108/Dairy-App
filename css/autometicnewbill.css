@@ -135,67 +135,50 @@
   /* Container for the select element */
   .select-container {
       position: relative;
-      margin-top: 20px;
       margin-bottom: 12px;
-      width: 220px;
+      width: fit-content;
   }
 
   /* Styling the select element */
-  #dateselect {
-      width: 100%;
+  #dateselectforbill {
+      width: fit-content;
       padding: 8px;
       font-size: 16px;
       border: 2px solid #064d26;
-      color: rgb(158, 85, 17);
+      color: rgb(110, 52, 7);
       font-weight: bolder;
       border-radius: 5px;
       appearance: none;
       /* Remove default arrow */
-      background-color: #fff;
+      background-color: #e6edd3;
       transition: border-color 0.3s ease;
   }
 
-  /* Focus state for the select element */
-  #dateselect:focus {
-      border-color: #007BFF;
-      outline: none;
-  }
-
-  /* Custom dropdown arrow */
-  .select-arrow {
-      position: absolute;
-      top: 50%;
-      right: 10px;
-      transform: translateY(-50%);
-      width: 0;
-      height: 0;
-      border-left: 6px solid transparent;
-      border-right: 6px solid transparent;
-      border-top: 6px solid #333;
-      pointer-events: none;
-      transition: transform 0.3s ease;
-  }
-
-  /* Rotate arrow on select focus */
-  #dateselect:focus+.select-arrow {
-      transform: translateY(-50%) rotate(180deg);
-  }
 
   .billfinal {
-      display: flex;
-      flex-direction: column;
+      display: block;
       margin-top: 50px;
+      margin-bottom: 0;
+      height: 120px;
+      padding: 0;
   }
 
   .input-group {
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 1px;
       /* Adjust as needed for spacing */
   }
 
   .inputTotalKGtaka {
-      padding: 10px;
-      font-size: 25px;
+      font-size: 16px;
+      font-weight: bolder;
+    
       /* Adjust as needed for spacing between label and input */
+  }
+  #inputTotalKG{
+    padding: 5px;
+  }
+  #inputTotalTaka{
+    padding: 6px;
   }

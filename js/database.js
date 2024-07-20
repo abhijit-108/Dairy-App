@@ -716,10 +716,54 @@ function filterEntries() {
 
         row.style.display = showRow ? '' : 'none';
     }
+    
+    populateDateSelectForBill(monthFilter, dateRangeFilter); // Call the function to populate the select menu
 
     calculateSums();
     populateTable3();
     populateTable4(); // Update table3 after filtering entries
+}
+function populateDateSelectForBill(monthFilter, dateRangeFilter) {
+    const dateSelectForBill = document.getElementById('dateselectforbill');
+    dateSelectForBill.innerHTML = ''; // Clear existing options
+
+    if (monthFilter === 'all' || dateRangeFilter === 'all') {
+        return;
+    }
+
+    const [monthName, year] = monthFilter.split(' ');
+    const monthIndex = monthNames.indexOf(monthName);
+    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+
+    let startDay, endDay;
+
+    switch (dateRangeFilter) {
+        case '01-07':
+            startDay = 1;
+            endDay = 7;
+            break;
+        case '08-15':
+            startDay = 8;
+            endDay = 15;
+            break;
+        case '16-23':
+            startDay = 16;
+            endDay = 23;
+            break;
+        case '24-end':
+            startDay = 24;
+            endDay = daysInMonth;
+            break;
+    }
+
+    const optionText = `${String(startDay).padStart(2, '0')}/${String(monthIndex + 1).padStart(2, '0')}/${year} - ${String(endDay).padStart(2, '0')}/${String(monthIndex + 1).padStart(2, '0')}/${year}`;
+    const option = document.createElement('option');
+    option.value = optionText;
+    option.textContent = optionText;
+    dateSelectForBill.appendChild(option);
+
+    // Preselect the option
+    dateSelectForBill.value = option.value;
 }
 
 
