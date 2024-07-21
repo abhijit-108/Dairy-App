@@ -15,7 +15,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(8px);
     z-index: 9999;
 }
@@ -25,15 +25,16 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #c5c1c1;
-    padding: 10px;
+    background-color: rgb(197, 193, 193, 0.9);
+    padding: 8px;
     border: 4px solid #2e1717;
     box-shadow: 0 4px 8px rgba(0, 0, 10, 0.7);
-    width: 90%;
+    width: 92%;
     height: 90%;
     margin: 0;
     overflow-y: auto;
 }
+
 .alltablebox {
     display: block;
     margin-top: 20px;
@@ -42,13 +43,15 @@
 .filter-row {
     display: flex;
 }
-.borderbox{
+
+.borderbox {
     border: 4px solid rgb(97, 8, 8);
     border-radius: 3px;
     padding: 0;
     margin: 0;
 
 }
+
 .filterbar {
     margin-bottom: 10px;
     padding: 5px;
@@ -145,9 +148,22 @@
     margin: 0;
 }
 
+.colorboxfortotal {
+    margin-top: 5px;
+    margin-bottom: 20px;
+    background-color: #d4ebd3;
+    color: #2019a1;
+    padding: 12px;
+    border-radius: 2px;
+    border: 2.8px solid black;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: bolder;
+}
+
 
 .table_box::-webkit-scrollbar {
-    display: none;
+    display: inside;
 }
 
 #table td {
@@ -172,6 +188,7 @@
     background-color: #ddd;
     /* Hover effect */
 }
+
 
 #table tbody td:nth-child(5),
 td:nth-child(6) {
@@ -199,18 +216,6 @@ td:nth-child(6) {
 
 }
 
-.colorboxfortotal {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    background-color: #e5c3b5;
-    color: #2019a1;
-    padding: 14px;
-    width: 250px;
-    border-radius: 10px;
-    margin-left: auto;
-    margin-right: auto;
-    font-weight: bolder;
-}
 
 /* Table 3 Styles */
 

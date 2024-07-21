@@ -345,7 +345,6 @@ function populateTable3() {
     const dataMap = new Map();
     const ratio_rate_29 = window.convertion_ratio_29taka = (29 / 40.5);
     let totalKGSum = 0;
-    let totalModifiedSum = 0;
     let totalTakaSum = 0;
 
     for (const row of rows) {
@@ -379,26 +378,30 @@ function populateTable3() {
             const row = table3Body.insertRow();
             const nameCell = row.insertCell(0);
             const totalKGCell = row.insertCell(1);
-            const totalModifiedCell = row.insertCell(2);
-            const totalTakaCell = row.insertCell(3);
+            const totalTakaCell = row.insertCell(2);
+            const avgRateCell = row.insertCell(3);
+
+            const avgRate = data.totalTaka / data.totalKG;
+
             // Calculate the modified total
-            const totalModified = data.totalTaka * ratio_rate_29;
 
             nameCell.textContent = name;
             totalKGCell.textContent = data.totalKG.toFixed(1);
-            totalModifiedCell.textContent = totalModified.toFixed(2);
-            totalTakaCell.textContent = data.totalTaka.toFixed(2);
+            totalTakaCell.textContent = data.totalTaka.toFixed(0);
+            avgRateCell.textContent = avgRate.toFixed(2);
+
 
             totalKGSum += data.totalKG;
-            totalModifiedSum += totalModified;
             totalTakaSum += data.totalTaka;
         }
     });
+    const avgRateSum = totalTakaSum / totalKGSum;
 
     // Update the footer with the totals
     document.getElementById('totalKGFooter').textContent = totalKGSum.toFixed(1);
-    document.getElementById('totalModifiedFooter').textContent = totalModifiedSum.toFixed(2);
-    document.getElementById('totalTakaFooter').textContent = totalTakaSum.toFixed(2);
+    document.getElementById('totalTakaFooter').textContent = totalTakaSum.toFixed(0);
+    document.getElementById('avgRateFooter').textContent = avgRateSum.toFixed(2);
+
 }
 
 
