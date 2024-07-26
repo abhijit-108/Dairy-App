@@ -506,7 +506,7 @@ function populateTable4() {
                 totalTakaCell.textContent = (data.totalTaka).toFixed(0);
 
                 totalKGSum += data.totalKG;
-                totalModifiedSum += data.totalModified;
+                totalModifiedSum += (data.totalModified * ratio_rate_29);
                 totalTakaSum += data.totalTaka * 1.396;
             } else {
                 totalKGCell.textContent = '0';
