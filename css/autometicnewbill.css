@@ -4,6 +4,11 @@
       /* Initially hidden */
   }
 
+  .bill_table_box_head {
+      display: block;
+      /* Initially hidden */
+  }
+
   #table4 {
       width: 100%;
       background-color: rgb(255, 255, 255);
@@ -11,17 +16,24 @@
       border: 2.3px solid black;
   }
 
+  @media screen and (min-width: 700px) {
+      #table4 {
+          width: 70%;
+          margin-right: auto;
+         margin-left: auto;
+      }
+  }
+
   #table4 th {
       background-color: rgb(233, 255, 255);
-      padding: 5px;
+      padding: 6px;
       border: 2px solid rgb(6, 6, 134);
       border-radius: 5px;
-      margin-right: 10px;
   }
 
   #table4 td {
-      border: 1.5px solid black;
-      padding: 8px;
+      border: 1.2px solid black;
+      padding: 7px;
       text-align: center;
   }
 
@@ -29,7 +41,7 @@
       background-color: hsl(0, 37%, 93%);
       font-weight: bold;
   }
-  
+
   #table4 tbody tr:nth-child(even) {
       background-color: #f9f9f9;
   }
@@ -173,12 +185,14 @@
   .inputTotalKGtaka {
       font-size: 16px;
       font-weight: bolder;
-    
+
       /* Adjust as needed for spacing between label and input */
   }
-  #inputTotalKG{
-    padding: 5px;
+
+  #inputTotalKG {
+      padding: 5px;
   }
-  #inputTotalTaka{
-    padding: 6px;
+
+  #inputTotalTaka {
+      padding: 6px;
   }
