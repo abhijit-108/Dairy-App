@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #a2a2a2;
+    background-color: #8d8a8a;
     display: block;
     text-align: center;
     height: 100vh;
@@ -12,18 +12,18 @@ body {
     padding: 20px;
     margin-left: auto;
     margin-right: auto;
-    max-width: 300px;
+    max-width: 290px;
     width: 80%;
-    border-radius: 7px;
+    border-radius: 6px;
     box-shadow: 0 8px 32px 0;
-    background-color: rgb(196, 245, 191);
+    background-color: rgb(138, 186, 244);
     box-sizing: border-box;
 }
 
 h2 {
     margin-bottom: 20px;
-    color: #333;
-    text-align: left;
+    color: #000000;
+    text-align: center;
 }
 
 .form-group {
@@ -35,14 +35,14 @@ label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
-    color: #555;
+    color: #292626;
 }
 
 select,
 input[type="number"] {
     width: 100%;
     padding: 10px;
-    font-size: 16px;
+    font-size: 15px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
@@ -51,7 +51,7 @@ input[type="number"] {
 .btn {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #ed5e29;
+    background-color: #c53b08;
     color: white;
     border: none;
     border-radius: 4px;
@@ -67,10 +67,10 @@ input[type="number"] {
 .guest-btn {
     display: inline-block;
     margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #fee1f1;
-    color: rgb(10, 9, 12);
-    border: none;
+    padding: 10px 10px;
+    background-color: #e4b1cd ;
+    color: rgb(0, 0, 0);
+    border: black;
     border-radius: 4px;
     cursor: pointer;
     font-size: 18px;
@@ -83,16 +83,12 @@ input[type="number"] {
 .guest-btn:hover {
     background-color: #ec33e3;
 }
-
-
 .error {
-    color: red;
+    color: rgb(157, 0, 0);
     margin: 0.5rem 0;
     text-align: center;
     font-size: 0.9rem;
-    /* Adjust font size */
 }
-
 .keybox {
     display: grid;
     width: 70%;
@@ -103,38 +99,33 @@ input[type="number"] {
     gap: 10px;
     margin-top: 20px;
 }
-
 .key {
     padding: 15px;
     background-color: #007bff;
-    color: #fff;
+    color: #ffffff;
     border: none;
     cursor: pointer;
     border-radius: 5px;
     cursor: pointer;
     font-size: 20px;
-    transition: 0.5s ease-in-out;
+    box-shadow: 0 3px 8px 0;
+    transition: 0.1s ease-in-out;
 }
-
 .key:hover {
-    background-color: #0055af;
+    background-color: #067411;
 }
-
 .key:active {
     background-color: #49b10d;
-    transform: scale(0.70);
+    transform: scale(0.65);
 }
-
 .key i {
     font-size: 20px;
 }
-
 #clear {
     background-color: #880b18;
-    border-radius: 20px;
+    border-radius: 10px;
 }
-
 #enter {
     background-color: #107828;
-    border-radius: 20px;
+    border-radius: 10px;
 }

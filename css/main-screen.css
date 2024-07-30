@@ -12,7 +12,8 @@ body {
     text-align: center;
     margin-left: auto;
     margin-right: auto;
-    width: 290px;
+    max-width: 290px;
+    width: 70%;
     align-items: center;
 }
 
@@ -103,7 +104,6 @@ input {
 #ratedisplay {
     margin-top: 10px;
     color: rgb(38, 13, 178);
-
 }
 
 #totaldisplay {
@@ -119,13 +119,13 @@ input {
     box-shadow: 0 8px 32px 0;
     padding: 10px;
     border-radius: 7px;
-    width: 270px;
+    max-width: 270px;
+    min-width: 150px;
     background-color: #52ffcb;
     font-weight: bold;
     font-size: 25px;
 }
 
-/* Style For Today Table */
 #table2 {
     display: relative;
     border-collapse: collapse;
@@ -134,7 +134,6 @@ input {
     width: 100%;
     padding: 10px;
     color: #000000d4;
-    /* Add border for better readability */
 }
 
 #table2 td {
@@ -148,14 +147,12 @@ input {
     font-size: 12px;
     color: #fffeff;
     background-color: #080c82;
-    /* Light gray background for table headers */
 }
 
 #table2 tfoot {
     color: #c1f41a;
     font-weight: bold;
     background-color: #000000;
-
 }
 
 #table2 tfoot td:first-child {
@@ -165,15 +162,12 @@ input {
 
 #table2 tbody tr:nth-child(1) {
     color: #2316db;
-    /* Alternate row colors for better readability */
 }
 
 #table2 tbody td:nth-child(2) {
     font-size: 13px;
-    /* Alternate row colors for better readability */
 }
 
-/* CSS for columns 4 and 5 */
 #table2 td:nth-child(6),
 td:nth-child(7) {
     color: hsl(0, 100%, 44%);
@@ -195,8 +189,6 @@ td:nth-child(7) {
     transform: scale(1.02);
 }
 
-/* make a media break point for bigger screens */
-
 @media only screen and (min-width: 600px) {
     .todaybox {
         width: 500px;
@@ -207,7 +199,6 @@ td:nth-child(7) {
         transform: scale(1.1);
     }
 }
-
 
 #customDate {
     width: 180px;
