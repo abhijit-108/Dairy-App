@@ -237,11 +237,14 @@
         }
 
         h2 {
-            font-size: 12px;
-            color: rgb(208, 0, 0);
+            font-size: 14px;
+            font-style: italic;
+            color: rgb(152, 49, 17);
             text-align: center;
         }
-
+        #last-refresh-time{
+            color: rgb(255, 71, 16);
+        }
         .daterow,
         .device {
             background-color: #b2c9f6;
@@ -389,7 +392,9 @@
         <select id="device-select">
             <!-- Options will be inserted here -->
         </select>
-        <h2>Table Data Refresh Every Hour</h2>
+        <h2 id="last-refresh-time"></h2>
+        <h2 id="next-refresh-time"></h2>
+
     </div>
     <div class="todaybox">
         <table id="data-table">
@@ -419,6 +424,52 @@
         billButton.addEventListener('click', function () {
             // Redirect to bill.html
             window.location.href = 'main.html';
+        });
+    </script>
+     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            
+            // Calculate next hour
+            let nextHour = new Date(now);
+            nextHour.setHours(now.getHours() + 1);
+            nextHour.setMinutes(0);
+            nextHour.setSeconds(0);
+            nextHour.setMilliseconds(0);
+
+            let nextHours = nextHour.getHours();
+            let nextPeriod = "AM";
+            if (nextHours >= 12) {
+                nextPeriod = "PM";
+                if (nextHours > 12) {
+                    nextHours -= 12;
+                }
+            }
+            if (nextHours === 0) {
+                nextHours = 12;
+            }
+            const formattedNextTime = `${nextHours}:00 ${nextPeriod}`;
+            
+            // Calculate last hour based on next hour
+            let lastHour = new Date(nextHour);
+            lastHour.setHours(nextHour.getHours() - 1);
+
+            let lastHours = lastHour.getHours();
+            let lastPeriod = "AM";
+            if (lastHours >= 12) {
+                lastPeriod = "PM";
+                if (lastHours > 12) {
+                    lastHours -= 12;
+                }
+            }
+            if (lastHours === 0) {
+                lastHours = 12;
+            }
+            const formattedLastTime = `${lastHours}:00 ${lastPeriod}`;
+
+            // Update the HTML elements with the calculated times
+            document.getElementById('next-refresh-time').innerHTML = `Next Refresh Time: ${formattedNextTime}`;
+            document.getElementById('last-refresh-time').innerHTML = `Last Refreshed: ${formattedLastTime}`;
         });
     </script>
 </body>
