@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wifi Data Usage</title>
+    <script type="module">
+        // Import the Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCE0EeoU9PbB5Ylfy7ew3rdP46Cq2iQYQY",
+            authDomain: "fir-authentication-adf8b.firebaseapp.com",
+            databaseURL: "https://fir-authentication-adf8b-default-rtdb.firebaseio.com",
+            projectId: "fir-authentication-adf8b",
+            storageBucket: "fir-authentication-adf8b.appspot.com",
+            messagingSenderId: "33641860307",
+            appId: "1:33641860307:web:9f60a891bc22827b885826"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        let data = {}; // Store fetched data globally
+
+        async function fetchData() {
+            try {
+                const dbRef = ref(database, 'data/');
+                const snapshot = await get(dbRef);
+                if (snapshot.exists()) {
+                    data = snapshot.val();
+                    populateDateOptions();
+                    populateMonthOptions();
+                    populateDeviceOptions();
+                    displayData();
+                } else {
+                    console.log("No data available");
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function getUpdatedDeviceName(deviceName) {
+            const updatedNames = {
+                "realme-narzo-20A": "realme-narzo-20A (Baba)",
+                "Aliothin": "Aliothin (Maa)",
+                "vivo-1916": "vivo-1916 (Udita)",
+                "realme-C25-Y": "realme-C25-Y (Priyanka)",
+                "POCO-C55": "POCO-C55 (Rakesh)"
+            };
+            return updatedNames[deviceName] || deviceName;
+        }
+
+        function populateDateOptions() {
+            const dateSelect = document.querySelector("#date-select");
+            dateSelect.innerHTML = "<option value=''>All Dates</option>";
+
+            const dates = Object.keys(data);
+
+            // Get today's date in local time zone
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const todayFormatted = `${year}-${month}-${day}`;
+
+            dates.forEach(date => {
+                const option = document.createElement("option");
+                option.value = date;
+                option.textContent = date;
+                if (date === todayFormatted) {
+                    option.selected = true;
+                }
+                dateSelect.appendChild(option);
+            });
+
+            // Ensure the default value is set if today is not in the dataset
+            if (!dates.includes(todayFormatted)) {
+                const option = document.createElement("option");
+                option.value = todayFormatted;
+                option.textContent = todayFormatted;
+                option.selected = true;
+                dateSelect.appendChild(option);
+            }
+        }
+
+
+        function populateMonthOptions() {
+            const monthSelect = document.querySelector("#month-select");
+            monthSelect.innerHTML = "<option value=''>All Months</option>";
+
+            const dates = Object.keys(data);
+            const months = new Set();
+
+            dates.forEach(date => {
+                const [year, month] = date.split('-');
+                const monthName = new Date(year, month - 1).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+                months.add(monthName);
+            });
+
+            const today = new Date();
+            const currentMonthYear = `${today.toLocaleDateString('en-US', { month: 'long' })} ${today.getFullYear()}`;
+
+            months.forEach(monthYear => {
+                const option = document.createElement("option");
+                option.value = monthYear;
+                option.textContent = monthYear;
+                if (monthYear === currentMonthYear) {
+                    option.selected = true;
+                }
+                monthSelect.appendChild(option);
+            });
+        }
+
+        function populateDeviceOptions() {
+            const deviceSelect = document.querySelector("#device-select");
+            deviceSelect.innerHTML = "<option value=''>All Devices</option>";
+
+            const devices = new Set();
+            Object.keys(data).forEach(date => {
+                data[date].forEach(record => {
+                    const deviceName = getUpdatedDeviceName(record["IP Address"].split(" ")[0]);
+                    devices.add(deviceName);
+                });
+            });
+
+            devices.forEach(device => {
+                const option = document.createElement("option");
+                option.value = device;
+                option.textContent = device;
+                deviceSelect.appendChild(option);
+            });
+        }
+
+        function displayData() {
+            const tableBody = document.querySelector("#data-table tbody");
+            const footer = document.querySelector("#data-table tfoot");
+            tableBody.innerHTML = ""; // Clear existing rows
+
+            let totalDownload = 0;
+            let totalUpload = 0;
+            let totalData = 0;
+
+            const selectedDate = document.querySelector("#date-select").value;
+            const selectedMonth = document.querySelector("#month-select").value;
+            const selectedDevice = document.querySelector("#device-select").value;
+
+            Object.keys(data).forEach(date => {
+                const [year, month, day] = date.split('-');
+                const monthYear = `${new Date(year, month - 1).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}`;
+
+                if ((selectedMonth === "" || monthYear === selectedMonth) &&
+                    (selectedDate === "" || selectedDate === date || selectedDate === '') &&
+                    (selectedDevice === "" || data[date].some(record => getUpdatedDeviceName(record["IP Address"].split(" ")[0]) === selectedDevice))) {
+                    data[date].forEach(record => {
+                        let deviceName = getUpdatedDeviceName(record["IP Address"].split(" ")[0]);
+
+                        // Check if the device name is one of the changed names
+                        const isChangedDevice = [
+                            "realme-narzo-20A (Baba)",
+                            "Aliothin (Maa)",
+                            "vivo-1916 (Udita)",
+                            "realme-C25-Y (Priyanka)",
+                            "POCO-C55 (Rakesh)"
+                        ].includes(deviceName);
+
+                        if (selectedDevice === "" || deviceName === selectedDevice) {
+                            const row = document.createElement("tr");
+
+                            row.innerHTML = `
+                                <td>${date}</td>
+                                <td>${deviceName}</td>
+                                <td>${record["Download (GB)"]}</td>
+                                <td>${record["Upload (GB)"]}</td>
+                                <td>${record["Total Data (GB)"]}</td>
+                            `;
+
+                            // Apply the green background for changed device names
+                            if (isChangedDevice) {
+                                row.classList.add("highlight-row");
+                            }
+
+                            tableBody.appendChild(row);
+
+                            // Update totals
+                            totalDownload += parseFloat(record["Download (GB)"]) || 0;
+                            totalUpload += parseFloat(record["Upload (GB)"]) || 0;
+                            totalData += parseFloat(record["Total Data (GB)"]) || 0;
+                        }
+                    });
+                }
+            });
+
+            // Update footer
+            footer.innerHTML = `
+                <tr>
+                    <td colspan="2"><strong>Total</strong></td>
+                    <td>${totalDownload.toFixed(3)}</td>
+                    <td>${totalUpload.toFixed(3)}</td>
+                    <td>${totalData.toFixed(3)}</td>
+                </tr>
+            `;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelector("#date-select").addEventListener("change", displayData);
+            document.querySelector("#month-select").addEventListener("change", displayData);
+            document.querySelector("#device-select").addEventListener("change", displayData);
+            fetchData();
+        });
+
+    </script>
+    <style>
+        #backtomain {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            padding: 6px;
+            background-color: brown;
+            color: aliceblue;
+            font-size: 16px;
+        }
+
+        body {
+            background-color: #878787;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 12px;
+            color: rgb(208, 0, 0);
+            text-align: center;
+        }
+
+        .daterow,
+        .device {
+            background-color: #b2c9f6;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            max-width: 300px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 8px 32px 0;
+
+        }
+
+        .daterow {
+            display: flex;
+            flex-direction: column;
+
+        }
+
+        .device {
+            display: flex;
+            flex-direction: column;
+            background-color: #63caec;
+
+        }
+
+        label {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #333;
+            background-color: #fff6e9;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        select:focus {
+            border-color: #66afe9;
+            outline: none;
+            box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
+        }
+
+        /* Additional styling for better alignment */
+        .daterow label,
+        .daterow select,
+        .device label,
+        .device select {
+            width: 100%;
+        }
+
+        .daterow select {
+            margin-bottom: 15px;
+        }
+
+
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* New CSS class for highlighting rows */
+        .highlight-row {
+            background-color: #b7c4f7;
+
+        }
+
+        #data-table {
+            display: relative;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow-y: auto;
+            width: 100%;
+            font-size: 16px;
+            color: #000000d4;
+        }
+
+        #data-table td {
+            padding: 6px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        #data-table th {
+            color: #fffeff;
+            font-size: 12px;
+            background-color: #080c82;
+        }
+
+        #data-table tbody tr:hover {
+            background-color: #92f7b6;
+            /* Hover effect */
+        }
+
+        #data-table tfoot {
+            color: #ffffff;
+            font-weight: bold;
+            background-color: #000000;
+        }
+
+        .todaybox {
+            width: 96%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 15px;
+            box-shadow: 0 8px 32px 0;
+            border-radius: 10px;
+            background-color: #ffffff;
+            margin-bottom: 50px;
+            transition: transform 0.4s ease;
+        }
+
+        .todaybox:hover {
+            transform: scale(1.02);
+        }
+    </style>
+
+</head>
+
+<body>
+    <br><button id="backtomain">Backtomain</button>
+    <h1>Internet Data Usage</h1>
+    <div class="daterow">
+        <label for="month-select">Select Month:</label>
+        <select id="month-select">
+            <!-- Options will be inserted here -->
+        </select>
+        <label for="date-select">Select Date:</label>
+        <select id="date-select">
+            <!-- Options will be inserted here -->
+        </select>
+    </div>
+    <div class="device">
+        <label for="device-select">Select Device:</label>
+        <select id="device-select">
+            <!-- Options will be inserted here -->
+        </select>
+        <h2>Table Data Refresh Every Hour</h2>
+    </div>
+    <div class="todaybox">
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Devices</th>
+                    <th>Download (GB)</th>
+                    <th>Upload (GB)</th>
+                    <th>Total (GB)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here -->
+            </tbody>
+            <tfoot>
+                <!-- Footer will be inserted here -->
+            </tfoot>
+        </table>
+    </div>
+
+    <script>
+        // Get the button element
+        var billButton = document.getElementById('backtomain');
+
+        // Add a click event listener to the button
+        billButton.addEventListener('click', function () {
+            // Redirect to bill.html
+            window.location.href = 'main.html';
+        });
+    </script>
+</body>
+
+</html>
