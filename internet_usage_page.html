@@ -4,7 +4,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wifi Data Usage</title>
+    <title>Internet Usage</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 8px;
+            background-color: #cbcbcb;
+            color: #333;
+        }
+
+        .filters {
+            display: flex;
+            margin-bottom: 6px;
+            justify-content: right;
+        }
+
+        .filters2 {
+            display: flex;
+            margin-bottom: 8px;
+            justify-content: right;
+        }
+
+        .filter {
+            padding: 12px;
+            margin: 8px;
+            border: 1.5px solid #270d7b;
+            border-radius: 4px;
+            background-color: #fff;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .filter:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+            outline: none;
+        }
+
+        table {
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            border-collapse: collapse;
+            font-size: 14px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+
+        }
+
+        thead th {
+            background-color: #10136a;
+            color: white;
+            margin: 0;
+            text-align: center;
+            border-bottom: 2px solid #ddd;
+            font-weight: bold;
+        }
+
+        tbody td {
+            padding: 6px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+
+
+        tbody tr:hover {
+            background-color: #b4ff9e;
+
+        }
+
+        tfoot td {
+            padding: 15px;
+            font-size: 17px;
+            background-color: rgb(37, 37, 37);
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        tfoot td:first-child {
+            text-align: right;
+        }
+
+        tfoot td:not(:first-child) {
+            text-align: center;
+        }
+
+        .highlight-row {
+            background-color: #b7c4f7;
+
+        }
+
+        tbody td:last-child {
+            font-weight: bolder;
+            font-size: 15px;
+        }
+
+        tbody td:first-child {
+            font-weight: normal;
+            font-size: 12px;
+            width: 65px;
+        }
+
+        .filter {
+            font-size: 14px;
+
+        }
+
+        .todaybox {
+            box-shadow: 0 8px 32px 0;
+            transition: transform 0.4s ease;
+            margin-bottom: 15px;
+        }
+
+        .todaybox:hover {
+            transform: scale(1.02);
+        }
+
+        #backtomain {
+            background-color: brown;
+            color: aliceblue;
+            font-size: 16px;
+        }
+
+        .loading-bubble {
+            display: inline-block;
+            width: 10px;
+            margin-left: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgb(154, 7, 7);
+            animation: bubbleAnimation 1s infinite;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        @keyframes bubbleAnimation {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.5);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="filters">
+        <select id="month-select" class="filter">
+        </select>
+        <select id="date-select" class="filter">
+        </select>
+    </div>
+    <div class="filters2">
+        <select id="device-select" class="filter">
+        </select>
+    </div>
+    <div class="todaybox">
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Devices</th>
+                    <th>Download (GB)</th>
+                    <th>Upload (GB)</th>
+                    <th>Total (GB)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here -->
+            </tbody>
+            <tfoot>
+                <!-- Footer will be inserted here -->
+            </tfoot>
+        </table>
+    </div>
+    </table>
+    <div>
+        <p id="lastUpdated" style="color: rgb(154, 7, 7); font-weight: bold;">
+            <span class="loading-bubble"></span> Last Updated At
+        </p>
+        <button id="backtomain" class="filter">Backtomain</button>
+    </div>
+    <script>
+        // Get the button element
+        var billButton = document.getElementById('backtomain');
+
+        // Add a click event listener to the button
+        billButton.addEventListener('click', function () {
+            // Redirect to bill.html
+            window.location.href = 'main.html';
+        });
+    </script>
     <script type="module">
         // Import the Firebase modules
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
@@ -215,265 +413,23 @@
         });
 
     </script>
-    <style>
-        #backtomain {
-            position: absolute;
-            right: 15px;
-            top: 15px;
-            padding: 6px;
-            background-color: brown;
-            color: aliceblue;
-            font-size: 16px;
-        }
-
-        body {
-            background-color: #878787;
-            margin: 0;
-            padding: 0;
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        h2 {
-            font-size: 14px;
-            font-style: italic;
-            color: rgb(208, 0, 0);
-            text-align: center;
-            margin: 0;
-            padding: 5px;
-        }
-        #last-refresh-time{
-            color: rgb(208, 0, 0);
-        }
-        .daterow,
-        .device {
-            background-color: #b2c9f6;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 15px;
-            max-width: 300px;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-            box-shadow: 0 8px 32px 0;
-
-        }
-
-        .daterow {
-            display: flex;
-            flex-direction: column;
-
-        }
-
-        .device {
-            display: flex;
-            flex-direction: column;
-            background-color: #63caec;
-
-        }
-
-        label {
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        select {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-            color: #333;
-            background-color: #fff6e9;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        select:focus {
-            border-color: #66afe9;
-            outline: none;
-            box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
-        }
-
-        /* Additional styling for better alignment */
-        .daterow label,
-        .daterow select,
-        .device label,
-        .device select {
-            width: 100%;
-        }
-
-        .daterow select {
-            margin-bottom: 15px;
-        }
-
-
-
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-        /* New CSS class for highlighting rows */
-        .highlight-row {
-            background-color: #b7c4f7;
-
-        }
-
-        #data-table {
-            display: relative;
-            border-collapse: collapse;
-            border-radius: 10px;
-            overflow-y: auto;
-            width: 100%;
-            font-size: 16px;
-            color: #000000d4;
-        }
-
-        #data-table td {
-            padding: 6px;
-            text-align: center;
-            font-size: 15px;
-            font-weight: bold;
-        }
-
-        #data-table th {
-            color: #fffeff;
-            font-size: 12px;
-            background-color: #080c82;
-        }
-
-        #data-table tbody tr:hover {
-            background-color: #92f7b6;
-            /* Hover effect */
-        }
-
-        #data-table tfoot {
-            color: #ffffff;
-            font-weight: bold;
-            background-color: #000000;
-        }
-
-        .todaybox {
-            width: 96%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 15px;
-            box-shadow: 0 8px 32px 0;
-            border-radius: 10px;
-            background-color: #ffffff;
-            margin-bottom: 50px;
-            transition: transform 0.4s ease;
-        }
-
-        .todaybox:hover {
-            transform: scale(1.02);
-        }
-    </style>
-
-</head>
-
-<body>
-    <br><button id="backtomain">Backtomain</button>
-    <h1>Internet Data Usage</h1>
-    <div class="daterow">
-        <label for="month-select">Select Month:</label>
-        <select id="month-select">
-            <!-- Options will be inserted here -->
-        </select>
-        <label for="date-select">Select Date:</label>
-        <select id="date-select">
-            <!-- Options will be inserted here -->
-        </select>
-    </div>
-    <div class="device">
-        <label for="device-select">Select Device:</label>
-        <select id="device-select">
-            <!-- Options will be inserted here -->
-        </select>
-        <h2 id="last-refresh-time"></h2>
-        <h2 id="next-refresh-time"></h2>
-
-    </div>
-    <div class="todaybox">
-        <table id="data-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Devices</th>
-                    <th>Download (GB)</th>
-                    <th>Upload (GB)</th>
-                    <th>Total (GB)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Data will be inserted here -->
-            </tbody>
-            <tfoot>
-                <!-- Footer will be inserted here -->
-            </tfoot>
-        </table>
-    </div>
-
     <script>
-        // Get the button element
-        var billButton = document.getElementById('backtomain');
-
-        // Add a click event listener to the button
-        billButton.addEventListener('click', function () {
-            // Redirect to bill.html
-            window.location.href = 'main.html';
-        });
-    </script>
-     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        function getPreviousTenMinuteMark() {
             const now = new Date();
+            const minutes = now.getMinutes();
+            const roundedMinutes = minutes - (minutes % 10);
+            now.setMinutes(roundedMinutes);
+            now.setSeconds(0);
             
-            // Calculate next hour
-            let nextHour = new Date(now);
-            nextHour.setHours(now.getHours() + 1);
-            nextHour.setMinutes(0);
-            nextHour.setSeconds(0);
-            nextHour.setMilliseconds(0);
+            const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+            return now.toLocaleTimeString([], options);
+        }
+        
+        document.getElementById('lastUpdated').innerHTML += getPreviousTenMinuteMark();
+        </script>
 
-            let nextHours = nextHour.getHours();
-            let nextPeriod = "AM";
-            if (nextHours >= 12) {
-                nextPeriod = "PM";
-                if (nextHours > 12) {
-                    nextHours -= 12;
-                }
-            }
-            if (nextHours === 0) {
-                nextHours = 12;
-            }
-            const formattedNextTime = `${nextHours}:00 ${nextPeriod}`;
-            
-            // Calculate last hour based on next hour
-            let lastHour = new Date(nextHour);
-            lastHour.setHours(nextHour.getHours() - 1);
 
-            let lastHours = lastHour.getHours();
-            let lastPeriod = "AM";
-            if (lastHours >= 12) {
-                lastPeriod = "PM";
-                if (lastHours > 12) {
-                    lastHours -= 12;
-                }
-            }
-            if (lastHours === 0) {
-                lastHours = 12;
-            }
-            const formattedLastTime = `${lastHours}:00 ${lastPeriod}`;
 
-            // Update the HTML elements with the calculated times
-            document.getElementById('next-refresh-time').innerHTML = `Next Refresh Time: ${formattedNextTime}`;
-            document.getElementById('last-refresh-time').innerHTML = `Last Refreshed: ${formattedLastTime}`;
-        });
-    </script>
 </body>
 
 </html>
