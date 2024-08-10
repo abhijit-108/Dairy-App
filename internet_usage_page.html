@@ -11,16 +11,19 @@
             margin-left: 8px;
             margin-right: 8px;
             margin-top: 0;
-            background-color: #cbcbcb;
+            background-color: #a5a5a5;
             color: #333;
         }
-        h1{
+
+        h1 {
             font-size: 22px;
             font-weight: bolder;
             text-align: center;
-            margin-bottom: 5px;
+            margin-bottom: 0;
+            margin-top: 4px;
             color: #1e14aa;
         }
+
         .filters {
             display: flex;
             justify-content: right;
@@ -34,10 +37,10 @@
 
         .filter {
             padding: 12px;
-            margin: 8px;
+            margin: 4px;
             border: 1.5px solid #270d7b;
             border-radius: 4px;
-            background-color: #fff;
+            background-color: #d6d6d6;
             font-size: 16px;
             transition: border-color 0.3s, box-shadow 0.3s;
         }
@@ -54,7 +57,7 @@
             margin-right: auto;
             border-collapse: collapse;
             font-size: 14px;
-            background-color: #fff;
+            background-color: rgb(225, 225, 225);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 
 
@@ -64,6 +67,7 @@
             background-color: #10136a;
             color: white;
             margin: 0;
+
             text-align: center;
             border-bottom: 2px solid #ddd;
             font-weight: bold;
@@ -83,10 +87,10 @@
         }
 
         tfoot td {
-            padding: 15px;
-            font-size: 17px;
-            background-color: rgb(37, 37, 37);
-            color: #ffffff;
+            padding: 6px;
+            font-size: 16px;
+            background-color: rgb(223, 223, 223);
+            color: #800404;
             font-weight: bold;
         }
 
@@ -160,18 +164,19 @@
                 transform: scale(1);
             }
         }
+
         @media screen and (min-width: 600px) {
-           
-            .todaybox{
+
+            .todaybox {
                 width: 98%;
                 margin-left: auto;
                 margin-right: auto;
             }
-            .todaybox:hover{
+
+            .todaybox:hover {
                 transform: scale(1);
             }
         }
-
     </style>
 </head>
 
@@ -368,6 +373,8 @@
             const selectedMonth = document.querySelector("#month-select").value;
             const selectedDevice = document.querySelector("#device-select").value;
 
+            const tableData = [];
+
             Object.keys(data).forEach(date => {
                 const [year, month, day] = date.split('-');
                 const monthYear = `${new Date(year, month - 1).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}`;
@@ -377,6 +384,11 @@
                     (selectedDevice === "" || data[date].some(record => getUpdatedDeviceName(record["IP Address"].split(" ")[0]) === selectedDevice))) {
                     data[date].forEach(record => {
                         let deviceName = getUpdatedDeviceName(record["IP Address"].split(" ")[0]);
+
+                        // If deviceName is '*', use the IP address instead
+                        if (deviceName === '*') {
+                            deviceName = record["IP Address"].split(" ")[0];
+                        }
 
                         // Check if the device name is one of the changed names
                         const isChangedDevice = [
@@ -388,22 +400,14 @@
                         ].includes(deviceName);
 
                         if (selectedDevice === "" || deviceName === selectedDevice) {
-                            const row = document.createElement("tr");
-
-                            row.innerHTML = `
-                                <td>${date}</td>
-                                <td>${deviceName}</td>
-                                <td>${record["Download (GB)"]}</td>
-                                <td>${record["Upload (GB)"]}</td>
-                                <td>${record["Total Data (GB)"]}</td>
-                            `;
-
-                            // Apply the green background for changed device names
-                            if (isChangedDevice) {
-                                row.classList.add("highlight-row");
-                            }
-
-                            tableBody.appendChild(row);
+                            tableData.push({
+                                date: date,
+                                deviceName: deviceName,
+                                download: parseFloat(record["Download (GB)"]) || 0,
+                                upload: parseFloat(record["Upload (GB)"]) || 0,
+                                total: parseFloat(record["Total Data (GB)"]) || 0,
+                                isChangedDevice: isChangedDevice
+                            });
 
                             // Update totals
                             totalDownload += parseFloat(record["Download (GB)"]) || 0;
@@ -414,16 +418,40 @@
                 }
             });
 
+            // Sort the table data by total in descending order
+            tableData.sort((a, b) => b.total - a.total);
+
+            // Populate the table
+            tableData.forEach(rowData => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+            <td>${rowData.date}</td>
+            <td>${rowData.deviceName}</td>
+            <td>${rowData.download.toFixed(3)}</td>
+            <td>${rowData.upload.toFixed(3)}</td>
+            <td>${rowData.total.toFixed(3)}</td>
+        `;
+
+                // Apply the green background for changed device names
+                if (rowData.isChangedDevice) {
+                    row.classList.add("highlight-row");
+                }
+
+                tableBody.appendChild(row);
+            });
+
             // Update footer
             footer.innerHTML = `
-                <tr>
-                    <td colspan="2"><strong>Total</strong></td>
-                    <td>${totalDownload.toFixed(3)}</td>
-                    <td>${totalUpload.toFixed(3)}</td>
-                    <td>${totalData.toFixed(3)}</td>
-                </tr>
-            `;
+        <tr>
+            <td colspan="2"><strong>Total</strong></td>
+            <td>${totalDownload.toFixed(3)}</td>
+            <td>${totalUpload.toFixed(3)}</td>
+            <td>${totalData.toFixed(3)}</td>
+        </tr>
+    `;
         }
+
 
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelector("#date-select").addEventListener("change", displayData);
@@ -440,13 +468,13 @@
             const roundedMinutes = minutes - (minutes % 10);
             now.setMinutes(roundedMinutes);
             now.setSeconds(0);
-            
+
             const options = { hour: 'numeric', minute: 'numeric', hour12: true };
             return now.toLocaleTimeString([], options);
         }
-        
+
         document.getElementById('lastUpdated').innerHTML += getPreviousTenMinuteMark();
-        </script>
+    </script>
 
 
 
