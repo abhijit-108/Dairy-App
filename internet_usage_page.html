@@ -138,6 +138,11 @@
             color: aliceblue;
             font-size: 16px;
         }
+        #refreshButton {
+            background-color: rgb(28, 141, 13);
+            color: aliceblue;
+            font-size: 16px;
+        }
 
         .loading-bubble {
             display: inline-block;
@@ -216,7 +221,10 @@
         <p id="lastUpdated" style="color: rgb(154, 7, 7); font-weight: bold;margin-bottom: 7px;">
             <span class="loading-bubble"></span> Last Updated At
         </p>
+       <div style="display: flex;justify-content: space-between;">
         <button id="backtomain" class="filter" >Go Back</button>
+        <button id="refreshButton" class="filter">Refresh Data</button>
+       </div>
     </div>
     <script>
         // Get the button element
@@ -474,6 +482,10 @@
         }
 
         document.getElementById('lastUpdated').innerHTML += getPreviousTenMinuteMark();
+
+        document.getElementById('refreshButton').onclick = function() {
+            location.reload();
+        };
     </script>
 
 
