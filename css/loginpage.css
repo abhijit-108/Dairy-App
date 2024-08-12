@@ -43,11 +43,14 @@ input[type="number"] {
     width: 100%;
     padding: 10px;
     font-size: 15px;
-    border: 1px solid #ccc;
+    border: 1.5px solid #b91616;
     border-radius: 4px;
     box-sizing: border-box;
 }
-
+#password:focus {
+    border: 2.3px solid rgb(255, 38, 0);
+    outline: none; /* Removes the default outline */
+}
 .btn {
     display: inline-block;
     padding: 10px 20px;
@@ -101,15 +104,14 @@ input[type="number"] {
 }
 .key {
     padding: 15px;
-    background-color: #007bff;
+    background-color: #0a68cd;
     color: #ffffff;
     border: none;
-    cursor: pointer;
     border-radius: 5px;
     cursor: pointer;
     font-size: 20px;
-    box-shadow: 0 3px 8px 0;
-    transition: 0.1s ease-in-out;
+    box-shadow: 0 1px 5px 0;
+    transition: 0.01s ease-in-out;
 }
 .key:hover {
     background-color: #067411;

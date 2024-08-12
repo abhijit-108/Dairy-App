@@ -42,7 +42,7 @@ option {
     padding: 20px;
     border-radius: 7px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
-    background-color: #52ffcb;
+    background-color: #96e6ce;
     box-sizing: border-box;
     transition: box-shadow 0.3s ease-in-out;
 }
@@ -60,7 +60,7 @@ input {
     font-size: 23px;
     font-weight: bolder;
     border-radius: 13px;
-    background-color: rgb(221, 252, 252);
+    background-color: rgb(238, 247, 247);
 }
 
 #fat {
