@@ -403,6 +403,10 @@
                         if (deviceName === '*') {
                             deviceName = record["IP Address"].split(" ")[0];
                         }
+                        if(deviceName==='wlan0'){
+                            deviceName= deviceName +" (Smart-Bulb)"
+
+                        }
 
                         // Check if the device name is one of the changed names
                         const isChangedDevice = [
