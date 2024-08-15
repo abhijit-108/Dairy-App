@@ -61,18 +61,18 @@
 
         @media screen and (min-width: 600px) {
             .card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 19px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            width: 230px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            color: #ffffff;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            min-height: 200px;
-            /* Set a minimum height to avoid layout shifting */
-        }
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+                padding: 19px;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                width: 230px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                color: #ffffff;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                min-height: 200px;
+                /* Set a minimum height to avoid layout shifting */
+            }
         }
 
         .card h2 {
@@ -102,231 +102,242 @@
             margin-top: 5px;
         }
     </style>
-
-<script>
-    const previousData = {}; // To store the previous total data values for speed calculation
-
-    async function fetchDhcpData() {
-        try {
-            const response = await fetch('http://192.168.1.1/cgi-bin/dhcp_data.sh');
-            const text = await response.text();
-            const lines = text.split('\n');
-            const dhcpData = {};
-
-            lines.forEach(line => {
-                const parts = line.split(/\s+/);
-                if (parts.length >= 4) {
-                    const mac = parts[1];
-                    const ip = parts[2];
-                    const name = parts[3] !== '*' ? parts[3] : 'Unknown Device';
-                    dhcpData[mac.toLowerCase()] = { ip, name };
-                }
-            });
-
-            return dhcpData;
-        } catch (error) {
-            console.error('Error fetching DHCP data:', error);
-            return {};
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(function (registration) {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(function (error) {
+                    console.log('Service Worker registration failed:', error);
+                });
         }
-    }
 
-    async function fetchNftData() {
-        try {
-            const response = await fetch('http://192.168.1.1/cgi-bin/nft_data.sh');
-            const text = await response.text();
-            const lines = text.split('\n');
-            const nftData = {};
+    </script>
+    <script>
+        const previousData = {}; // To store the previous total data values for speed calculation
 
-            lines.forEach(line => {
-                const parts = line.split(/\s+/);
-                if (parts.length >= 3) {
-                    const ip = parts[0];
-                    const type = parts[1];
-                    const bytes = parseInt(parts[2]);
-
-                    if (!nftData[ip]) {
-                        nftData[ip] = { download: 0, upload: 0 };
-                    }
-
-                    if (type === 'daddr') {
-                        nftData[ip].download = bytes;
-                    } else if (type === 'saddr') {
-                        nftData[ip].upload = bytes;
-                    }
-                }
-            });
-
-            return nftData;
-        } catch (error) {
-            console.error('Error fetching NFT data:', error);
-            return {};
-        }
-    }
-
-    function formatConnectedTime(seconds) {
-        if (seconds < 60) {
-            return `${seconds} sec`;
-        } else if (seconds < 3600) {
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            return `${minutes} min ${remainingSeconds} sec`;
-        } else {
-            const hours = Math.floor(seconds / 3600);
-            const remainingMinutes = Math.floor((seconds % 3600) / 60);
-            return `${hours} hr ${remainingMinutes} min`;
-        }
-    }
-
-    function formatBytes(bytes) {
-        if (bytes < 1024) {
-            return `${bytes} B`;
-        } else if (bytes < 1024 * 1024) {
-            return `${(bytes / 1024).toFixed(2)} KB`;
-        } else if (bytes < 1024 * 1024 * 1024) {
-            return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-        } else {
-            return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-        }
-    }
-
-    function formatTotalBytes(download, upload) {
-        const totalBytes = download + upload;
-        return formatBytes(totalBytes);
-    }
-
-    function calculateSpeed(mac, currentTotalBytes) {
-        const previousTotalBytes = previousData[mac]?.total || 0;
-        const bytesTransferred = currentTotalBytes - previousTotalBytes;
-        const speedMBps = (bytesTransferred / 1) / (1024 * 1024); // Bytes per second to MBps
-        previousData[mac] = { total: currentTotalBytes };
-        return speedMBps.toFixed(2);
-    }
-
-    // Function to fetch and format the signal information
-    function formatSignal(line) {
-        const signalMatch = line.match(/signal:\s*(-?\d+)/);
-        if (signalMatch) {
-            return `Signal : ${signalMatch[1]}`;
-        }
-        return 'Signal : NA'; // Fallback if the signal format is not matched
-    }
-
-    async function fetchInfo() {
-        const dhcpData = await fetchDhcpData();
-        const nftData = await fetchNftData();
-
-        fetch('http://192.168.1.1/cgi-bin/assoclist.sh')
-            .then(response => response.text())
-            .then(data => {
-                const lines = data.split('\n');
-                const stationData = [];
-                let currentStation = null;
+        async function fetchDhcpData() {
+            try {
+                const response = await fetch('http://192.168.1.1/cgi-bin/dhcp_data.sh');
+                const text = await response.text();
+                const lines = text.split('\n');
+                const dhcpData = {};
 
                 lines.forEach(line => {
-                    if (line.startsWith('Station ')) {
-                        if (currentStation) {
-                            stationData.push(currentStation);
+                    const parts = line.split(/\s+/);
+                    if (parts.length >= 4) {
+                        const mac = parts[1];
+                        const ip = parts[2];
+                        const name = parts[3] !== '*' ? parts[3] : 'Unknown Device';
+                        dhcpData[mac.toLowerCase()] = { ip, name };
+                    }
+                });
+
+                return dhcpData;
+            } catch (error) {
+                console.error('Error fetching DHCP data:', error);
+                return {};
+            }
+        }
+
+        async function fetchNftData() {
+            try {
+                const response = await fetch('http://192.168.1.1/cgi-bin/nft_data.sh');
+                const text = await response.text();
+                const lines = text.split('\n');
+                const nftData = {};
+
+                lines.forEach(line => {
+                    const parts = line.split(/\s+/);
+                    if (parts.length >= 3) {
+                        const ip = parts[0];
+                        const type = parts[1];
+                        const bytes = parseInt(parts[2]);
+
+                        if (!nftData[ip]) {
+                            nftData[ip] = { download: 0, upload: 0 };
                         }
-                        currentStation = { title: line, details: [] };
-                    } else if (currentStation) {
-                        if (line.includes('connected time:')) {
-                            const timeInSeconds = parseInt(line.split(':')[1].trim());
-                            const formattedTime = formatConnectedTime(timeInSeconds);
-                            currentStation.details.push(`On Since: ${formattedTime}`);
-                        } else if (line.includes('signal:')) {
-                            // Format signal line using the new formatSignal function
-                            const formattedSignal = formatSignal(line);
-                            currentStation.details.push(formattedSignal);
-                        } else if (line.includes('tx bitrate:')) {
-                            const txLine = line.split('tx bitrate:')[1].trim();
-                            const txSpeed = txLine.split(' ')[0];
-                            const txWidth = txLine.split(' ')[4];
-                            currentStation.details.push(`Tx : ${txSpeed} ${txWidth}`);
-                        } else if (line.includes('rx bitrate:')) {
-                            const rxLine = line.split('rx bitrate:')[1].trim();
-                            const rxSpeed = rxLine.split(' ')[0];
-                            const rxWidth = rxLine.split(' ')[4];
-                            currentStation.details.push(`Rx : ${rxSpeed} ${rxWidth}`);
-                        } else if (line.includes('expected throughput:')) {
-                            const throughput = line.split('expected throughput:')[1].trim();
-                            currentStation.details.push(`Link : ${throughput}`);
+
+                        if (type === 'daddr') {
+                            nftData[ip].download = bytes;
+                        } else if (type === 'saddr') {
+                            nftData[ip].upload = bytes;
                         }
                     }
                 });
 
-                if (currentStation) {
-                    stationData.push(currentStation);
-                }
+                return nftData;
+            } catch (error) {
+                console.error('Error fetching NFT data:', error);
+                return {};
+            }
+        }
 
-                const container = document.getElementById('info');
-                const cardMap = {};  // Mapping of MAC addresses to card elements
-                container.innerHTML = ''; // Clear previous content
+        function formatConnectedTime(seconds) {
+            if (seconds < 60) {
+                return `${seconds} sec`;
+            } else if (seconds < 3600) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                return `${minutes} min ${remainingSeconds} sec`;
+            } else {
+                const hours = Math.floor(seconds / 3600);
+                const remainingMinutes = Math.floor((seconds % 3600) / 60);
+                return `${hours} hr ${remainingMinutes} min`;
+            }
+        }
 
-                stationData.forEach(station => {
-                    const macMatch = station.title.match(/Station\s([0-9a-f:]{17})/i);
-                    const mac = macMatch ? macMatch[1].toLowerCase() : null;
-                    const dhcpInfo = mac && dhcpData[mac];
+        function formatBytes(bytes) {
+            if (bytes < 1024) {
+                return `${bytes} B`;
+            } else if (bytes < 1024 * 1024) {
+                return `${(bytes / 1024).toFixed(2)} KB`;
+            } else if (bytes < 1024 * 1024 * 1024) {
+                return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+            } else {
+                return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+            }
+        }
 
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    cardMap[mac] = card;
+        function formatTotalBytes(download, upload) {
+            const totalBytes = download + upload;
+            return formatBytes(totalBytes);
+        }
 
-                    // Determine if speed > 0.10 MBps
-                    let speedMBps = 0;
-                    if (dhcpInfo && nftData[dhcpInfo.ip]) {
-                        const download = nftData[dhcpInfo.ip].download;
-                        const upload = nftData[dhcpInfo.ip].upload;
-                        const totalBytes = download + upload;
-                        speedMBps = calculateSpeed(mac, totalBytes);
+        function calculateSpeed(mac, currentTotalBytes) {
+            const previousTotalBytes = previousData[mac]?.total || 0;
+            const bytesTransferred = currentTotalBytes - previousTotalBytes;
+            const speedMBps = (bytesTransferred / 1) / (1024 * 1024); // Bytes per second to MBps
+            previousData[mac] = { total: currentTotalBytes };
+            return speedMBps.toFixed(2);
+        }
 
-                        if (speedMBps > 0.10) {
-                            card.classList.add('active');
+        // Function to fetch and format the signal information
+        function formatSignal(line) {
+            const signalMatch = line.match(/signal:\s*(-?\d+)/);
+            if (signalMatch) {
+                return `Signal : ${signalMatch[1]}`;
+            }
+            return 'Signal : NA'; // Fallback if the signal format is not matched
+        }
+
+        async function fetchInfo() {
+            const dhcpData = await fetchDhcpData();
+            const nftData = await fetchNftData();
+
+            fetch('http://192.168.1.1/cgi-bin/assoclist.sh')
+                .then(response => response.text())
+                .then(data => {
+                    const lines = data.split('\n');
+                    const stationData = [];
+                    let currentStation = null;
+
+                    lines.forEach(line => {
+                        if (line.startsWith('Station ')) {
+                            if (currentStation) {
+                                stationData.push(currentStation);
+                            }
+                            currentStation = { title: line, details: [] };
+                        } else if (currentStation) {
+                            if (line.includes('connected time:')) {
+                                const timeInSeconds = parseInt(line.split(':')[1].trim());
+                                const formattedTime = formatConnectedTime(timeInSeconds);
+                                currentStation.details.push(`On Since: ${formattedTime}`);
+                            } else if (line.includes('signal:')) {
+                                // Format signal line using the new formatSignal function
+                                const formattedSignal = formatSignal(line);
+                                currentStation.details.push(formattedSignal);
+                            } else if (line.includes('tx bitrate:')) {
+                                const txLine = line.split('tx bitrate:')[1].trim();
+                                const txSpeed = txLine.split(' ')[0];
+                                const txWidth = txLine.split(' ')[4];
+                                currentStation.details.push(`Tx : ${txSpeed} ${txWidth}`);
+                            } else if (line.includes('rx bitrate:')) {
+                                const rxLine = line.split('rx bitrate:')[1].trim();
+                                const rxSpeed = rxLine.split(' ')[0];
+                                const rxWidth = rxLine.split(' ')[4];
+                                currentStation.details.push(`Rx : ${rxSpeed} ${rxWidth}`);
+                            } else if (line.includes('expected throughput:')) {
+                                const throughput = line.split('expected throughput:')[1].trim();
+                                currentStation.details.push(`Link : ${throughput}`);
+                            }
                         }
-                    }
-
-                    const title = document.createElement('h2');
-                    title.innerText = dhcpInfo ? `${dhcpInfo.name} (${dhcpInfo.ip})` : station.title;
-                    card.appendChild(title);
-
-                    station.details.forEach(detail => {
-                        const p = document.createElement('p');
-                        p.innerText = detail;
-                        card.appendChild(p);
                     });
 
-                    // Add download and upload info
-                    if (dhcpInfo && nftData[dhcpInfo.ip]) {
-                        const download = nftData[dhcpInfo.ip].download;
-                        const upload = nftData[dhcpInfo.ip].upload;
-                        const downloadP = document.createElement('p');
-                        const uploadP = document.createElement('p');
-                        const totalDataP = document.createElement('p');
-                        const speedP = document.createElement('p');
-
-                        const totalBytes = download + upload;
-
-                        downloadP.innerText = `Download: ${formatBytes(download)}`;
-                        uploadP.innerText = `Upload: ${formatBytes(upload)}`;
-                        totalDataP.innerText = `Total Data: ${formatTotalBytes(download, upload)}`;
-                        totalDataP.className = 'total-data';
-                        speedP.innerText = `Speed: ${speedMBps} MBps`;
-                        speedP.className = 'speed';
-
-                        card.appendChild(downloadP);
-                        card.appendChild(uploadP);
-                        card.appendChild(totalDataP);
-                        card.appendChild(speedP);
+                    if (currentStation) {
+                        stationData.push(currentStation);
                     }
 
-                    container.appendChild(card);
-                });
+                    const container = document.getElementById('info');
+                    const cardMap = {};  // Mapping of MAC addresses to card elements
+                    container.innerHTML = ''; // Clear previous content
 
-                // Update only the content of the cards instead of replacing them
-                container.innerHTML = '';
-                Object.values(cardMap).forEach(card => container.appendChild(card));
-            })
-            .catch(error => console.error('Error fetching info:', error));
-    }
+                    stationData.forEach(station => {
+                        const macMatch = station.title.match(/Station\s([0-9a-f:]{17})/i);
+                        const mac = macMatch ? macMatch[1].toLowerCase() : null;
+                        const dhcpInfo = mac && dhcpData[mac];
+
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        cardMap[mac] = card;
+
+                        // Determine if speed > 0.10 MBps
+                        let speedMBps = 0;
+                        if (dhcpInfo && nftData[dhcpInfo.ip]) {
+                            const download = nftData[dhcpInfo.ip].download;
+                            const upload = nftData[dhcpInfo.ip].upload;
+                            const totalBytes = download + upload;
+                            speedMBps = calculateSpeed(mac, totalBytes);
+
+                            if (speedMBps > 0.10) {
+                                card.classList.add('active');
+                            }
+                        }
+
+                        const title = document.createElement('h2');
+                        title.innerText = dhcpInfo ? `${dhcpInfo.name} (${dhcpInfo.ip})` : station.title;
+                        card.appendChild(title);
+
+                        station.details.forEach(detail => {
+                            const p = document.createElement('p');
+                            p.innerText = detail;
+                            card.appendChild(p);
+                        });
+
+                        // Add download and upload info
+                        if (dhcpInfo && nftData[dhcpInfo.ip]) {
+                            const download = nftData[dhcpInfo.ip].download;
+                            const upload = nftData[dhcpInfo.ip].upload;
+                            const downloadP = document.createElement('p');
+                            const uploadP = document.createElement('p');
+                            const totalDataP = document.createElement('p');
+                            const speedP = document.createElement('p');
+
+                            const totalBytes = download + upload;
+
+                            downloadP.innerText = `Download: ${formatBytes(download)}`;
+                            uploadP.innerText = `Upload: ${formatBytes(upload)}`;
+                            totalDataP.innerText = `Total Data: ${formatTotalBytes(download, upload)}`;
+                            totalDataP.className = 'total-data';
+                            speedP.innerText = `Speed: ${speedMBps} MBps`;
+                            speedP.className = 'speed';
+
+                            card.appendChild(downloadP);
+                            card.appendChild(uploadP);
+                            card.appendChild(totalDataP);
+                            card.appendChild(speedP);
+                        }
+
+                        container.appendChild(card);
+                    });
+
+                    // Update only the content of the cards instead of replacing them
+                    container.innerHTML = '';
+                    Object.values(cardMap).forEach(card => container.appendChild(card));
+                })
+                .catch(error => console.error('Error fetching info:', error));
+        }
 
         // Fetch info every 5 seconds
         setInterval(fetchInfo, 1000);
