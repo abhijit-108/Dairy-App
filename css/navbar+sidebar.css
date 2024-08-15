@@ -85,14 +85,16 @@ a {
 .sidebar ul {
     list-style-type: square;
     padding: 0;
+    
 }
 
 .sidebar ul li {
-    margin-bottom: 20px;
+    margin-bottom: 35px;
     margin-top: 10px;
     margin-left: 15px;
     padding: 8px;
     border-radius: 3px;
+    
 
 }
 
@@ -102,6 +104,7 @@ a {
     font-weight: bolder;
     font-style: oblique;
     font-size: 18px;
+    
 }
 
 
