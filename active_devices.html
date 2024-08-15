@@ -119,7 +119,7 @@
 
         async function fetchDhcpData() {
             try {
-                const response = await fetch('http://192.168.1.1/cgi-bin/dhcp_data.sh');
+                const response = await fetch('https://abhijit-108.github.io/Dairy-App/proxy/cgi-bin/dhcp_data.sh');
                 const text = await response.text();
                 const lines = text.split('\n');
                 const dhcpData = {};
@@ -143,7 +143,7 @@
 
         async function fetchNftData() {
             try {
-                const response = await fetch('http://192.168.1.1/cgi-bin/nft_data.sh');
+                const response = await fetch('https://abhijit-108.github.io/Dairy-App/proxy/cgi-bin/nft_data.sh');
                 const text = await response.text();
                 const lines = text.split('\n');
                 const nftData = {};
@@ -226,7 +226,7 @@
             const dhcpData = await fetchDhcpData();
             const nftData = await fetchNftData();
 
-            fetch('http://192.168.1.1/cgi-bin/assoclist.sh')
+            fetch('https://abhijit-108.github.io/Dairy-App/proxy/cgi-bin/assoclist.sh')
                 .then(response => response.text())
                 .then(data => {
                     const lines = data.split('\n');
