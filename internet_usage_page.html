@@ -138,6 +138,7 @@
             color: aliceblue;
             font-size: 16px;
         }
+
         #refreshButton {
             background-color: rgb(28, 141, 13);
             color: aliceblue;
@@ -155,7 +156,7 @@
             margin-right: 5px;
             vertical-align: middle;
         }
-       
+
         @keyframes bubbleAnimation {
             0% {
                 transform: scale(1);
@@ -221,16 +222,16 @@
         <p id="lastUpdated" style="color: rgb(154, 7, 7); font-weight: bold;margin-bottom: 7px;">
             <span class="loading-bubble"></span> Last Updated At
         </p>
-        <p  style="color: rgb(7, 19, 154); font-weight: normal;margin-bottom: 7px;">
+        <p style="color: rgb(7, 19, 154); font-weight: normal;margin-bottom: 7px;">
             <span class="loading-bubble"></span> Speed 300kbps After 2 GB
         </p>
-        <p  style="color: rgb(7, 19, 154); font-weight: normal;margin-bottom: 7px;">
+        <p style="color: rgb(7, 19, 154); font-weight: normal;margin-bottom: 7px;">
             <span class="loading-bubble"></span> Block After 3 GB
         </p>
-       <div style="display: flex;justify-content: space-between;">
-        <button id="backtomain" class="filter" >Go Back</button>
-        <button id="refreshButton" class="filter">Refresh Data</button>
-       </div>
+        <div style="display: flex;justify-content: space-between;">
+            <button id="backtomain" class="filter">Go Back</button>
+            <button id="refreshButton" class="filter">Refresh Data</button>
+        </div>
     </div>
     <script>
         // Get the button element
@@ -249,13 +250,12 @@
 
         // Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyCE0EeoU9PbB5Ylfy7ew3rdP46Cq2iQYQY",
-            authDomain: "fir-authentication-adf8b.firebaseapp.com",
-            databaseURL: "https://fir-authentication-adf8b-default-rtdb.firebaseio.com",
-            projectId: "fir-authentication-adf8b",
-            storageBucket: "fir-authentication-adf8b.appspot.com",
-            messagingSenderId: "33641860307",
-            appId: "1:33641860307:web:9f60a891bc22827b885826"
+            apiKey: "AIzaSyAd_MRd9qzhoYYMEBKRyGBDuIUTFsLr5QM",
+            authDomain: "wifi-usage.firebaseapp.com",
+            projectId: "wifi-usage",
+            storageBucket: "wifi-usage.appspot.com",
+            messagingSenderId: "1062426364160",
+            appId: "1:1062426364160:web:117526cc0725c912008be5"
         };
 
         // Initialize Firebase
@@ -403,8 +403,8 @@
                         if (deviceName === '*') {
                             deviceName = record["IP Address"].split(" ")[0];
                         }
-                        if(deviceName==='wlan0'){
-                            deviceName= deviceName +" (Smart-Bulb)"
+                        if (deviceName === 'wlan0') {
+                            deviceName = deviceName + " (Smart-Bulb)"
 
                         }
 
@@ -493,7 +493,7 @@
 
         document.getElementById('lastUpdated').innerHTML += getPreviousTenMinuteMark();
 
-        document.getElementById('refreshButton').onclick = function() {
+        document.getElementById('refreshButton').onclick = function () {
             location.reload();
         };
     </script>
