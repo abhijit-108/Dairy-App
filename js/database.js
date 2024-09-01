@@ -937,12 +937,14 @@ onAuthStateChanged(auth, (user) => {
     const guestinfo = document.getElementById('guest-info');
 
     const fixDatabaseItem = document.getElementById('fixDatabaseItem');
+    const billvalidate=document.querySelector('.billvalidate')
     const h3names = document.getElementById('h3names');
 
     if (user) {
         // User is authenticated, show user name
         userInfoDiv.innerText = 'Logout (Abhijit)';
         fixDatabaseItem.classList.remove('disabled');
+        billvalidate.classList.remove('disabled');
         h3names.classList.remove('disabled');
 
     } else {
@@ -950,6 +952,7 @@ onAuthStateChanged(auth, (user) => {
         userInfoDiv.innerText = 'Logout (Guest)';
         guestinfo.innerText = 'This is guest mode.You can only See the data cannot modify it. ';
         fixDatabaseItem.classList.add('disabled');
+        billvalidate.classList.add('disabled');
         h3names.classList.add('disabled');
     }
 });
