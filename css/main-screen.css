@@ -42,7 +42,7 @@ option {
     padding: 20px;
     border-radius: 7px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
-    background-color: #96e6ce;
+    background-color: #c0f0e2;
     box-sizing: border-box;
     transition: box-shadow 0.3s ease-in-out;
 }
@@ -80,7 +80,7 @@ input {
 
 .submit-btn {
     padding: 10px;
-    background-color: #b73705f1;
+    background-color: #9d3f19f1;
     color: #ffffff;
     border: none;
     border-radius: 5px;
@@ -121,7 +121,7 @@ input {
     border-radius: 7px;
     max-width: 270px;
     min-width: 150px;
-    background-color: #52ffcb;
+    background-color: #b2fee7;
     font-weight: bold;
     font-size: 25px;
 }
