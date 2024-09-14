@@ -42,7 +42,7 @@ option {
     padding: 20px;
     border-radius: 7px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
-    background-color: #c0f0e2;
+    background-color: #6fd4ff;
     box-sizing: border-box;
     transition: box-shadow 0.3s ease-in-out;
 }
@@ -50,7 +50,7 @@ option {
 .label {
     font-size: 20px;
     font-weight: bold;
-    color: rgba(0, 0, 0, 0.837);
+    color: rgba(80, 79, 79, 0.837);
 }
 
 input {
