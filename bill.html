@@ -7,7 +7,8 @@
     <title>Bill Calculator</title>
     <style>
         table {
-            width: 100%;
+            max-width: 600px;
+            width: 90%;
             background-color: rgb(255, 255, 255);
             border-collapse: collapse;
             border: 2.3px solid black;
@@ -19,7 +20,7 @@
             padding: 5px;
             border: 2px solid rgb(6, 6, 134);
             border-radius: 5px;
-            margin-right:10px;
+            margin-right: 10px;
         }
 
         td {
@@ -32,12 +33,23 @@
             background-color: hsl(0, 37%, 93%);
         }
 
+        table td:first-child
+         {
+            color: hsl(0, 0%, 0%);
+            font-size: 13px;
+            font-weight: bold;
+            min-width: 85px;
+            padding: 4px;
+
+        }
+
+
         .readonly {
             background-color: #ffffff;
         }
 
         input {
-            width: 80px;
+            width: 70px;
             height: 30px;
             border: 1.5px solid rgb(8, 3, 136);
             font-weight: bolder;
@@ -59,7 +71,7 @@
             font-weight: bolder;
             font-size: larger;
             background-color: aqua;
-            margin-left: auto;
+            margin-right: auto;
             margin-top: 20px;
             display: block;
             width: 150px;
@@ -90,8 +102,9 @@
         .validate2:active {
             transform: scale(0.70);
         }
-       /* Container for the select element */
-       .select-container {
+
+        /* Container for the select element */
+        .select-container {
             position: relative;
             margin-top: 20px;
             margin-bottom: 12px;
@@ -107,7 +120,8 @@
             color: rgb(158, 85, 17);
             font-weight: bolder;
             border-radius: 5px;
-            appearance: none; /* Remove default arrow */
+            appearance: none;
+            /* Remove default arrow */
             background-color: #fff;
             transition: border-color 0.3s ease;
         }
@@ -134,7 +148,7 @@
         }
 
         /* Rotate arrow on select focus */
-        #dateselect:focus + .select-arrow {
+        #dateselect:focus+.select-arrow {
             transform: translateY(-50%) rotate(180deg);
         }
     </style>
@@ -148,17 +162,16 @@
         <br>
         <br>
         <label for="originalrupees">মোট কত টাকা :- </label>
-        <input style="width: 120px;" type="number" placeholder="₹ 0" id="originalrupees"
-            oninput="updaterupeesValues()">
-            
-            <div class="select-container">
-                <select id="dateselect"></select>
-                <div class="select-arrow"></div>
-            </div>
+        <input style="width: 120px;" type="number" placeholder="₹ 0" id="originalrupees" oninput="updaterupeesValues()">
+
+        <div class="select-container">
+            <select id="dateselect"></select>
+            <div class="select-arrow"></div>
+        </div>
 
 
     </div>
-    
+
     <table>
         <thead>
             <tr>
@@ -201,7 +214,7 @@
                 <td>রজিনা শেখ</td>
                 <td><input type="number" name="kg5" class="kgInput" oninput="updateKgValues()" placeholder="0"></td>
                 <td><input type="number" name="taka29_5" class="taka29Input" readonly></td>
-                <td><input type="number" name="taka40_5" class="taka40Input" oninput="updateTaka29()"placeholder="₹ 0"
+                <td><input type="number" name="taka40_5" class="taka40Input" oninput="updateTaka29()" placeholder="₹ 0"
                         oninput="updaterupeesValues()"></td>
             </tr>
             <!-- <tr>
@@ -222,25 +235,25 @@
                 <td>বিকাশ কুমার ঘোষ</td>
                 <td><input type="number" name="kg8" class="kgInput" oninput="updateKgValues()" placeholder="0"></td>
                 <td><input type="number" name="taka29_8" class="taka29Input" readonly></td>
-                <td><input type="number" name="taka40_8" class="taka40Input" oninput="updateTaka29()"placeholder="₹ 0"
+                <td><input type="number" name="taka40_8" class="taka40Input" oninput="updateTaka29()" placeholder="₹ 0"
                         oninput="updaterupeesValues()"></td>
             </tr>
             <tr>
                 <td>সুলোচনা ঘোষ</td>
                 <td><input type="number" name="kg9" class="kgInput" oninput="updateKgValues()" placeholder="0"></td>
                 <td><input type="number" name="taka29_9" class="taka29Input" readonly></td>
-                <td><input type="number" name="taka40_9" class="taka40Input" oninput="updateTaka29()"placeholder="₹ 0"
+                <td><input type="number" name="taka40_9" class="taka40Input" oninput="updateTaka29()" placeholder="₹ 0"
                         oninput="updaterupeesValues()"></td>
             </tr>
             <tr>
                 <td>মধুমিতা মন্ডল</td>
                 <td><input type="number" name="kg10" class="kgInput" oninput="updateKgValues()" placeholder="0"></td>
                 <td><input type="number" name="taka29_10" class="taka29Input" readonly></td>
-                <td><input type="number" name="taka40_10" class="taka40Input" oninput="updateTaka29()"placeholder="₹ 0"
+                <td><input type="number" name="taka40_10" class="taka40Input" oninput="updateTaka29()" placeholder="₹ 0"
                         oninput="updaterupeesValues()"></td>
             </tr>
 
-            
+
         </tbody>
         <tfoot>
             <tr>
@@ -263,7 +276,7 @@
     </div>
 
     <script>
-         document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const dateSelect = document.getElementById('dateselect');
             const currentDate = new Date();
             const currentDay = currentDate.getDate();
@@ -434,7 +447,7 @@
             // Redirect to bill.html
             window.location.href = 'main.html';
         });
-        
+
     </script>
 
 
