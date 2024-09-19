@@ -923,7 +923,7 @@ document.getElementById('submit').addEventListener('click', () => {
 function logout() {
     signOut(auth).then(() => {
         // Sign-out successful, redirect to login page
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
     }).catch((error) => {
         console.error('Error signing out:', error);
     });
