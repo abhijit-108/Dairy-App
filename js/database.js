@@ -237,7 +237,7 @@ displayTodayEntriesIntable_today();
 
 // Event listener for the refresh button
 document.getElementById('submit').addEventListener('click', () => {
-    setTimeout(displayTodayEntriesIntable_today, 4000); // Fetch data after 4 seconds
+    setTimeout(displayTodayEntriesIntable_today, 2000); // Fetch data after 4 seconds
 });
 
 

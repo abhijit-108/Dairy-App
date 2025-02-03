@@ -6,7 +6,7 @@
 }
 
 body {
-    background: #102402;
+    background: #a6a6a6;
     padding: 0.8rem;
     padding-top: 6rem;
 }
@@ -33,7 +33,16 @@ body {
     transition: transform 0.2s;
     margin-right: 1rem;
 }
+.heading {
+    color: rgb(82, 255, 255);
+    display: block;
+    overflow: hidden;
+    padding: 6px;
+    border-radius: 5px;
+    background-color: #070f04;
+    font-weight: bolder;
 
+}
 .app-info {
     display: flex;
     gap: 2rem;
@@ -228,7 +237,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
     body {
-        background: #121212;
+        background: #494949;
         color: #e0e0e0;
         padding-top: 6rem;
     }
