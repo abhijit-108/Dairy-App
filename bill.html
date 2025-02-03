@@ -376,9 +376,9 @@
         function updateTaka29(event) {
             const inputValue = parseFloat(event.target.value) || 0;
             const taka29Input = event.target.parentNode.previousElementSibling.querySelector('input');
-            const calculatedValue = (inputValue * convert29).toFixed(0); // 70% of the value
+            const calculatedValue =  Math.ceil(inputValue * convert29);  // 70% of the value 
 
-            taka29Input.value = calculatedValue;
+            taka29Input.value = calculatedValue ;
 
             // Call updaterupeesValues() after updating taka29 values
             updaterupeesValues();
