@@ -1,264 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dairy CaL</title>
     <link rel="manifest" href="manifest.json">
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it@12.2.0/dist/markdown-it.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
     <link rel="icon" href="logo.png" type="image/png">
-    <link rel="stylesheet" href="css/main-screen.css?v=3.0.0">
-    <link rel="stylesheet" href="css/autometicnewbill.css?v=3.0.1">
-    <link rel="stylesheet" href="css/other-parts.css?v=3.0.0">
-    <link rel="stylesheet" href="css/databasepopup.css?v=3.0.4">
-    <link rel="stylesheet" href="css/navbar+sidebar.css?v=3.0.1">
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/alert.css?v=3.0.0">
+    <link rel="stylesheet" href="css/main_screen.css">
 </head>
 
 <body>
-    <header>
-        <div class="menu-button" id="nav-menu">
-            <a href="#home" class="nav__link active-link">
-                <i class='bx bx-home-alt nav__icon'></i>
-        </div>
-
+    <!-- Title Bar -->
+    <div class="title-bar">
+        <i class="menu-button fas fa-bars" onclick="togglePanel()"></i>
         <div class="heading" id="headerLogin">Dairy App</div>
-
-        <div class="clock-button" id="clock-box">
-            <a href="#clock" class="clock">
-                <div id="clock"></div>
-                <div id="date"></div>
-        </div>
         <div id="fixcurrentrate"></div>
-    </header>
-
-    <div class="sidebar">
-        <nav>
-            <ul>
-                <li id="openPopup"><a href="#" class="perfromace_report_toggle">সমস্ত সদস্য</a></li>
-                <li id="storagepage"><a href="storage page.html">পুরনো Bills (photo)</a></li>
-                <li class="billvalidate"><a href="#" class="update-toggle" id="billvalidate">Generate Bills (Manual) </a></li>
-                <li id="fixDatabaseItem"><a href="rewrite Data.html">Fix Database</a></li>
-                <br>
-                <br>
-                <li><a href="internet_usage_page.html" class="update-toggle">Wifi Data History</a></li>
-                <li><a href="http://192.168.1.1/active_devices.html" class="update-toggle">Wifi Devices</a></li>
-
-               
-                <button id="logoutButton">Logout</button>
-                <div id="guest-info">
-                </div>
-                <div id="error" class="error"></div>
-
-            </ul>
-        </nav>
-    </div>
-
-    <div id="offlinePopup" class="offline-popup">
-        <div class="popup-content100">
-            <h1>ইন্টারনেট বন্ধ! </h1>
-            <p>ইন্টারনেট বন্ধ হয়ে গেছে </p>
+        <div class="app-info">
+            <div class="time-date">
+                <span id="current-date"></span> 
+                <span id="current-time"></span>
+            </div>
         </div>
     </div>
 
-    <div id="alert" class="alert">
-        <div class="tick">&#10003;</div>
-        Saved To Database <br>Email Sent
+    <div class="side-panel" id="sidePanel">
+        <ul class="panel-items">
+            <li class="panel-item"><a href="all_member.html" class="perfromace_report_toggle">সমস্ত সদস্য</a></li>
+            <li class="panel-item" id="Generate_bill"><a href="generate_bill.html">Generate Bill (Manual)</a></li>
+            <li class="panel-item" id="storagepage"><a href="storage page.html">পুরনো Bills (photo)</a></li>
+            <li class="panel-item" id="fixDatabaseItem"><a href="rewrite Data.html">Fix Database</a></li>
+            <li class="panel-item"><a href="internet_usage_page.html" class="update-toggle">Data history (Wifi)</a></li>
+            <li class="panel-item"><a href="http://archerc60/active_devices.html" class="update-toggle">Online Devices (Wifi)</a></li>
+            <button id="logoutButton">Logout</button>
+            <div id="guest-info">
+            </div>
+            <div id="error" class="error"></div>
+        </ul>
     </div>
-    <div id="form-box">
+
+
+    <!-- Main Container -->
+    <div class="container">
         <form action="" name="lol" method="post" id="registrationform">
-            <h3 id="h3names" class="disabled">
-                <label class="label" for="name">সদস্যর নাম</label>
-                <select class="select" id="name" name="NAME" required>
+            <div class="select-container" id="select-container">
+                <select class="styled-select" id="name" name="NAME" required>
                     <option value=""></option>
                 </select>
-            </h3>
-            <div id="little-box">
-                <label class="label" for="kg">KG:</label>
-                <input type="number" placeholder="Kg" value="" id="kg" step="any" required oninput="rateandtotal();" />
-                <br>
-                <label class="label" for="fat">FAT:</label>
-                <input type="number" placeholder="FAT" value="" id="fat" step="any" oninput="rateandtotal();" />
-                <br>
-                <label class="label" for="snf">SNF:</label>
-                <input type="number" placeholder="SNF" value="" id="snf" step="any" required
-                    oninput="rateandtotal();" />
-                <br>
-                <input type="number" value="" id="rate" step="any" required hidden />
-                <input type="number" value="" id="total" step="any" required hidden />
-                <br>
-                <button id="submit" class="submit-btn">Calculate</button>
-                <audio id="myAudio">
-                    <source src="button.wav" type="audio/mp3">
-                </audio>
             </div>
+
+            <div class="input-group">
+                <div class="input-field">
+                    <input type="number" id="kg" placeholder=" " step="any" required oninput="rateandtotal();">
+                    <label for="kg">KG:</label>
+                </div>
+                <div class="input-field">
+                    <input type="number" id="fat" placeholder=" " step="any" required oninput="rateandtotal();">
+                    <label>FAT</label>
+                </div>
+                <div class="input-field">
+                    <input type="number" id="snf" placeholder=" " step="any" required oninput="rateandtotal();">
+                    <label>SNF</label>
+                </div>
+            </div>
+            <input type="number" value="" id="rate" step="any" required hidden />
+            <input type="number" value="" id="total" step="any" required hidden />
+            <button class="submit-btn" id="submit" onclick="calculatePayment()">Calculate Payment</button>
         </form>
-        <input type="email" id="email" name="EMAIL" placeholder="Enter email" hidden>
-        <div class="ratetotalbox">
-            <div id="errorKg" class="errorinput"></div>
-            <div id="errorFat" class="errorinput"></div>
-            <div id="errorSnf" class="errorinput"></div>
-            <div id="ratedisplay"></div>
-            <div id="totaldisplay"></div>
-        </div>
     </div>
-    <br>
-    <div id="popupWrapper" class="popup-wrapper">
-        <div id="popup" class="popup">
-            <div class="borderbox">
-                <div class="titlebar">
-                    <select id="monthFilter">
-                        <option value="all">All Months</option>
-                    </select>
-                    <button id="autobill" class="bill-Section">Bill Section</button>
-                    <div class="toggle-switch">
-                        <input type="checkbox" id="toggleSwitch" class="toggle-switch-input">
-                        <label for="toggleSwitch" class="toggle-switch-label"></label>
-                    </div>
-                    <button id="closePopup" class="close-btn">Close</button>
-                </div>
-    
-                <div class="filterbar">
-                    <div class="filter-row">
-                        <div class="filter-group">
-                            <select id="nameFilter">
-                                <option value="all">All Names</option>
-                            </select>
-                        </div>
-    
-                        <div class="filter-group">
-    
-                        </div>
-                        <div class="filter-group">
-                            <select id="dateRangeFilter">
-                                <option value="all">All Dates</option>
-                                <option value="01-07">1-7</option>
-                                <option value="08-15">8-15</option>
-                                <option value="16-23">16-23</option>
-                                <option value="24-end">24 onwards</option>
-                            </select>
-    
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="alltablebox">
-                <div class="table_box">
-                    <table id="table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Time-Period</th>
-                                <th>Name</th>
-                                <th>FAT <br>SNF <br> RATE</th>
-                                <th>KG</th>
-                                <th>TOTAL</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Table rows will be dynamically added here -->
-                        </tbody>
-                    </table>
-
-                </div>
-                <div class="colorboxfortotal">
-                    <div id="total-Kg">0</div>
-                    <div id="ultimate-total">0</div>
-                </div>
-                <table id="table3" border="1">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Total KG</th>
-                            <th>Original Rupees</th>
-                            <th>Avg Rate</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Rows will be populated dynamically -->
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td>Total</td>
-                            <td id="totalKGFooter">0</td>
-                            <td id="totalTakaFooter">0</td>
-                            <td id="avgRateFooter">0</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-
-            <div class="bill_table_box">
-                <!-- Input fields for Total KG and Total Taka -->
-               <div class="Bill_table_box_head">
-                <div class="billfinal">
-                    <div class="input-group">
-                        <label for="inputTotalKG" class="inputTotalKGtaka">Total KG:</label>
-                        <input type="number" id="inputTotalKG" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label for="inputTotalTaka" class="inputTotalKGtaka">Total টাকা:</label>
-                        <input type="number" id="inputTotalTaka" step="0.1">
-                    </div>
-                </div>
-                <div class="select-container">
-                    <select id="dateselectforbill"></select>
-                </div>
-               </div>
-
-                <table id="table4" border="1">
-                    <thead>
-                        <tr>
-                            <th>নাম</th>
-                            <th>পরিমাণ<br>(Kg)</th>
-                            <th>29 টাকা</th>
-                            <th>40.5 টাকা</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>চন্দনা-ঘোষ</td>
-                            <td contenteditable="true"></td>
-                            <td contenteditable="true"></td>
-                            <td contenteditable="true"></td>
-                        </tr>
-                        <tr>
-                            <td>রাজেন্দ্র ঘোষ</td>
-                            <td contenteditable="true"></td>
-                            <td contenteditable="true"></td>
-                            <td contenteditable="true"></td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-
-                        <tr>
-                            <td>Bill Total</td>
-                            <td id="validatedTotalKGFooter4">0</td>
-                            <td id="validatedTotalModifiedFooter4">0</td>
-                            <td id="validatedTotalTakaFooter4">0</td>
-                        </tr>
-                        <tr>
-                            <td>Total <br><span style="font-size: 12px;"><pre>(চন্দনা-ঘোষ,
-রাজেন্দ্র ঘোষ
- কে বাদ দিয়ে)</pre></span></td>
-                            <td id="totalKGFooter4">0</td>
-                            <td id="totalModifiedFooter4">0</td>
-                            <td id="totalTakaFooter4">0</td>
-                        </tr>
-                    </tfoot>
-                </table>
-                <div class="foot">
-                    <button id="toggleEditButton">Toggle Editable</button>
-                    <button id="bill_validate">Validate Bill</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-
     <div class="todaybox" id="todaybox">
-        <table id="table2">
+        <table id="table_today">
             <thead>
                 <tr>
                     <th>Time</th>
@@ -278,58 +92,137 @@
             </tfoot>
         </table>
     </div>
+
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="modal-row"><span>Name:</span><span id="modalName">-</span></div>
+            <div class="modal-row"><span>KG:</span><span id="modalKG">0</span></div>
+            <div class="modal-row"><span>FAT:</span><span id="modalFAT">0</span></div>
+            <div class="modal-row"><span>SNF:</span><span id="modalSNF">0</span></div>
+            <div class="modal-row rate"><span>Rate:</span><span id="modalRate">₹ 0</span></div>
+            <div class="modal-row total"><span>Total Amount:</span><span id="modalTotal">₹ 0</span></div>
+        </div>
+    </div>
+
+    <!-- Audio Files -->
+    <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2762/2762.wav"></audio>
+    <audio id="closeSound" src="https://assets.mixkit.co/active_storage/sfx/2776/2776.wav"></audio>
+
+    <script>
+        // Time and Date Update
+        function updateDateTime() {
+            const now = new Date();
+
+            // Format the date to "3 Feb" and add the Bengali day
+            const day = now.getDate();
+            const month = now.toLocaleString('default', { month: 'short' });
+
+            // Get the Bengali day (e.g., "Bangla Bar")
+            const banglaDays = ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহস্পতি", "শুক্র", "শনি"];
+            const banglaDay = banglaDays[now.getDay()];
+
+            // Format time as "10:00 AM"
+            const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // Update content
+            document.getElementById('current-date').textContent = `${day} ${month}, ${banglaDay}`;
+            document.getElementById('current-time').textContent = formattedTime;
+        }
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+
+        // Panel Toggle
+        function togglePanel() {
+            document.getElementById('sidePanel').classList.toggle('open');
+        }
+
+        // Close panel when clicking outside
+        document.addEventListener('click', (event) => {
+            const sidePanel = document.getElementById('sidePanel');
+            const menuButton = document.querySelector('.menu-button');
+
+            if (!sidePanel.contains(event.target) && !menuButton.contains(event.target)) {
+                sidePanel.classList.remove('open');
+            }
+        });
+
+        // Close panel on ESC key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                document.getElementById('sidePanel').classList.remove('open');
+            }
+        });
+
+        // Sound Functions
+        function playSound(soundId) {
+            let sound = document.getElementById(soundId);
+            sound.currentTime = 0;
+            sound.play();
+        }
+
+        // Payment Calculation
+        function calculatePayment() {
+            playSound('clickSound');
+
+            const name = document.getElementById('name').value || "";
+            const kg = parseFloat(document.getElementById('kg').value) || 0;
+            const fat = parseFloat(document.getElementById('fat').value) || 0;
+            const snf = parseFloat(document.getElementById('snf').value) || 0;
+
+            const rate = (fat * window.dairy_original_fat) + (snf * window.dairy_original_snf);
+            const total = kg * rate;
+            document.getElementById('modalName').textContent = name;
+            document.getElementById('modalKG').textContent = kg.toFixed(1);
+            document.getElementById('modalFAT').textContent = fat.toFixed(1);
+            document.getElementById('modalSNF').textContent = snf.toFixed(1);
+            document.getElementById('modalRate').textContent = `₹ ${rate.toFixed(2)}`;
+            document.getElementById('modalTotal').textContent = `₹ ${total.toFixed(0)}`;
+
+            showModal();
+        }
+
+        // Modal Functions
+        function showModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('hide');
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            playSound('closeSound');
+            const modal = document.getElementById('modal');
+            modal.classList.remove('show');
+            modal.classList.add('hide');
+        }
+
+        window.onclick = function (event) {
+            const modal = document.getElementById('modal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const headerLogin = document.getElementById('headerLogin');
-    
+
             // Redirect to login.html when the "Dairy App" header is clicked
             headerLogin.addEventListener('click', () => {
                 window.location.href = 'login.html';
             });
         });
-    </script>    
-    <script>
-        // Function to toggle between table_box and bill_table_box
-        function toggleTableVisibility() {
-            const tableBox = document.querySelector('.alltablebox');
-            const billTableBox = document.querySelector('.bill_table_box');
-            const toggleSwitch = document.getElementById('toggleSwitch');
-
-            // Toggle visibility using CSS classes
-            if (tableBox.style.display !== 'none') {
-                tableBox.style.display = 'none';
-                billTableBox.style.display = 'block';
-                toggleSwitch.checked = true; // Update toggle switch state
-            } else {
-                tableBox.style.display = 'block';
-                billTableBox.style.display = 'none';
-                toggleSwitch.checked = false; // Update toggle switch state
-            }
-        }
-
-        // Event listener for Autobill button click
-        document.getElementById('autobill').addEventListener('click', () => {
-            toggleTableVisibility();
-        });
-
-        // Event listener for toggle switch change
-        document.getElementById('toggleSwitch').addEventListener('change', () => {
-            toggleTableVisibility();
-        });
-
-        // Get the button element
-        var billButton = document.getElementById('billvalidate');
-        // Add a click event listener to the button
-        billButton.addEventListener('click', function () {
-            // Redirect to bill.html
-            window.location.href = 'bill.html';
-        });
     </script>
-    <script src="js/main-screen.js?v=3.0.0"></script>
+
     <script type="module" src="js/database.js?v=3.0.5"></script>
-    <script src="js/email.js" id="emailscript?v=3.0.0"></script>
-    <script src="js/include_name_email.js?v=3.0.1"></script>
+    <script src="js/include_name.js?v=3.0.0"></script>
     <script src="js/rate.js?v=3.0.0"></script>
+
+
 </body>
 
 </html>

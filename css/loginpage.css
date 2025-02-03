@@ -47,10 +47,13 @@ input[type="number"] {
     border-radius: 4px;
     box-sizing: border-box;
 }
+
 #password:focus {
     border: 2.3px solid rgb(255, 38, 0);
-    outline: none; /* Removes the default outline */
+    outline: none;
+    /* Removes the default outline */
 }
+
 .btn {
     display: inline-block;
     padding: 10px 20px;
@@ -71,7 +74,7 @@ input[type="number"] {
     display: inline-block;
     margin-top: 10px;
     padding: 10px 10px;
-    background-color: #e4b1cd ;
+    background-color: #e4b1cd;
     color: rgb(0, 0, 0);
     border: black;
     border-radius: 4px;
@@ -86,12 +89,14 @@ input[type="number"] {
 .guest-btn:hover {
     background-color: #ec33e3;
 }
+
 .error {
     color: rgb(157, 0, 0);
     margin: 0.5rem 0;
     text-align: center;
     font-size: 0.9rem;
 }
+
 .keybox {
     display: grid;
     width: 70%;
@@ -102,6 +107,7 @@ input[type="number"] {
     gap: 10px;
     margin-top: 20px;
 }
+
 .key {
     padding: 15px;
     background-color: #0a68cd;
@@ -113,20 +119,25 @@ input[type="number"] {
     box-shadow: 0 1px 5px 0;
     transition: 0.01s ease-in-out;
 }
+
 .key:hover {
     background-color: #067411;
 }
+
 .key:active {
     background-color: #49b10d;
     transform: scale(0.65);
 }
+
 .key i {
     font-size: 20px;
 }
+
 #clear {
     background-color: #880b18;
     border-radius: 10px;
 }
+
 #enter {
     background-color: #107828;
     border-radius: 10px;

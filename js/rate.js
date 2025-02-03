@@ -1,9 +1,13 @@
-window.convertion_ratio_29taka=(29/40.5);
+window.convertion_ratio_29taka = (29 / 40.5);
 
-const fatvaluedairy=3.81
-const snfvaluedairy=2.689
-const ratevaluedairy=(4.5 * fatvaluedairy) + (8.5* snfvaluedairy);
-document.getElementById("fixcurrentrate").innerHTML =  "Rate " +ratevaluedairy.toFixed(2);
+const fatvaluedairy = 3.81
+const snfvaluedairy = 2.689
+window.dairy_original_fat = 3.81;
+window.dairy_original_snf = 2.689;
+
+
+const ratevaluedairy = (4.5 * fatvaluedairy) + (8.5 * snfvaluedairy);
+document.getElementById("fixcurrentrate").innerHTML = "Rate " + ratevaluedairy.toFixed(2);
 
 
 function rateandtotal() {
@@ -12,7 +16,7 @@ function rateandtotal() {
     var kg = document.getElementById("kg").value;
 
     var Rate = (fat * fatvaluedairy) + (snf * snfvaluedairy);
-    var Total = Rate * kg;
+    var Total = (kg * Rate);
     var fixtedotal = Math.round(Total);
     var fixedrate = Rate.toFixed(2);
 
@@ -20,18 +24,3 @@ function rateandtotal() {
     document.getElementById('total').value = fixtedotal;
 }
 
-//after button click multiply numbers
-function multiplyNumbers() {
-    // Get the input values
-    var fat = document.getElementById("fat").value;
-    var snf = document.getElementById("snf").value;
-    var kg = document.getElementById("kg").value;
-
-    var Rate = (fat * fatvaluedairy) + (snf * snfvaluedairy);
-    var Total = Rate * kg;
-    var fixtedotal = Math.round(Total);
-    var fixedrate = Rate.toFixed(2);
-
-    document.getElementById("ratedisplay").innerHTML = "Rate: " + fixedrate;
-    document.getElementById("totaldisplay").innerHTML = "Total Rs: " + fixtedotal;
-}
