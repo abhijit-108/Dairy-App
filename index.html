@@ -48,7 +48,7 @@
     <div class="container">
         <form action="" name="lol" method="post" id="registrationform">
             <div class="select-container" id="select-container">
-                <select class="styled-select" id="name" name="NAME" required>
+                <select class="styled-select" id="name" name="NAME" required oninvalid="setCustomMessage(this)">
                     <option value=""></option>
                 </select>
             </div>
@@ -175,8 +175,15 @@
             const fat = parseFloat(document.getElementById('fat').value) || 0;
             const snf = parseFloat(document.getElementById('snf').value) || 0;
 
+            // Check if fat and snf are within the valid range
+            if (fat < 1.1 || fat > 12.1 || snf < 3.1 || snf > 12.1) {
+                alert('Fat or SNF wrong😒');
+                return; // Stop further execution if the values are invalid
+            }
+
             const rate = (fat * window.dairy_original_fat) + (snf * window.dairy_original_snf);
             const total = kg * rate;
+
             document.getElementById('modalName').textContent = name;
             document.getElementById('modalKG').textContent = kg.toFixed(1);
             document.getElementById('modalFAT').textContent = fat.toFixed(1);
@@ -186,6 +193,7 @@
 
             showModal();
         }
+
 
         // Modal Functions
         function showModal() {
@@ -218,7 +226,17 @@
             });
         });
     </script>
+    <script>
+        function setCustomMessage(select) {
+            if (!select.value) {
+                select.setCustomValidity("No Name : You have not selected any name ");
+            }
+        }
 
+        function resetMessage(select) {
+            select.setCustomValidity(""); // Reset the message when user selects an item
+        }
+    </script>
     <script type="module" src="js/database.js?v=2.0.3"></script>
     <script src="js/include_name.js?v=2.0.1"></script>
     <script src="js/rate.js?v=2.0.1"></script>
