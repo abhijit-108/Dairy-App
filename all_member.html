@@ -1,355 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dairy Records</title>
-    <style>
-        /* General Styles */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #a4a4a4;
-            color: #333;
-            transition: background 0.3s, color 0.3s;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dairy Records</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #a4a4a4;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
 
-        /* Filter Container */
-        .filter-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding: 20px;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 1rem;
-            background: #ffffff;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.4);
-            border-radius: 8px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+    /* Filter Container */
+    .filter-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 20px;
+      width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 1rem;
+      background: #ffffff;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.4);
+      border-radius: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-        .filter-container select {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-            background: #fff;
-            color: #333;
-        }
+    .filter-container select {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      background: #fff;
+      color: #333;
+    }
 
-        /* Table Container for Small Screens */
-        .table-container {
-            overflow-x: auto;
-            overflow-y: auto;
-            max-height: 500px;
-            /* Fixed height for the table */
-            padding: 10px;
-            width: 90%;
-            /* Limit width to 90% of the viewport width */
-            margin: 0 auto;
-            margin-top: 1.2rem;
-        }
+    /* Table Container for Small Screens */
+    .table-container {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 500px;
+      /* Fixed height for the table */
+      padding: 10px;
+      width: 90%;
+      /* Limit width to 90% of the viewport width */
+      margin: 0 auto;
+      margin-top: 1.2rem;
+    }
 
-        /* Table Styling */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
-        }
+    /* Table Styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
+    }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: center;
-            font-size: 14px;
-            white-space: nowrap;
-        }
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+      font-size: 14px;
+      white-space: nowrap;
+    }
 
-        th {
-            background: linear-gradient(135deg, #28a745, #218838);
-            color: white;
-            font-weight: bold;
-        }
+    th {
+      background: linear-gradient(135deg, #28a745, #218838);
+      color: white;
+      font-weight: bold;
+    }
 
-        tfoot td {
-            font-weight: bold;
-            background: #e9ecef;
-        }
+    tfoot td {
+      font-weight: bold;
+      background: #e9ecef;
+    }
 
-        /* Mobile-Friendly Adjustments */
-        @media screen and (max-width: 600px) {
+    /* Mobile-Friendly Adjustments */
+    @media screen and (max-width: 600px) {
 
-            th,
-            td {
-                padding: 10px;
-                font-size: 12px;
-            }
+      th,
+      td {
+        padding: 10px;
+        font-size: 12px;
+      }
 
-            .filter-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
+      .filter-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
 
-            .filter-container select {
-                font-size: 12px;
-            }
-        }
-        .disabled{
-            display: none;
-        }
-    </style>
+      .filter-container select {
+        font-size: 12px;
+      }
+    }
+
+    .disabled {
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="filter-container" id="hidefilter">
-        <select id="monthFilter"></select>
-        <select id="yearFilter"></select>
-        <select id="dateRangeFilter">
-            <option value="all">All Dates</option>
-            <option value="1-7">1-7</option>
-            <option value="8-15">8-15</option>
-            <option value="16-23">16-23</option>
-            <option value="24-end">24-end</option>
-        </select>
-        <select id="nameFilter">
-            <option value="all">All Names</option>
-        </select>
-    </div>
+  <div class="filter-container" id="hidefilter">
+    <select id="monthFilter"></select>
+    <select id="yearFilter"></select>
+    <select id="dateRangeFilter">
+      <option value="all">All Dates</option>
+      <option value="1-7">1-7</option>
+      <option value="8-15">8-15</option>
+      <option value="16-23">16-23</option>
+      <option value="24-end">24-end</option>
+    </select>
+    <select id="nameFilter">
+      <option value="all">All Names</option>
+    </select>
+  </div>
 
-    <div class="table-container">
-        <table id="dataTable">
-            <thead>
-                <tr>
-                    <th>Day</th>
-                    <th>Session</th>
-                    <th>Fat</th>
-                    <th>SNF</th>
-                    <th>Rate</th>
-                    <th>Kg</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="5">Total</td>
-                    <td id="totalKg">0</td>
-                    <td id="totalAmount">0</td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+  <div class="table-container">
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Session</th>
+          <th>Fat</th>
+          <th>SNF</th>
+          <th>Rate</th>
+          <th>Kg</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="5">Total</td>
+          <td id="totalKg">0</td>
+          <td id="totalAmount">0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-      
-        // Your Firebase config
-        const firebaseConfig = {
-          apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
-          authDomain: "dairy-app-abhijit.firebaseapp.com",
-          databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
-          projectId: "dairy-app-abhijit",
-          storageBucket: "dairy-app-abhijit.appspot.com",
-          messagingSenderId: "196152880143",
-          appId: "1:196152880143:web:bec02170e30932a7d5877a"
-        };
-      
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth();
-        const database = getDatabase(app);
-        const recordsRef = ref(database, 'records');
-      
-        // -------------------------------------------------------------------------
-        // Check query parameters for overrides
-        const urlParams = new URLSearchParams(window.location.search);
-        const queryName  = urlParams.get('name');   // e.g. ?name=test
-        const queryMonth = urlParams.get('month');  // e.g. ?month=february
-        const queryYear  = urlParams.get('year');   // e.g. ?year=2025
-      
-        // We'll use a flag to know if any override is active.
-        const override = (queryName || queryMonth);
-      
-        // Set a base date for filters.
-        let filterDate = new Date();
-      
-        if (queryMonth) {
-          // If a month query parameter exists, override the month/year filter.
-          // Map month names to their zero-indexed month numbers.
-          const monthMap = {
-            january: 0,
-            february: 1,
-            march: 2,
-            april: 3,
-            may: 4,
-            june: 5,
-            july: 6,
-            august: 7,
-            september: 8,
-            october: 9,
-            november: 10,
-            december: 11
-          };
-          let monthLower = queryMonth.toLowerCase();
-          if (monthMap.hasOwnProperty(monthLower)) {
-            filterDate.setMonth(monthMap[monthLower]);
-          }
-          if (queryYear) {
-            filterDate.setFullYear(parseInt(queryYear));
-          } else {
-            // Use the current year if none provided.
-            filterDate.setFullYear(new Date().getFullYear());
-          }
-        } else if (queryName) {
-          // If only a name is provided, do not subtract 5 days.
-          // (filterDate remains as today's date)
-        } else {
-          // Default behavior: use today minus 5 days.
-          filterDate.setDate(filterDate.getDate() - 5);
-        }
-        // -------------------------------------------------------------------------
-      
-        let allData = {};
-      
-        onValue(recordsRef, (snapshot) => {
-          allData = snapshot.val();
-          populateFilters(allData);
-          updateTable();
-        });
-      
-        function populateFilters(data) {
-          const months = new Set();
-          const years = new Set();
-          const names = new Set();
-      
-          Object.keys(data).forEach(dateKey => {
-            const [day, month, year] = dateKey.split('-').map(Number);
-            const dateObj = new Date(year, month - 1, day);
-      
-            months.add(`${month}-${year}`);
-            years.add(year);
-      
-            Object.values(data[dateKey]).forEach(user => {
-              Object.values(user).forEach(entry => {
-                names.add(entry.name);
-              });
-            });
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
+      authDomain: "dairy-app-abhijit.firebaseapp.com",
+      databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
+      projectId: "dairy-app-abhijit",
+      storageBucket: "dairy-app-abhijit.appspot.com",
+      messagingSenderId: "196152880143",
+      appId: "1:196152880143:web:bec02170e30932a7d5877a"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const database = getDatabase(app);
+    const recordsRef = ref(database, 'records');
+
+    // -------------------------------------------------------------------------
+    // Check query parameters for overrides
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryName = urlParams.get('name');   // e.g. ?name=test
+    const queryMonth = urlParams.get('month');  // e.g. ?month=february
+    const queryYear = urlParams.get('year');   // e.g. ?year=2025
+
+    // We'll use a flag to know if any override is active.
+    const override = (queryName || queryMonth);
+
+    // Set a base date for filters.
+    let filterDate = new Date();
+
+    if (queryMonth) {
+      // If a month query parameter exists, override the month/year filter.
+      // Map month names to their zero-indexed month numbers.
+      const monthMap = {
+        january: 0,
+        february: 1,
+        march: 2,
+        april: 3,
+        may: 4,
+        june: 5,
+        july: 6,
+        august: 7,
+        september: 8,
+        october: 9,
+        november: 10,
+        december: 11
+      };
+      let monthLower = queryMonth.toLowerCase();
+      if (monthMap.hasOwnProperty(monthLower)) {
+        filterDate.setMonth(monthMap[monthLower]);
+      }
+      if (queryYear) {
+        filterDate.setFullYear(parseInt(queryYear));
+      } else {
+        // Use the current year if none provided.
+        filterDate.setFullYear(new Date().getFullYear());
+      }
+    } else if (queryName) {
+      // If only a name is provided, do not subtract 5 days.
+      // (filterDate remains as today's date)
+    } else {
+      // Default behavior: use today minus 5 days.
+      filterDate.setDate(filterDate.getDate() - 5);
+    }
+    // -------------------------------------------------------------------------
+
+    let allData = {};
+
+    onValue(recordsRef, (snapshot) => {
+      allData = snapshot.val();
+      populateFilters(allData);
+      updateTable();
+    });
+
+    function populateFilters(data) {
+      const months = new Set();
+      const years = new Set();
+      const names = new Set();
+
+      Object.keys(data).forEach(dateKey => {
+        const [day, month, year] = dateKey.split('-').map(Number);
+        const dateObj = new Date(year, month - 1, day);
+
+        months.add(`${month}-${year}`);
+        years.add(year);
+
+        Object.values(data[dateKey]).forEach(user => {
+          Object.values(user).forEach(entry => {
+            names.add(entry.name);
           });
-      
-          // Create sorted month objects
-          const sortedMonths = Array.from(months)
-            .map(m => {
-              const [month, year] = m.split('-').map(Number);
-              return {
-                month,
-                year,
-                label: `${new Date(year, month - 1).toLocaleString('en-US', { month: 'long' })} ${year}`
-              };
-            })
-            .sort((a, b) => b.year - a.year || b.month - a.month);
-      
-          // Populate Month Filter with an "All Months" option first.
-          const monthFilter = document.getElementById('monthFilter');
-          monthFilter.innerHTML = `<option value="all">All Months</option>` +
-            sortedMonths.map(m => `<option value="${m.month}">${m.label}</option>`).join('');
-          // If no queryMonth override, set the default month to filterDate; otherwise, leave as "all"
-          if (!queryMonth) {
-            monthFilter.value = filterDate.getMonth() + 1;
-          } else {
-            // When overriding with queryMonth, we preset the month filter to that month.
-            monthFilter.value = filterDate.getMonth() + 1;
-          }
-      
-          // Populate Year Filter with an "All Years" option first.
-          const yearFilter = document.getElementById('yearFilter');
-          yearFilter.innerHTML = `<option value="all">All Years</option>` +
-            Array.from(years)
-            .sort((a, b) => b - a)
-            .map(year => `<option value="${year}">${year}</option>`)
-            .join('');
-          // Set default year if a queryMonth or queryName override is active, otherwise use filterDate's year.
-          if (queryMonth || queryName) {
-            yearFilter.value = filterDate.getFullYear();
-          } else {
-            yearFilter.value = filterDate.getFullYear();
-          }
-      
-          // Populate Name Filter with "All Names" as the default option.
-          const nameFilter = document.getElementById('nameFilter');
-          nameFilter.innerHTML = '<option value="all">All Names</option>' +
-            Array.from(names)
-              .sort()
-              .map(name => `<option value="${name}">${name}</option>`)
-              .join('');
-          // If a query name is provided, select it; otherwise default to "all"
-          nameFilter.value = queryName ? queryName : "all";
-      
-          // Populate Date Range Filter.
-          // If any override is active (queryName or queryMonth), use "all" dates.
-          // Otherwise, use the day-range based on the filterDate.
-          const dateRangeFilter = document.getElementById('dateRangeFilter');
-          if (override) {
-            dateRangeFilter.value = "all";
-          } else {
-            const day = filterDate.getDate();
-            if (day >= 1 && day <= 7) dateRangeFilter.value = "1-7";
-            else if (day >= 8 && day <= 15) dateRangeFilter.value = "8-15";
-            else if (day >= 16 && day <= 23) dateRangeFilter.value = "16-23";
-            else dateRangeFilter.value = "24-end";
-          }
+        });
+      });
+
+      // Create sorted month objects
+      const sortedMonths = Array.from(months)
+        .map(m => {
+          const [month, year] = m.split('-').map(Number);
+          return {
+            month,
+            year,
+            label: `${new Date(year, month - 1).toLocaleString('en-US', { month: 'long' })} ${year}`
+          };
+        })
+        .sort((a, b) => b.year - a.year || b.month - a.month);
+
+      // Populate Month Filter with an "All Months" option first.
+      const monthFilter = document.getElementById('monthFilter');
+      monthFilter.innerHTML = `<option value="all">All Months</option>` +
+        sortedMonths.map(m => `<option value="${m.month}">${m.label}</option>`).join('');
+      // If no queryMonth override, set the default month to filterDate; otherwise, leave as "all"
+      if (!queryMonth) {
+        monthFilter.value = filterDate.getMonth() + 1;
+      } else {
+        // When overriding with queryMonth, we preset the month filter to that month.
+        monthFilter.value = filterDate.getMonth() + 1;
+      }
+
+      // Populate Year Filter with an "All Years" option first.
+      const yearFilter = document.getElementById('yearFilter');
+      yearFilter.innerHTML = `<option value="all">All Years</option>` +
+        Array.from(years)
+          .sort((a, b) => b - a)
+          .map(year => `<option value="${year}">${year}</option>`)
+          .join('');
+      // Set default year if a queryMonth or queryName override is active, otherwise use filterDate's year.
+      if (queryMonth || queryName) {
+        yearFilter.value = filterDate.getFullYear();
+      } else {
+        yearFilter.value = filterDate.getFullYear();
+      }
+
+      // Populate Name Filter with "All Names" as the default option.
+      const nameFilter = document.getElementById('nameFilter');
+      nameFilter.innerHTML = '<option value="all">All Names</option>' +
+        Array.from(names)
+          .sort()
+          .map(name => `<option value="${name}">${name}</option>`)
+          .join('');
+      // If a query name is provided, select it; otherwise default to "all"
+      nameFilter.value = queryName ? queryName : "all";
+
+      // Populate Date Range Filter.
+      // If any override is active (queryName or queryMonth), use "all" dates.
+      // Otherwise, use the day-range based on the filterDate.
+      const dateRangeFilter = document.getElementById('dateRangeFilter');
+      if (override) {
+        dateRangeFilter.value = "all";
+      } else {
+        const day = filterDate.getDate();
+        if (day >= 1 && day <= 7) dateRangeFilter.value = "1-7";
+        else if (day >= 8 && day <= 15) dateRangeFilter.value = "8-15";
+        else if (day >= 16 && day <= 23) dateRangeFilter.value = "16-23";
+        else dateRangeFilter.value = "24-end";
+      }
+    }
+
+    function updateTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      let totalKg = 0;
+      let totalAmount = 0;
+
+      // Read selected filters
+      const selectedMonth = document.getElementById('monthFilter').value;
+      const selectedYear = document.getElementById('yearFilter').value;
+      const selectedDateRange = document.getElementById('dateRangeFilter').value;
+      const selectedName = document.getElementById('nameFilter').value;
+
+      Object.keys(allData).forEach(dateKey => {
+        const [dayStr, monthStr, yearStr] = dateKey.split('-');
+        const day = parseInt(dayStr);
+        const month = parseInt(monthStr);
+        const year = parseInt(yearStr);
+
+        // Apply month filter (if not "all")
+        if (selectedMonth !== 'all' && parseInt(selectedMonth) !== month) return;
+        // Apply year filter (if not "all")
+        if (selectedYear !== 'all' && parseInt(selectedYear) !== year) return;
+
+        // Apply date range filter if not set to "all"
+        if (selectedDateRange !== 'all') {
+          const [start, end] = selectedDateRange.split('-');
+          if (end === 'end' && day < 24) return;
+          if (end !== 'end' && (day < parseInt(start) || day > parseInt(end))) return;
         }
-      
-        function updateTable() {
-          const tbody = document.getElementById('tableBody');
-          tbody.innerHTML = '';
-      
-          let totalKg = 0;
-          let totalAmount = 0;
-      
-          // Read selected filters
-          const selectedMonth = document.getElementById('monthFilter').value;
-          const selectedYear = document.getElementById('yearFilter').value;
-          const selectedDateRange = document.getElementById('dateRangeFilter').value;
-          const selectedName = document.getElementById('nameFilter').value;
-      
-          Object.keys(allData).forEach(dateKey => {
-            const [dayStr, monthStr, yearStr] = dateKey.split('-');
-            const day = parseInt(dayStr);
-            const month = parseInt(monthStr);
-            const year = parseInt(yearStr);
-      
-            // Apply month filter (if not "all")
-            if (selectedMonth !== 'all' && parseInt(selectedMonth) !== month) return;
-            // Apply year filter (if not "all")
-            if (selectedYear !== 'all' && parseInt(selectedYear) !== year) return;
-      
-            // Apply date range filter if not set to "all"
-            if (selectedDateRange !== 'all') {
-              const [start, end] = selectedDateRange.split('-');
-              if (end === 'end' && day < 24) return;
-              if (end !== 'end' && (day < parseInt(start) || day > parseInt(end))) return;
-            }
-      
-            Object.values(allData[dateKey]).forEach(user => {
-              Object.entries(user).forEach(([session, entry]) => {
-                if (selectedName !== 'all' && entry.name !== selectedName) return;
-      
-                totalKg += parseFloat(entry.kg);
-                totalAmount += parseFloat(entry.total);
-      
-                tbody.innerHTML += `
+
+        Object.values(allData[dateKey]).forEach(user => {
+          Object.entries(user).forEach(([session, entry]) => {
+            if (selectedName !== 'all' && entry.name !== selectedName) return;
+
+            totalKg += parseFloat(entry.kg);
+            totalAmount += parseFloat(entry.total);
+
+            tbody.innerHTML += `
                   <tr>
                     <td>${dayStr.padStart(2, '0')}</td>
                     <td>${session}</td>
@@ -360,25 +362,25 @@
                     <td>${entry.total}</td>
                   </tr>
                 `;
-              });
-            });
           });
-      
-          document.getElementById('totalKg').textContent = totalKg.toFixed(1);
-          document.getElementById('totalAmount').textContent = totalAmount.toFixed(0);
-        }
-      
-        // Update table whenever a filter changes.
-        document.querySelectorAll('.filter-container select')
-          .forEach(filter => filter.addEventListener('change', updateTable));
-      
-        onAuthStateChanged(auth, (user) => {
-          // Your authentication handling code (if any)
         });
-      </script>
-      
-      
-      
+      });
+
+      document.getElementById('totalKg').textContent = totalKg.toFixed(1);
+      document.getElementById('totalAmount').textContent = totalAmount.toFixed(0);
+    }
+
+    // Update table whenever a filter changes.
+    document.querySelectorAll('.filter-container select')
+      .forEach(filter => filter.addEventListener('change', updateTable));
+
+    onAuthStateChanged(auth, (user) => {
+      // Your authentication handling code (if any)
+    });
+  </script>
+
+
+
 </body>
 
 </html>

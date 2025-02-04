@@ -261,7 +261,7 @@ onAuthStateChanged(auth, (user) => {
     const fixDatabaseItem = document.getElementById('fixDatabaseItem');
     const headerLogin = document.getElementById('headerLogin');
 
-    
+
     // const billvalidate=document.querySelector('.billvalidate')
     const select_container = document.getElementById('select-container');
 
@@ -275,7 +275,7 @@ onAuthStateChanged(auth, (user) => {
     } else {
         // User is not authenticated, show guest
         userInfoDiv.innerText = 'Logout (Guest)';
-        guestinfo.innerText = 'This is guest mode.You can only See the data cannot modify it. ';
+        guestinfo.innerText = 'This is guest-mode . Data cannot be modified.';
         fixDatabaseItem.classList.add('disabled');
         headerLogin.classList.add('headerloginguest');
         select_container.classList.add('disabled');

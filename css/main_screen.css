@@ -33,6 +33,7 @@ body {
     transition: transform 0.2s;
     margin-right: 1rem;
 }
+
 .heading {
     color: rgb(82, 255, 255);
     display: block;
@@ -43,6 +44,7 @@ body {
     font-weight: bolder;
 
 }
+
 .app-info {
     display: flex;
     gap: 2rem;
@@ -111,10 +113,12 @@ body {
     font-weight: bold;
     border-radius: 8px;
 }
-.select-container{
+
+.select-container {
     width: 80%;
 
 }
+
 .styled-select {
     border: 2px solid #d1d5db;
     margin-bottom: 2rem;
@@ -308,7 +312,6 @@ body {
     margin-top: 40px;
     overflow-y: auto;
     width: 100%;
-
     padding: 10px;
     color: #000000d4;
 }
@@ -391,13 +394,16 @@ td:nth-child(7) {
 }
 
 #guest-info {
-    color: #9d1607;
-    font-weight: bolder;
+    color: #ffffff;
+    font-weight: normal;
+    font-size: small;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 #logoutButton {
-    background: linear-gradient(135deg, #ff4b5c, #ff2e63);
-    color: white;
+    background: linear-gradient(135deg, #e74250, #650b22);
+    color: rgb(255, 255, 255);
     border: none;
     padding: 10px 12px;
     font-size: 16px;
@@ -422,7 +428,7 @@ td:nth-child(7) {
     transform: scale(0.95);
 }
 
-.headerloginguest{
+.headerloginguest {
     background-color: whitesmoke;
-    color: red;
+    color: rgb(162, 3, 3);
 }
