@@ -1,158 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dairy App</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="logo.png" type="image/png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/loginpage.css?v=1.0.2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dairy App</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/loginpage.css?v=1.0.2">
+</head>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+    font-family: Arial, sans-serif;
+    display: block;
+    margin-top: 10%;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+  }
+
+  .login-container {
+    background: #fff;
+    width: 95%;
+    max-width: 400px;
+    padding: 35px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: center;
+  }
+
+
+  .guest-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: max-content;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 0px;
+  }
+
+  .guest-btn:hover {
+    background: #008824;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  .user-label {
+    font-size: 18px;
+    font-weight: bold;
+    background: #f0f0f0;
+    padding: 12px;
+    border-radius: 4px;
+    text-align: center;
+    cursor: not-allowed;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    background: #f9f9f9;
+    cursor: not-allowed;
+  }
+
+  .form-group input:focus {
+    border-color: #74ebd5;
+    outline: none;
+  }
+
+  .error {
+    color: red;
+    margin-top: 0.8rem;
+    font-size: 1.2rem;
+    min-height: 20px;
+  }
+
+  .keyboard {
+    margin-top: 20px;
+  }
+
+  .keyboard .key-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .keyboard button {
+    flex: 1;
+    margin: 0 5px;
+    padding: 15px;
+    font-size: 18562px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bolder;
+    transition: background 0.2s;
+  }
+.loginbutton{
+  color: rgb(60, 140, 20);
+  background: red;
+  font-weight: bold;
+}
+.clearbutton{
+  color: red;
+  background: red;
+  font-weight: bold;
+}
+  .keyboard button:hover {
+    background: #ddd;
+  }
+
+  @media (max-width: 480px) {
+    .login-container {
+      padding: 15px;
+    }
+
+    .keyboard button {
+      padding: 15px;
+      font-size: 16px;
+    }
+  }
+</style>
 </head>
 
 <body>
-    <div class="guest-btn" id="guestlogin">Guest Login
-    </div>
-    <div class="login-container">
-        <h2>Login</h2>
-        <div class="form-group">
-            <label for="email">Select User:</label>
-            <select id="email">
-                <option value="abhijit722141@gmail.com">Abhijit</option>
-                <option value="guest722141@gmail.com">Guest</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="number" id="password" placeholder="Enter your password" readonly autofocus>
-        </div>
-        <button class="btn" id="loginButton">Login</button>
-        <div id="error" class="error"></div>
-
-    </div>
-    <div class="keybox">
-        <button class="key" data-number="1">1</button>
-        <button class="key" data-number="2">2</button>
-        <button class="key" data-number="3">3</button>
-        <button class="key" data-number="4">4</button>
-        <button class="key" data-number="5">5</button>
-        <button class="key" data-number="6">6</button>
-        <button class="key" data-number="7">7</button>
-        <button class="key" data-number="8">8</button>
-        <button class="key" data-number="9">9</button>
-        <button class="key" id="clear"><i class="fas fa-backspace"></i></button>
-        <button class="key" data-number="0">0</button>
-        <button class="key" id="enter"><i class="fas fa-check"></i></button>
+  <div class="login-container">
+    <button class="guest-btn" onclick="guestLogin()">Login as Guest</button>
+    <div class="form-group">
+      <div class="user-label">User: Abhijit</div>
+      <input type="hidden" id="email" value="abhijit722141@gmail.com">
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const passwordInput = document.getElementById('password');
-            const keys = document.querySelectorAll('.key');
-            const clearButton = document.getElementById('clear');
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input type="number" id="password" placeholder="Enter your password" readonly>
+    </div>
 
+    <div class="keyboard">
+      <div class="key-row">
+        <button onclick="appendToPassword('1')">1</button>
+        <button onclick="appendToPassword('2')">2</button>
+        <button onclick="appendToPassword('3')">3</button>
+      </div>
+      <div class="key-row">
+        <button onclick="appendToPassword('4')">4</button>
+        <button onclick="appendToPassword('5')">5</button>
+        <button onclick="appendToPassword('6')">6</button>
+      </div>
+      <div class="key-row">
+        <button onclick="appendToPassword('7')">7</button>
+        <button onclick="appendToPassword('8')">8</button>
+        <button onclick="appendToPassword('9')">9</button>
+      </div>
+      <div class="key-row">
+        <button onclick="clearPassword()" class="clearbutton">Clear</button>
+        <button onclick="appendToPassword('0')">0</button>
+        <button onclick="login()" class="loginbutton">Login</button>
+      </div>
+    </div>
+    <div id="error" class="error"></div>
 
-            keys.forEach(key => {
-                key.addEventListener('click', () => {
-                    const number = key.getAttribute('data-number');
-                    if (number) {
-                        passwordInput.value += number;
-                    }
-                    playSound();
-                });
-            });
+  </div>
 
-            clearButton.addEventListener('click', () => {
-                passwordInput.value = '';
-                playSound();
-            });
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+    var firebaseConfig = {
+      apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
+      authDomain: "dairy-app-abhijit.firebaseapp.com",
+      databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
+      projectId: "dairy-app-abhijit",
+      storageBucket: "dairy-app-abhijit.appspot.com",
+      messagingSenderId: "196152880143",
+      appId: "1:196152880143:web:bec02170e30932a7d5877a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+
+    window.guestLogin = function guestLogin() {
+      window.location.href = 'index.html';
+    };
+
+    window.login = function login() {
+      const email = document.getElementById('email').value;
+      const passwordPart2 = document.getElementById('password').value;
+      const passwordPart1 = "9775815681"; // fixed prefix
+      const password = passwordPart1 + passwordPart2;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          window.location.href = 'index.html';
+        })
+        .catch((error) => {
+          const errorDisplay = document.getElementById('error');
+          if (error.message.includes('invalid')) {
+            errorDisplay.innerText = 'Oops, wrong password?';
+          } else if (error.message.includes('missing')) {
+            errorDisplay.innerText = 'Please enter password';
+          } else if (error.message.includes('attempts')) {
+            errorDisplay.innerText = 'Please try again later';
+          } else {
+            errorDisplay.innerText = error.message;
+          }
         });
-        // Web Audio API setup
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        let audioBuffer;
+    };
 
-        // Load the sound
-        fetch('effect.ogg')
-            .then(response => response.arrayBuffer())
-            .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-            .then(buffer => {
-                audioBuffer = buffer;
-            })
-            .catch(e => console.error('Error with decoding audio data', e));
+    window.appendToPassword = function appendToPassword(char) {
+      document.getElementById('password').value += char;
+    };
 
-        const playSound = () => {
-            if (audioBuffer) {
-                const source = audioContext.createBufferSource();
-                source.buffer = audioBuffer;
-                source.connect(audioContext.destination);
-                source.start(0);
-            }
-        };
-
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-
-        var firebaseConfig = {
-            apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
-            authDomain: "dairy-app-abhijit.firebaseapp.com",
-            databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
-            projectId: "dairy-app-abhijit",
-            storageBucket: "dairy-app-abhijit.appspot.com",
-            messagingSenderId: "196152880143",
-            appId: "1:196152880143:web:bec02170e30932a7d5877a"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth();
-
-        function login() {
-            var email = document.getElementById('email').value;
-            var passwordpart2 = document.getElementById('password').value;
-            var passwordpart1 = "9775815681";
-            var password = passwordpart1 + passwordpart2;
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    window.location.href = 'index.html';
-                })
-                .catch((error) => {
-                    var errorMessage = error.message;
-                    var errorDisplay = document.getElementById('error');
-
-                    if (errorMessage.includes('invalid')) {
-                        errorDisplay.innerText = 'Opps Wrong password ?';
-                    } else if (errorMessage.includes('missing')) {
-                        errorDisplay.innerText = 'Please enter password';
-                    } else if (errorMessage.includes('attempts')) {
-                        errorDisplay.innerText = 'Please Try Again Later';
-                    } else {
-                        errorDisplay.innerText = errorMessage;
-                    }
-                });
-        }
-
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                login();
-            }
-        }
-
-        // Attach event listener to password input field for key press event
-        document.getElementById('password').addEventListener('keypress', handleKeyPress);
-
-        // Attach event listener to login button
-        document.getElementById('loginButton').addEventListener('click', login);
-        document.getElementById('enter').addEventListener('click', login);
-
-        // Event listener for Guest button
-        document.getElementById('guestlogin').addEventListener('click', function () {
-            // Redirect to main.html for guest login
-            window.location.href = 'index.html';
-        });
-    </script>
+    window.clearPassword = function clearPassword() {
+      document.getElementById('password').value = "";
+    };
+  </script>
 </body>
 
 </html>

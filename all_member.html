@@ -153,146 +153,232 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-        import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      
+        // Your Firebase config
         const firebaseConfig = {
-            apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
-            authDomain: "dairy-app-abhijit.firebaseapp.com",
-            databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
-            projectId: "dairy-app-abhijit",
-            storageBucket: "dairy-app-abhijit.appspot.com",
-            messagingSenderId: "196152880143",
-            appId: "1:196152880143:web:bec02170e30932a7d5877a"
+          apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
+          authDomain: "dairy-app-abhijit.firebaseapp.com",
+          databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
+          projectId: "dairy-app-abhijit",
+          storageBucket: "dairy-app-abhijit.appspot.com",
+          messagingSenderId: "196152880143",
+          appId: "1:196152880143:web:bec02170e30932a7d5877a"
         };
-
+      
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth();
-
         const database = getDatabase(app);
         const recordsRef = ref(database, 'records');
-
+      
+        // -------------------------------------------------------------------------
+        // Check query parameters for overrides
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryName  = urlParams.get('name');   // e.g. ?name=test
+        const queryMonth = urlParams.get('month');  // e.g. ?month=february
+        const queryYear  = urlParams.get('year');   // e.g. ?year=2025
+      
+        // We'll use a flag to know if any override is active.
+        const override = (queryName || queryMonth);
+      
+        // Set a base date for filters.
+        let filterDate = new Date();
+      
+        if (queryMonth) {
+          // If a month query parameter exists, override the month/year filter.
+          // Map month names to their zero-indexed month numbers.
+          const monthMap = {
+            january: 0,
+            february: 1,
+            march: 2,
+            april: 3,
+            may: 4,
+            june: 5,
+            july: 6,
+            august: 7,
+            september: 8,
+            october: 9,
+            november: 10,
+            december: 11
+          };
+          let monthLower = queryMonth.toLowerCase();
+          if (monthMap.hasOwnProperty(monthLower)) {
+            filterDate.setMonth(monthMap[monthLower]);
+          }
+          if (queryYear) {
+            filterDate.setFullYear(parseInt(queryYear));
+          } else {
+            // Use the current year if none provided.
+            filterDate.setFullYear(new Date().getFullYear());
+          }
+        } else if (queryName) {
+          // If only a name is provided, do not subtract 5 days.
+          // (filterDate remains as today's date)
+        } else {
+          // Default behavior: use today minus 5 days.
+          filterDate.setDate(filterDate.getDate() - 5);
+        }
+        // -------------------------------------------------------------------------
+      
         let allData = {};
-        let today = new Date();
-        today.setDate(today.getDate() - 5); // Today's date - 5 days
-
+      
         onValue(recordsRef, (snapshot) => {
-            allData = snapshot.val();
-            populateFilters(allData);
-            updateTable();
+          allData = snapshot.val();
+          populateFilters(allData);
+          updateTable();
         });
-
+      
         function populateFilters(data) {
-            const months = new Set();
-            const years = new Set();
-            const names = new Set();
-            let latestDate = null;
-
-            Object.keys(data).forEach(dateKey => {
-                const [day, month, year] = dateKey.split('-').map(Number);
-                const dateObj = new Date(year, month - 1, day);
-
-                months.add(`${month}-${year}`);
-                years.add(year);
-
-                if (!latestDate || dateObj > latestDate) {
-                    latestDate = dateObj;
-                }
-
-                Object.values(data[dateKey]).forEach(user => {
-                    Object.values(user).forEach(entry => {
-                        names.add(entry.name);
-                    });
-                });
+          const months = new Set();
+          const years = new Set();
+          const names = new Set();
+      
+          Object.keys(data).forEach(dateKey => {
+            const [day, month, year] = dateKey.split('-').map(Number);
+            const dateObj = new Date(year, month - 1, day);
+      
+            months.add(`${month}-${year}`);
+            years.add(year);
+      
+            Object.values(data[dateKey]).forEach(user => {
+              Object.values(user).forEach(entry => {
+                names.add(entry.name);
+              });
             });
-
-            const sortedMonths = Array.from(months)
-                .map(m => {
-                    const [month, year] = m.split('-').map(Number);
-                    return { month, year, label: `${new Date(year, month - 1).toLocaleString('en-US', { month: 'long' })} ${year}` };
-                })
-                .sort((a, b) => b.year - a.year || b.month - a.month);
-
-            const monthFilter = document.getElementById('monthFilter');
-            monthFilter.innerHTML = sortedMonths.map(m => `<option value="${m.month}">${m.label}</option>`).join('');
-            monthFilter.value = today.getMonth() + 1;
-
-            const yearFilter = document.getElementById('yearFilter');
-            yearFilter.innerHTML = Array.from(years).sort((a, b) => b - a)
-                .map(year => `<option value="${year}">${year}</option>`).join('');
-            yearFilter.value = today.getFullYear();
-
-            const nameFilter = document.getElementById('nameFilter');
-            nameFilter.innerHTML = '<option value="all">All Names</option>' + Array.from(names).sort()
-                .map(name => `<option value="${name}">${name}</option>`).join('');
-
-            const dateRangeFilter = document.getElementById('dateRangeFilter');
-            const day = today.getDate();
+          });
+      
+          // Create sorted month objects
+          const sortedMonths = Array.from(months)
+            .map(m => {
+              const [month, year] = m.split('-').map(Number);
+              return {
+                month,
+                year,
+                label: `${new Date(year, month - 1).toLocaleString('en-US', { month: 'long' })} ${year}`
+              };
+            })
+            .sort((a, b) => b.year - a.year || b.month - a.month);
+      
+          // Populate Month Filter with an "All Months" option first.
+          const monthFilter = document.getElementById('monthFilter');
+          monthFilter.innerHTML = `<option value="all">All Months</option>` +
+            sortedMonths.map(m => `<option value="${m.month}">${m.label}</option>`).join('');
+          // If no queryMonth override, set the default month to filterDate; otherwise, leave as "all"
+          if (!queryMonth) {
+            monthFilter.value = filterDate.getMonth() + 1;
+          } else {
+            // When overriding with queryMonth, we preset the month filter to that month.
+            monthFilter.value = filterDate.getMonth() + 1;
+          }
+      
+          // Populate Year Filter with an "All Years" option first.
+          const yearFilter = document.getElementById('yearFilter');
+          yearFilter.innerHTML = `<option value="all">All Years</option>` +
+            Array.from(years)
+            .sort((a, b) => b - a)
+            .map(year => `<option value="${year}">${year}</option>`)
+            .join('');
+          // Set default year if a queryMonth or queryName override is active, otherwise use filterDate's year.
+          if (queryMonth || queryName) {
+            yearFilter.value = filterDate.getFullYear();
+          } else {
+            yearFilter.value = filterDate.getFullYear();
+          }
+      
+          // Populate Name Filter with "All Names" as the default option.
+          const nameFilter = document.getElementById('nameFilter');
+          nameFilter.innerHTML = '<option value="all">All Names</option>' +
+            Array.from(names)
+              .sort()
+              .map(name => `<option value="${name}">${name}</option>`)
+              .join('');
+          // If a query name is provided, select it; otherwise default to "all"
+          nameFilter.value = queryName ? queryName : "all";
+      
+          // Populate Date Range Filter.
+          // If any override is active (queryName or queryMonth), use "all" dates.
+          // Otherwise, use the day-range based on the filterDate.
+          const dateRangeFilter = document.getElementById('dateRangeFilter');
+          if (override) {
+            dateRangeFilter.value = "all";
+          } else {
+            const day = filterDate.getDate();
             if (day >= 1 && day <= 7) dateRangeFilter.value = "1-7";
             else if (day >= 8 && day <= 15) dateRangeFilter.value = "8-15";
             else if (day >= 16 && day <= 23) dateRangeFilter.value = "16-23";
             else dateRangeFilter.value = "24-end";
+          }
         }
-
+      
         function updateTable() {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-
-            let totalKg = 0;
-            let totalAmount = 0;
-
-            const selectedMonth = document.getElementById('monthFilter').value;
-            const selectedYear = document.getElementById('yearFilter').value;
-            const selectedDateRange = document.getElementById('dateRangeFilter').value;
-            const selectedName = document.getElementById('nameFilter').value;
-
-            Object.keys(allData).forEach(dateKey => {
-                const [dayStr, monthStr, yearStr] = dateKey.split('-');
-                const day = parseInt(dayStr);
-                const month = parseInt(monthStr);
-                const year = parseInt(yearStr);
-
-                if (selectedMonth !== 'all' && parseInt(selectedMonth) !== month) return;
-                if (selectedYear !== 'all' && parseInt(selectedYear) !== year) return;
-
-                if (selectedDateRange !== 'all') {
-                    const [start, end] = selectedDateRange.split('-');
-                    if (end === 'end' && day < 24) return;
-                    if (day < parseInt(start) || day > parseInt(end)) return;
-                }
-
-                Object.values(allData[dateKey]).forEach(user => {
-                    Object.entries(user).forEach(([session, entry]) => {
-                        if (selectedName !== 'all' && entry.name !== selectedName) return;
-
-                        totalKg += parseFloat(entry.kg);
-                        totalAmount += parseFloat(entry.total);
-
-                        tbody.innerHTML += `
-                            <tr>
-                                <td>${dayStr.padStart(2, '0')}</td>
-                                <td>${session}</td>
-                                <td>${entry.fat}</td>
-                                <td>${entry.snf}</td>
-                                <td>${entry.rate}</td>
-                                <td>${entry.kg}</td>
-                                <td>${entry.total}</td>
-                            </tr>
-                        `;
-                    });
-                });
+          const tbody = document.getElementById('tableBody');
+          tbody.innerHTML = '';
+      
+          let totalKg = 0;
+          let totalAmount = 0;
+      
+          // Read selected filters
+          const selectedMonth = document.getElementById('monthFilter').value;
+          const selectedYear = document.getElementById('yearFilter').value;
+          const selectedDateRange = document.getElementById('dateRangeFilter').value;
+          const selectedName = document.getElementById('nameFilter').value;
+      
+          Object.keys(allData).forEach(dateKey => {
+            const [dayStr, monthStr, yearStr] = dateKey.split('-');
+            const day = parseInt(dayStr);
+            const month = parseInt(monthStr);
+            const year = parseInt(yearStr);
+      
+            // Apply month filter (if not "all")
+            if (selectedMonth !== 'all' && parseInt(selectedMonth) !== month) return;
+            // Apply year filter (if not "all")
+            if (selectedYear !== 'all' && parseInt(selectedYear) !== year) return;
+      
+            // Apply date range filter if not set to "all"
+            if (selectedDateRange !== 'all') {
+              const [start, end] = selectedDateRange.split('-');
+              if (end === 'end' && day < 24) return;
+              if (end !== 'end' && (day < parseInt(start) || day > parseInt(end))) return;
+            }
+      
+            Object.values(allData[dateKey]).forEach(user => {
+              Object.entries(user).forEach(([session, entry]) => {
+                if (selectedName !== 'all' && entry.name !== selectedName) return;
+      
+                totalKg += parseFloat(entry.kg);
+                totalAmount += parseFloat(entry.total);
+      
+                tbody.innerHTML += `
+                  <tr>
+                    <td>${dayStr.padStart(2, '0')}</td>
+                    <td>${session}</td>
+                    <td>${entry.fat}</td>
+                    <td>${entry.snf}</td>
+                    <td>${entry.rate}</td>
+                    <td>${entry.kg}</td>
+                    <td>${entry.total}</td>
+                  </tr>
+                `;
+              });
             });
-
-            document.getElementById('totalKg').textContent = totalKg.toFixed(1);
-            document.getElementById('totalAmount').textContent = totalAmount.toFixed(0);
+          });
+      
+          document.getElementById('totalKg').textContent = totalKg.toFixed(1);
+          document.getElementById('totalAmount').textContent = totalAmount.toFixed(0);
         }
-
-        document.querySelectorAll('.filter-container select').forEach(filter => filter.addEventListener('change', updateTable));
-        
-
+      
+        // Update table whenever a filter changes.
+        document.querySelectorAll('.filter-container select')
+          .forEach(filter => filter.addEventListener('change', updateTable));
+      
         onAuthStateChanged(auth, (user) => {
-             
+          // Your authentication handling code (if any)
         });
-    </script>
+      </script>
+      
+      
+      
 </body>
 
 </html>

@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wi-Fi Usage Table with Filters</title>
+    <title>Wi-Fi Usage</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 </head>
 <style>
-    /* Global Styles */
-    body {
+     /* Global Styles */
+     body {
         font-family: 'Arial', sans-serif;
         background-color: #f4f4f4;
         margin: 0;
@@ -16,18 +17,15 @@
         color: #333;
         transition: background-color 0.3s, color 0.3s;
     }
-
     h2 {
         text-align: center;
         margin-bottom: 20px;
         font-size: 26px;
         color: inherit;
-        background: linear-gradient(90deg, #007BFF, #00BFFF);
+        background: linear-gradient(90deg, #a21b09, #2b00ff);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        color: #007BFF;
-        /* Fallback color */
     }
 
     #fix {
@@ -41,7 +39,11 @@
     label {
         font-weight: bold;
         margin-right: 10px;
-        color: #007BFF;
+        color: inherit;
+        background: linear-gradient(90deg, #a21b09, #2b00ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     select {
@@ -98,11 +100,13 @@
     }
 
     th {
-        background-color: #007BFF;
-        color: white;
-        font-weight: bold;
-        font-size: 16px;
-        background: linear-gradient(90deg, #007BFF, #00BFFF);
+        font-weight: normal;
+        font-size: 14px;
+        color: inherit;
+        background: linear-gradient(90deg, #a21b09, #2b00ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     tbody tr:nth-child(even) {
@@ -127,11 +131,13 @@
     }
 
     tfoot {
-        background-color: #007BFF;
-        color: white;
+        color: inherit;
+        background: linear-gradient(90deg, #a21b09, #2b00ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
         font-weight: bold;
         font-size: 16px;
-        background: linear-gradient(90deg, #007BFF, #00BFFF);
     }
 
     #total-row td {
@@ -254,8 +260,8 @@
     /* Dark Mode Styles */
     @media (prefers-color-scheme: dark) {
         body {
-            background-color: #333;
-            color: #ddd;
+            background-color: #121212;
+            color: #e0e0e0;
         }
 
         h2 {
@@ -275,24 +281,29 @@
         }
 
         table {
-            background-color: #444;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+            background-color: #1e1e1e;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
         }
 
         th {
-            background-color: #0066cc;
-            color: #fff;
-            background: linear-gradient(90deg, #0066cc, #00BFFF);
+            background: linear-gradient(90deg, #6daffe, #89cfff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         tbody tr:nth-child(even) {
-            background-color: #555;
+            background-color: #232323;
         }
 
         tfoot {
-            background-color: #0066cc;
-            color: #fff;
-            background: linear-gradient(90deg, #0066cc, #00BFFF);
+            color: inherit;
+            background: linear-gradient(90deg, #e9d5d3, #2b00ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color:  #839eff;
+            font-weight: bold;
+            font-size: 16px;
         }
 
         #total-row td {
@@ -306,12 +317,9 @@
             font-weight: bold;
         }
 
-        /* Hover effect in Dark Mode */
         tbody tr:hover {
-            background-color: #666;
-            /* Darker hover effect */
-            color: #fff;
-            /* Ensure the text remains visible */
+            background-color: #333;
+            color: #6daffe;
             animation: pulseDark 0.5s infinite alternate;
         }
 
@@ -439,30 +447,30 @@
 
 
 <body>
-
-    <h2>Wi-Fi Usage Data</h2>
-
-
-
+    <h2>Delsgade Wifi-Data Usage</h2>
     <!-- Filter Menus -->
     <div id="fix">
         <label for="month-select">Month:</label>
         <select id="month-select">
             <option value="">All Months</option>
         </select>
-
+    </div>
+    <div id="fix">
         <label for="date-select">Date:</label>
         <select id="date-select">
             <option value="">All Dates</option>
         </select>
-
+    </div>
+    <div id="fix">
         <select id="device-select">
             <option value="">All Devices</option>
         </select>
     </div>
 
+
+
     <!-- Data Table -->
-    <table border="1">
+    <table border="1" id="data-table-container">
         <thead>
             <tr>
                 <th>Date</th>
@@ -491,38 +499,98 @@
         </p>
 
         <p>
-            <span class="loading-bubble"></span> Delsgade off from 10:00 pm to 01:00 am
+            <span class="loading-bubble"></span> Delsgade off from 10:00 pm to 05:00 am
         </p>
 
         <p>
-            <span class="loading-bubble"></span> Speed 300kbps After 2 GB
+            <span class="loading-bubble"></span> Speed 300kbps After 2 GB(No Limit Now)
         </p>
         <p>
-            <span class="loading-bubble"></span> Block After 3 GB
+            <span class="loading-bubble"></span> Block After 3 GB(No Limit Now)
         </p>
         <p>
-            <span class="loading-bubble"></span>10:00 PM - 12:30 AM (RE200 Game DND)
-        </p>
-        <p>
-            <span class="loading-bubble"></span>10:00 PM - 12:30 AM (speed 250 kbps To All)
+            <span class="loading-bubble"></span>10:00 PM - 12:30 AM (Game-Mode , speed 12 Mbps)
         </p>
 
         <div>
             <button id="backtomain" class="filter">Go Back</button>
             <button id="refreshButton" class="filter">Refresh Data</button>
+
         </div>
+
+
+    </div>
+    <!-- Download Button -->
+    <div style="margin-top: 20px; margin-left: 50px;">
+        <button id="downloadPdfButton">Download as PDF</button>
     </div>
 
     <script>
-        // Get the button element
-        var billButton = document.getElementById('backtomain');
-
-        // Add a click event listener to the button
-        billButton.addEventListener('click', function () {
-            // Redirect to bill.html
+        document.getElementById('backtomain').addEventListener('click', function () {
             window.location.href = 'index.html';
         });
     </script>
+
+
+    <script>
+        document.getElementById('downloadPdfButton').addEventListener('click', function () {
+            // Use jsPDF to generate the PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Get selected filter values
+            const selectedMonth = document.getElementById('month-select').value || "All Months";
+            const selectedDate = document.getElementById('date-select').value || "All Dates";
+            const selectedDevice = document.getElementById('device-select').value || "All Devices";
+
+            // Simulate shadow and strap with layering
+            const strapX = 10; // X position for the strap
+            const strapY = 20; // Y position for the strap
+            const strapWidth = 190; // Width of the strap
+            const strapHeight = 15; // Height of the strap
+
+            // Shadow effect (darker rectangle offset slightly)
+            doc.setFillColor(200, 200, 200); // Light gray shadow
+            doc.rect(strapX + 2, strapY + 2, strapWidth, strapHeight, 'F'); // Offset for shadow
+
+            // Main strap background
+            doc.setFillColor(240, 248, 255); // Very light blue (AliceBlue)
+            doc.rect(strapX, strapY, strapWidth, strapHeight, 'F');
+
+            // Border for the strap
+            doc.setDrawColor(169, 169, 169); // Gray border color
+            doc.rect(strapX, strapY, strapWidth, strapHeight, 'S'); // Draw border
+
+            // Add filters text in a single row over the strap
+            doc.setTextColor(0, 0, 0); // Black text color
+            doc.setFontSize(12);
+            const filtersText = `Month: ${selectedMonth}  |  Date: ${selectedDate}  |  Device: ${selectedDevice}`;
+            doc.text(filtersText, strapX + 5, strapY + 10); // Add text inside the strap (adjust Y for vertical centering)
+
+            // Add title
+            doc.setFontSize(16);
+            doc.text("Wi-Fi Data Usage", 10, 10);
+
+            // Get the table element
+            const table = document.getElementById('data-table-container');
+
+            // Format the table for PDF
+            doc.autoTable({
+                html: table,        // Automatically parse the table
+                startY: strapY + strapHeight + 10, // Start the table below the strap
+                headStyles: { fillColor: [22, 160, 133] }, // Style the header row
+                margin: { left: 10, right: 10 },          // Margins for the table
+                styles: { fontSize: 10 }                  // Font size for the table data
+            });
+
+            // Save the PDF
+            const fileName = `${selectedDevice}_${selectedMonth}.pdf`;
+            doc.save(fileName);
+        });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
     <script>
         function getPreviousTenMinuteMark() {
             const now = new Date();
@@ -541,8 +609,6 @@
             location.reload();
         };
     </script>
-
-
 
     <script type="module">
         // Import the Firebase modules
@@ -600,8 +666,6 @@
         }
 
         const deviceFromUrl = getUrlParameter("device");
-
-
 
         // Function to format the month string from YYYY-MM to "Month YYYY"
         function formatMonth(month) {
