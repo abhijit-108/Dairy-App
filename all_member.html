@@ -16,32 +16,49 @@
       transition: background 0.3s, color 0.3s;
     }
 
-    /* Filter Container */
     .filter-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      padding: 20px;
-      width: 80%;
-      margin-left: auto;
-      margin-right: auto;
-      margin-top: 1rem;
+      gap: 15px;
+      padding: 25px;
+      width: max-content;
+      margin: 1rem auto;
       background: #ffffff;
       box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.4);
       border-radius: 8px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
     }
 
-    .filter-container select {
-      flex: 1;
-      padding: 8px;
-      border: 1px solid #ccc;
+    .select-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 150px;
+      /* Adjust width as needed */
+    }
+
+    .select-wrapper select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ccc;
       border-radius: 5px;
       font-size: 14px;
-      background: #fff;
-      color: #333;
+      font-weight: bold;
+      background: transparent;
+      color: rgb(0, 0, 0);
+      appearance: none;
+      /* Hide default dropdown icon */
+      outline: none;
+    }
+
+    .select-wrapper label {
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      background: #0c8925;
+      padding: 0 5px;
+      font-size: 12px;
+      color: white;
+      font-weight: bold;
     }
 
     /* Table Container for Small Screens */
@@ -113,20 +130,33 @@
 </head>
 
 <body>
-  <div class="filter-container" id="hidefilter">
-    <select id="monthFilter"></select>
-    <select id="yearFilter"></select>
-    <select id="dateRangeFilter">
-      <option value="all">All Dates</option>
-      <option value="1-7">1-7</option>
-      <option value="8-15">8-15</option>
-      <option value="16-23">16-23</option>
-      <option value="24-end">24-end</option>
-    </select>
-    <select id="nameFilter">
-      <option value="all">All Names</option>
-    </select>
+  <div class="filter-container">
+    <div class="select-wrapper">
+      <label for="monthFilter">Month</label>
+      <select id="monthFilter"></select>
+    </div>
+    <div class="select-wrapper">
+      <label for="yearFilter">Year</label>
+      <select id="yearFilter"></select>
+    </div>
+    <div class="select-wrapper">
+      <label for="dateRangeFilter">Date Range</label>
+      <select id="dateRangeFilter">
+        <option value="all">All Dates</option>
+        <option value="1-7">1-7</option>
+        <option value="8-15">8-15</option>
+        <option value="16-23">16-23</option>
+        <option value="24-end">24-end</option>
+      </select>
+    </div>
+    <div class="select-wrapper">
+      <label for="nameFilter">Name</label>
+      <select id="nameFilter">
+        <option value="all">All Names</option>
+      </select>
+    </div>
   </div>
+
 
   <div class="table-container">
     <table id="dataTable">
