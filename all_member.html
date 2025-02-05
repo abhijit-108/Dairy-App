@@ -1,11 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dairy Records</title>
   <style>
+    /* Transparent Loading Screen Styles */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      /* A semi-transparent white so the background can be seen */
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .spinner {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #3498db;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 10px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    .Pleasewait{
+      color: white;
+    }
     /* General Styles */
     body {
       font-family: 'Arial', sans-serif;
@@ -33,7 +69,6 @@
       display: flex;
       align-items: center;
       width: 150px;
-      /* Adjust width as needed */
     }
 
     .select-wrapper select {
@@ -46,7 +81,6 @@
       background: transparent;
       color: rgb(0, 0, 0);
       appearance: none;
-      /* Hide default dropdown icon */
       outline: none;
     }
 
@@ -66,10 +100,8 @@
       overflow-x: auto;
       overflow-y: auto;
       max-height: 500px;
-      /* Fixed height for the table */
       padding: 10px;
       width: 90%;
-      /* Limit width to 90% of the viewport width */
       margin: 0 auto;
       margin-top: 1.2rem;
     }
@@ -106,18 +138,15 @@
 
     /* Mobile-Friendly Adjustments */
     @media screen and (max-width: 600px) {
-
       th,
       td {
         padding: 10px;
         font-size: 12px;
       }
-
       .filter-container {
         flex-direction: column;
         align-items: stretch;
       }
-
       .filter-container select {
         font-size: 12px;
       }
@@ -130,6 +159,13 @@
 </head>
 
 <body>
+  <!-- Transparent Loading Screen with Spinner and Text -->
+  <div id="loading-screen">
+    <div class="spinner"></div>
+    <div class="Pleasewait">Please wait...</div>
+  </div>
+
+  <!-- Main Content -->
   <div class="filter-container">
     <div class="select-wrapper">
       <label for="monthFilter">Month</label>
@@ -157,7 +193,6 @@
     </div>
   </div>
 
-
   <div class="table-container">
     <table id="dataTable">
       <thead>
@@ -171,7 +206,9 @@
           <th>Total</th>
         </tr>
       </thead>
-      <tbody id="tableBody"></tbody>
+      <tbody id="tableBody">
+        <!-- Firebase data rows will be inserted here -->
+      </tbody>
       <tfoot>
         <tr>
           <td colspan="5">Total</td>
@@ -382,16 +419,16 @@
             totalAmount += parseFloat(entry.total);
 
             tbody.innerHTML += `
-                  <tr>
-                    <td>${dayStr.padStart(2, '0')}</td>
-                    <td>${session}</td>
-                    <td>${entry.fat}</td>
-                    <td>${entry.snf}</td>
-                    <td>${entry.rate}</td>
-                    <td>${entry.kg}</td>
-                    <td>${entry.total}</td>
-                  </tr>
-                `;
+              <tr>
+                <td>${dayStr.padStart(2, '0')}</td>
+                <td>${session}</td>
+                <td>${entry.fat}</td>
+                <td>${entry.snf}</td>
+                <td>${entry.rate}</td>
+                <td>${entry.kg}</td>
+                <td>${entry.total}</td>
+              </tr>
+            `;
           });
         });
       });
@@ -407,10 +444,14 @@
     onAuthStateChanged(auth, (user) => {
       // Your authentication handling code (if any)
     });
+
+    // Ensure the loading screen stays visible for a fixed 3 seconds.
+    setTimeout(() => {
+      const loadingScreen = document.getElementById('loading-screen');
+      if (loadingScreen) {
+        loadingScreen.style.display = 'none';
+      }
+    }, 3000);
   </script>
-
-
-
 </body>
-
 </html>
