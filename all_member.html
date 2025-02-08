@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,13 +36,16 @@
       0% {
         transform: rotate(0deg);
       }
+
       100% {
         transform: rotate(360deg);
       }
     }
-    .Pleasewait{
+
+    .Pleasewait {
       color: white;
     }
+
     /* General Styles */
     body {
       font-family: 'Arial', sans-serif;
@@ -99,16 +103,19 @@
     .table-container {
       overflow-x: auto;
       overflow-y: auto;
-      max-height: 500px;
+      max-height: 600px;
       padding: 10px;
       width: 90%;
       margin: 0 auto;
-      margin-top: 1.2rem;
+      margin-top: 0.5rem;
     }
 
     /* Table Styling */
     table {
       width: 100%;
+      max-width: 750px;
+      margin-left: auto;
+      margin-right: auto;
       border-collapse: collapse;
       background: white;
       border-radius: 10px;
@@ -119,7 +126,7 @@
     th,
     td {
       border: 1px solid #ddd;
-      padding: 12px;
+      padding: 4px;
       text-align: center;
       font-size: 14px;
       white-space: nowrap;
@@ -137,18 +144,33 @@
     }
 
     /* Mobile-Friendly Adjustments */
-    @media screen and (max-width: 600px) {
+    @media screen and (max-width: 500px) {
+
       th,
       td {
-        padding: 10px;
+        padding: 5px;
         font-size: 12px;
       }
+
       .filter-container {
         flex-direction: column;
         align-items: stretch;
       }
+
       .filter-container select {
         font-size: 12px;
+      }
+
+      /* Table Container for Small Screens */
+      /* Table Container for Small Screens */
+      .table-container {
+        overflow-x: auto;
+        overflow-y: auto;
+        max-height: 400px;
+        padding: 8px;
+        width: 98%;
+        margin: 0 auto;
+        margin-top: 0.5rem;
       }
     }
 
@@ -166,7 +188,7 @@
   </div>
 
   <!-- Main Content -->
-  <div class="filter-container">      
+  <div class="filter-container">
     <div class="select-wrapper">
       <label for="monthFilter">Month</label>
       <select id="monthFilter"></select>
@@ -483,4 +505,5 @@
     }, 3000);
   </script>
 </body>
+
 </html>
