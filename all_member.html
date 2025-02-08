@@ -166,7 +166,7 @@
   </div>
 
   <!-- Main Content -->
-  <div class="filter-container">
+  <div class="filter-container">      
     <div class="select-wrapper">
       <label for="monthFilter">Month</label>
       <select id="monthFilter"></select>
@@ -211,7 +211,10 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="5">Total</td>
+          <td colspan="2">Total/Average</td>
+          <td id="avgFat">0</td>
+          <td id="avgSnf">0</td>
+          <td id="avgRate">0</td>
           <td id="totalKg">0</td>
           <td id="totalAmount">0</td>
         </tr>
@@ -333,13 +336,8 @@
       const monthFilter = document.getElementById('monthFilter');
       monthFilter.innerHTML = `<option value="all">All Months</option>` +
         sortedMonths.map(m => `<option value="${m.month}">${m.label}</option>`).join('');
-      // If no queryMonth override, set the default month to filterDate; otherwise, leave as "all"
-      if (!queryMonth) {
-        monthFilter.value = filterDate.getMonth() + 1;
-      } else {
-        // When overriding with queryMonth, we preset the month filter to that month.
-        monthFilter.value = filterDate.getMonth() + 1;
-      }
+      // If no queryMonth override, set the default month to filterDate; otherwise, preset to the queryMonth.
+      monthFilter.value = queryMonth ? filterDate.getMonth() + 1 : filterDate.getMonth() + 1;
 
       // Populate Year Filter with an "All Years" option first.
       const yearFilter = document.getElementById('yearFilter');
@@ -348,12 +346,7 @@
           .sort((a, b) => b - a)
           .map(year => `<option value="${year}">${year}</option>`)
           .join('');
-      // Set default year if a queryMonth or queryName override is active, otherwise use filterDate's year.
-      if (queryMonth || queryName) {
-        yearFilter.value = filterDate.getFullYear();
-      } else {
-        yearFilter.value = filterDate.getFullYear();
-      }
+      yearFilter.value = (queryMonth || queryName) ? filterDate.getFullYear() : filterDate.getFullYear();
 
       // Populate Name Filter with "All Names" as the default option.
       const nameFilter = document.getElementById('nameFilter');
@@ -362,7 +355,6 @@
           .sort()
           .map(name => `<option value="${name}">${name}</option>`)
           .join('');
-      // If a query name is provided, select it; otherwise default to "all"
       nameFilter.value = queryName ? queryName : "all";
 
       // Populate Date Range Filter.
@@ -384,8 +376,9 @@
       const tbody = document.getElementById('tableBody');
       tbody.innerHTML = '';
 
-      let totalKg = 0;
-      let totalAmount = 0;
+      let sumKg = 0, sumTotal = 0;
+      let sumFat = 0, sumSnf = 0, sumRate = 0, countEntries = 0;
+      let rows = [];
 
       // Read selected filters
       const selectedMonth = document.getElementById('monthFilter').value;
@@ -415,26 +408,62 @@
           Object.entries(user).forEach(([session, entry]) => {
             if (selectedName !== 'all' && entry.name !== selectedName) return;
 
-            totalKg += parseFloat(entry.kg);
-            totalAmount += parseFloat(entry.total);
+            const fatVal = parseFloat(entry.fat);
+            const snfVal = parseFloat(entry.snf);
+            const rateVal = parseFloat(entry.rate);
+            const kgVal = parseFloat(entry.kg);
+            const totalVal = parseFloat(entry.total);
 
-            tbody.innerHTML += `
-              <tr>
-                <td>${dayStr.padStart(2, '0')}</td>
-                <td>${session}</td>
-                <td>${entry.fat}</td>
-                <td>${entry.snf}</td>
-                <td>${entry.rate}</td>
-                <td>${entry.kg}</td>
-                <td>${entry.total}</td>
-              </tr>
-            `;
+            sumFat += fatVal;
+            sumSnf += snfVal;
+            sumRate += rateVal;
+            sumKg += kgVal;
+            sumTotal += totalVal;
+            countEntries++;
+
+            rows.push({
+              day: day,
+              dayStr: dayStr.padStart(2, '0'),
+              session: session,
+              fat: entry.fat,
+              snf: entry.snf,
+              rate: entry.rate,
+              kg: entry.kg,
+              total: entry.total
+            });
           });
         });
       });
 
-      document.getElementById('totalKg').textContent = totalKg.toFixed(1);
-      document.getElementById('totalAmount').textContent = totalAmount.toFixed(0);
+      // Sort rows by day in increasing order
+      rows.sort((a, b) => a.day - b.day);
+
+      // Append rows to the table body
+      rows.forEach(row => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${row.dayStr}</td>
+            <td>${row.session}</td>
+            <td>${row.fat}</td>
+            <td>${row.snf}</td>
+            <td>${row.rate}</td>
+            <td>${row.kg}</td>
+            <td>${row.total}</td>
+          </tr>
+        `;
+      });
+
+      // Calculate averages for Fat, SNF, and Rate
+      const avgFat = countEntries > 0 ? (sumFat / countEntries) : 0;
+      const avgSnf = countEntries > 0 ? (sumSnf / countEntries) : 0;
+      const avgRate = countEntries > 0 ? (sumRate / countEntries) : 0;
+
+      // Update footer with averages and totals
+      document.getElementById('avgFat').textContent = avgFat.toFixed(1);
+      document.getElementById('avgSnf').textContent = avgSnf.toFixed(1);
+      document.getElementById('avgRate').textContent = avgRate.toFixed(1);
+      document.getElementById('totalKg').textContent = sumKg.toFixed(1);
+      document.getElementById('totalAmount').textContent = sumTotal.toFixed(0);
     }
 
     // Update table whenever a filter changes.
