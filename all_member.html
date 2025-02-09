@@ -143,6 +143,22 @@
       background: #e9ecef;
     }
 
+    /* Target the last column (header and cells) */
+
+    table tr td:last-child {
+      color: rgb(30, 21, 21);
+      font-weight: bolder;
+      /* Change to your desired color */
+    }
+
+    /* Target the second-to-last column (header and cells) */
+    table tr th:nth-last-child(2),
+    table tr td:nth-last-child(2) {
+      color: rgb(0, 0, 153);
+      font-weight: bold;
+      /* Change to your desired color */
+    }
+
     /* Mobile-Friendly Adjustments */
     @media screen and (max-width: 500px) {
 
@@ -187,7 +203,7 @@
     <div class="Pleasewait">Please wait...</div>
   </div>
 
-  <!-- Main Content -->
+  <!-- Main Filters -->
   <div class="filter-container">
     <div class="select-wrapper">
       <label for="monthFilter">Month</label>
@@ -215,6 +231,7 @@
     </div>
   </div>
 
+  <!-- Main Data Table -->
   <div class="table-container">
     <table id="dataTable">
       <thead>
@@ -239,6 +256,30 @@
           <td id="avgRate">0</td>
           <td id="totalKg">0</td>
           <td id="totalAmount">0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Aggregated Data Table by Name -->
+  <div class="table-container">
+    <table id="nameAggregateTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Rate (Total/KG)</th>
+          <th>Total-KG</th>
+          <th>Total-total</th>
+        </tr>
+      </thead>
+      <tbody id="nameAggregateTableBody">
+        <!-- Aggregated rows by name will be inserted here -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">Total</td>
+          <td id="aggregateTotalKg">0</td>
+          <td id="aggregateTotalTotal">0</td>
         </tr>
       </tfoot>
     </table>
@@ -271,7 +312,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const queryName = urlParams.get('name');   // e.g. ?name=test
     const queryMonth = urlParams.get('month');  // e.g. ?month=february
-    const queryYear = urlParams.get('year');   // e.g. ?year=2025
+    const queryYear = urlParams.get('year');     // e.g. ?year=2025
 
     // We'll use a flag to know if any override is active.
     const override = (queryName || queryMonth);
@@ -281,7 +322,6 @@
 
     if (queryMonth) {
       // If a month query parameter exists, override the month/year filter.
-      // Map month names to their zero-indexed month numbers.
       const monthMap = {
         january: 0,
         february: 1,
@@ -303,12 +343,10 @@
       if (queryYear) {
         filterDate.setFullYear(parseInt(queryYear));
       } else {
-        // Use the current year if none provided.
         filterDate.setFullYear(new Date().getFullYear());
       }
     } else if (queryName) {
       // If only a name is provided, do not subtract 5 days.
-      // (filterDate remains as today's date)
     } else {
       // Default behavior: use today minus 5 days.
       filterDate.setDate(filterDate.getDate() - 5);
@@ -358,7 +396,6 @@
       const monthFilter = document.getElementById('monthFilter');
       monthFilter.innerHTML = `<option value="all">All Months</option>` +
         sortedMonths.map(m => `<option value="${m.month}">${m.label}</option>`).join('');
-      // If no queryMonth override, set the default month to filterDate; otherwise, preset to the queryMonth.
       monthFilter.value = queryMonth ? filterDate.getMonth() + 1 : filterDate.getMonth() + 1;
 
       // Populate Year Filter with an "All Years" option first.
@@ -380,8 +417,6 @@
       nameFilter.value = queryName ? queryName : "all";
 
       // Populate Date Range Filter.
-      // If any override is active (queryName or queryMonth), use "all" dates.
-      // Otherwise, use the day-range based on the filterDate.
       const dateRangeFilter = document.getElementById('dateRangeFilter');
       if (override) {
         dateRangeFilter.value = "all";
@@ -401,6 +436,8 @@
       let sumKg = 0, sumTotal = 0;
       let sumFat = 0, sumSnf = 0, sumRate = 0, countEntries = 0;
       let rows = [];
+      // Initialize aggregation object for the aggregated table by name.
+      const nameAggregates = {};
 
       // Read selected filters
       const selectedMonth = document.getElementById('monthFilter').value;
@@ -453,14 +490,22 @@
               kg: entry.kg,
               total: entry.total
             });
+
+            // --- Aggregate by name for the second table ---
+            const name = entry.name;
+            if (!nameAggregates[name]) {
+              nameAggregates[name] = { totalKg: 0, totalTotal: 0 };
+            }
+            nameAggregates[name].totalKg += kgVal;
+            nameAggregates[name].totalTotal += totalVal;
           });
         });
       });
 
-      // Sort rows by day in increasing order
+      // Sort rows by day in increasing order for the main table
       rows.sort((a, b) => a.day - b.day);
 
-      // Append rows to the table body
+      // Append rows to the main table body
       rows.forEach(row => {
         tbody.innerHTML += `
           <tr>
@@ -475,17 +520,45 @@
         `;
       });
 
-      // Calculate averages for Fat, SNF, and Rate
+      // Calculate averages for Fat, SNF, and Rate for the main table
       const avgFat = countEntries > 0 ? (sumFat / countEntries) : 0;
       const avgSnf = countEntries > 0 ? (sumSnf / countEntries) : 0;
       const avgRate = countEntries > 0 ? (sumRate / countEntries) : 0;
 
-      // Update footer with averages and totals
+      // Update footer with averages and totals for the main table
       document.getElementById('avgFat').textContent = avgFat.toFixed(1);
       document.getElementById('avgSnf').textContent = avgSnf.toFixed(1);
       document.getElementById('avgRate').textContent = avgRate.toFixed(1);
       document.getElementById('totalKg').textContent = sumKg.toFixed(1);
       document.getElementById('totalAmount').textContent = sumTotal.toFixed(0);
+
+      // --- Update the second (aggregated) table by name ---
+      const nameAggregateTbody = document.getElementById('nameAggregateTableBody');
+      nameAggregateTbody.innerHTML = '';
+
+      // Variables to sum up footer totals for the aggregated table
+      let aggregateSumKg = 0;
+      let aggregateSumTotal = 0;
+
+      Object.keys(nameAggregates).forEach(name => {
+        const aggregate = nameAggregates[name];
+        // Calculate aggregated rate as totalTotal / totalKg (if available)
+        const aggregatedRate = aggregate.totalKg > 0 ? (aggregate.totalTotal / aggregate.totalKg) : 0;
+        nameAggregateTbody.innerHTML += `
+          <tr>
+            <td>${name}</td>
+            <td>${aggregatedRate.toFixed(1)}</td>
+            <td>${aggregate.totalKg.toFixed(1)}</td>
+            <td>${aggregate.totalTotal.toFixed(0)}</td>
+          </tr>
+        `;
+        aggregateSumKg += aggregate.totalKg;
+        aggregateSumTotal += aggregate.totalTotal;
+      });
+
+      // Update the aggregated table footer
+      document.getElementById('aggregateTotalKg').textContent = aggregateSumKg.toFixed(1);
+      document.getElementById('aggregateTotalTotal').textContent = aggregateSumTotal.toFixed(0);
     }
 
     // Update table whenever a filter changes.
