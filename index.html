@@ -10,57 +10,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/alert.css?v=2.0.1">
     <link rel="stylesheet" href="css/main_screen.css?v=2.0.4">
-    <style>
-    /* Transparent Loading Screen Styles */
-    #loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      /* A semi-transparent white so the background can be seen */
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .spinner {
-      border: 8px solid #f3f3f3;
-      border-top: 8px solid #3498db;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      animation: spin 1s linear infinite;
-      margin-bottom: 10px;
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    .Pleasewait {
-      color: white;
-    }
-
-    </style>
 </head>
 
 <body>
-    <!-- Loading screen HTML -->
-    <div id="loading-screen">
-        <div class="spinner"></div>
-        <div class="Pleasewait">Please wait...</div>
-    </div>
-
     <!-- Title Bar -->
     <div class="title-bar">
         <i class="menu-button fas fa-bars" onclick="togglePanel()"></i>
@@ -159,21 +111,7 @@
     <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2762/2762.wav"></audio>
     <audio id="closeSound" src="https://assets.mixkit.co/active_storage/sfx/2776/2776.wav"></audio>
 
-    <script>
-        window.addEventListener('load', function () {
-            // Keep the loading screen visible for 3 seconds
-            setTimeout(function () {
-                const loadingScreen = document.getElementById('loading-screen');
-                // Fade out effect
-                loadingScreen.style.opacity = '0';
-
-                // After the fade-out, hide the loading screen completely
-                setTimeout(function () {
-                    loadingScreen.style.display = 'none';
-                }, 500); // matches the CSS transition duration
-            }, 3000); // 3000 milliseconds = 3 seconds
-        });
-    </script>
+   
 
     <script>
         // Time and Date Update
