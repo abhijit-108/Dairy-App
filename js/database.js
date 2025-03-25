@@ -275,7 +275,7 @@ onAuthStateChanged(auth, (user) => {
     } else {
         // User is not authenticated, show guest
         userInfoDiv.innerText = 'Logout (Guest)';
-        guestinfo.innerText = 'This is guest-mode . Data cannot be modified.';
+        guestinfo.innerText = 'Data cannot be modified.';
         fixDatabaseItem.classList.add('disabled');
         headerLogin.classList.add('headerloginguest');
         select_container.classList.add('disabled');
