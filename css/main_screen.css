@@ -35,12 +35,12 @@ body {
 }
 
 .heading {
-    color: rgb(82, 255, 255);
+    color: rgb(3, 237, 50);
     display: block;
     overflow: hidden;
-    padding: 6px;
+    padding: 4px;
     border-radius: 5px;
-    background-color: #070f04;
+    background-color: #979d95;
     font-weight: bolder;
 
 }
@@ -429,6 +429,6 @@ td:nth-child(7) {
 }
 
 .headerloginguest {
-    background-color: whitesmoke;
-    color: rgb(162, 3, 3);
+    background-color: rgb(152, 0, 0);
+    color: rgb(255, 240, 240);
 }
