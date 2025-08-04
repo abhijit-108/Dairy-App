@@ -82,11 +82,20 @@ body {
 }
 
 .panel-item a {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
     padding: 1rem 2rem;
     color: white;
     text-decoration: none;
     cursor: pointer;
+}
+
+.sidebar-icon {
+    font-size: 1.25em;
+    min-width: 1.5em;
+    text-align: center;
+    opacity: 0.85;
 }
 
 .panel-item:hover {
