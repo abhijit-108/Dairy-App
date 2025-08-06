@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/alert.css?v=2.0.1">
-    <link rel="stylesheet" href="css/main_screen.css?v=2.0.5">
+    <link rel="stylesheet" href="css/main_screen.css?v=2.0.6">
 </head>
 
 <body>
@@ -28,12 +29,18 @@
 
     <div class="side-panel" id="sidePanel">
         <ul class="panel-items">
-            <li class="panel-item"><a href="all_member.html" class="perfromace_report_toggle"><i class="fas fa-users sidebar-icon"></i> All Members</a></li>
-            <li class="panel-item" id="Generate_bill"><a href="generate_bill.html"><i class="fas fa-file-invoice-dollar sidebar-icon"></i> Generate Bill (Manual)</a></li>
-            <li class="panel-item" id="storagepage"><a href="storage page.html"><i class="fas fa-archive sidebar-icon"></i> পুরনো Bills (photo)</a></li>
-            <li class="panel-item" id="fixDatabaseItem"><a href="rewrite Data.html"><i class="fas fa-database sidebar-icon"></i> Fix Database</a></li>
-            <li class="panel-item"><a href="internet_usage_page.html" class="update-toggle"><i class="fas fa-history sidebar-icon"></i> Data history (Wifi)</a></li>
-            <li class="panel-item"><a href="http://Dlink2640/active_devices.html" class="update-toggle"><i class="fas fa-wifi sidebar-icon"></i> Online Devices (Wifi)</a></li>
+            <li class="panel-item"><a href="all_member.html" class="perfromace_report_toggle"><i
+                        class="fas fa-users sidebar-icon"></i> All Members</a></li>
+            <li class="panel-item" id="Generate_bill"><a href="generate_bill.html"><i
+                        class="fas fa-file-invoice-dollar sidebar-icon"></i> Generate Bill (Manual)</a></li>
+            <li class="panel-item" id="storagepage"><a href="storage page.html"><i
+                        class="fas fa-archive sidebar-icon"></i> পুরনো Bills (photo)</a></li>
+            <li class="panel-item" id="fixDatabaseItem"><a href="rewrite Data.html"><i
+                        class="fas fa-database sidebar-icon"></i> Fix Database</a></li>
+            <li class="panel-item"><a href="internet_usage_page.html" class="update-toggle"><i
+                        class="fas fa-history sidebar-icon"></i> Data history (Wifi)</a></li>
+            <li class="panel-item"><a href="http://Dlink2640/active_devices.html" class="update-toggle"><i
+                        class="fas fa-wifi sidebar-icon"></i> Online Devices (Wifi)</a></li>
             <button id="logoutButton">Logout</button>
             <div id="guest-info">
             </div>
@@ -110,7 +117,7 @@
     <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2762/2762.wav"></audio>
     <audio id="closeSound" src="https://assets.mixkit.co/active_storage/sfx/2776/2776.wav"></audio>
 
-   
+
 
     <script>
         // Time and Date Update
@@ -122,7 +129,7 @@
             const month = now.toLocaleString('default', { month: 'short' });
 
             // Get the Bengali day (e.g., "Bangla Bar")
-            const banglaDays = ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহস্পতি", "শুক্র", "শনি"];
+            const banglaDays = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
             const banglaDay = banglaDays[now.getDay()];
 
             // Format time as "10:00 AM"

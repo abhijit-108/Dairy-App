@@ -52,9 +52,14 @@ body {
 }
 
 .time-date {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     color: #ecf0f1;
     font-weight: bold;
+}
+
+#current-date {
+    display: block;
+    margin-bottom: 4px;
 }
 
 /* Side Panel Styles */
