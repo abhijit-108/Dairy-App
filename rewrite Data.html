@@ -1,446 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dairy Management System</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #0e1a4e 0%, #440780 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-            padding: 40px;
-            width: 100%;
-            max-width: 500px;
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .back-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        .back-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .title {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #2d3748;
-            font-size: 28px;
-            font-weight: 700;
-            position: relative;
-            padding-top: 20px;
-        }
-
-        .title::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border-radius: 2px;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #4a5568;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        input[type="date"] {
-            color-scheme: light;
-        }
-
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            cursor: pointer;
-        }
-
-        input:focus,
-        select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .member-select {
-            position: relative;
-        }
-
-        .member-select select {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 16px;
-            margin: 24px 0;
-        }
-
-        .metric-item {
-            position: relative;
-        }
-
-        .metric-item input {
-            text-align: center;
-            font-weight: 600;
-            font-size: 18px;
-        }
-
-        .metric-item input[readonly] {
-            background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
-            color: #065f46;
-            cursor: not-allowed;
-        }
-
-        .submit-btn {
-            width: 100%;
-            background: linear-gradient(45deg, #48bb78, #38a169);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.4);
-        }
-
-        .submit-btn:active {
-            transform: translateY(-1px);
-        }
-
-        .alert {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(45deg, #48bb78, #38a169);
-            color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.3);
-            transform: translateX(400px);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 1000;
-        }
-
-        .alert.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-        .bengali-label {
-            color: #667eea;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        @media (max-width: 640px) {
-            body {
-                padding: 10px;
-            }
-
-            .container {
-                padding: 16px;
-                margin: 0;
-                border-radius: 12px;
-            }
-
-            .title {
-                font-size: 22px;
-                margin-bottom: 20px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-                margin-bottom: 16px;
-            }
-
-            .form-group {
-                margin-bottom: 16px;
-            }
-
-            .metrics-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-                margin: 16px 0;
-            }
-
-            input,
-            select {
-                padding: 10px 12px;
-                font-size: 15px;
-            }
-
-            label {
-                margin-bottom: 6px;
-                font-size: 13px;
-            }
-
-            .submit-btn {
-                padding: 12px;
-                font-size: 16px;
-            }
-
-            .back-btn {
-                top: 8px;
-                right: 8px;
-                padding: 6px 10px;
-                font-size: 12px;
-                border-radius: 6px;
-            }
-
-            .title {
-                font-size: 20px;
-                margin-bottom: 16px;
-                padding-top: 25px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 12px;
-                max-width: none;
-            }
-
-            .title {
-                font-size: 20px;
-                margin-bottom: 16px;
-            }
-
-            .metrics-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
-                margin: 12px 0;
-            }
-
-            .form-group {
-                margin-bottom: 12px;
-            }
-
-            .form-row {
-                gap: 6px;
-                margin-bottom: 12px;
-            }
-
-            input,
-            select {
-                padding: 8px 10px;
-                font-size: 14px;
-            }
-
-            label {
-                margin-bottom: 4px;
-                font-size: 12px;
-            }
-
-            .submit-btn {
-                padding: 10px;
-                font-size: 15px;
-            }
-        }
-
-        /* Loading animation */
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-
-        .submit-btn.loading::after {
-            content: '';
-            width: 20px;
-            height: 20px;
-            border: 2px solid transparent;
-            border-top: 2px solid white;
-            border-radius: 50%;
-            display: inline-block;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Floating labels effect */
-        .form-group-floating {
-            position: relative;
-            margin-bottom: 24px;
-        }
-
-        .form-group-floating input {
-            padding-top: 20px;
-            padding-bottom: 8px;
-        }
-
-        .form-group-floating label {
-            position: absolute;
-            top: 12px;
-            left: 16px;
-            transition: all 0.3s ease;
-            pointer-events: none;
-            color: #a0aec0;
-        }
-
-        .form-group-floating input:focus+label,
-        .form-group-floating input:not(:placeholder-shown)+label {
-            top: 4px;
-            font-size: 12px;
-            color: #667eea;
-        }
-    </style>
+    <title>Fix Database</title>
 </head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #a19b9b;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+    }
+    #form-box {
+        background-color: #d7d7d7;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 65%;
+        max-width: 250px;
+        position: absolute;
+        top: 65px;
+    }
+    .title{
+        margin-bottom: 15px;
+        font-size: 30px;
+        font-weight: bolder;
+        color: rgb(122, 40, 40);
+        text-decoration: underline rgb(200, 32, 32);
+    }
+    form{
+        text-align: center;
+    }
+    select{
+        padding: 8px;
+        font-size: 15px;
+        font-weight: bold;
+        color: rgb(103, 27, 27);
+        border-radius: 5px;
+    }
+    .labelname{
+        font-size: 14px;
+    }
+    .label {
+        margin-bottom: 5px;
+        font-weight: bolder;
+        margin-right:5px;
+        
+    }
+    input[type="number"] {
+        width: 80px;
+        padding: 10px;
+        font-size: 20px;
+        margin-bottom: 15px;
+        font-weight: bold;
+        border: 1.3px solid #8b8a8a;
+        border-radius: 4px;
+    }
+    input[type="date"],input[type="time"] {
+        padding: 6px;
+        background-color: rgb(248, 249, 232);
+        width: 120px;
+        font-weight: bolder;
+        border-radius: 5px;
+        font-size: 15px;
+    }
+    .submit-btn {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width:120px;
+        font-size: 18px;
+    }
+    .submit-btn:hover {
+        background-color: #218838;
+    }
+    .alert {
+        display: none;
+        background-color: #e0340d;
+        color: #d3ffdd;
+        padding: 20px;
+        border-radius: 4px;
+        margin-top: 10px;
+        text-align: center;
+        position: relative;
+    }
+    .alert.show {
+        display: block;
+    }
+    #backtomain {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        padding: 6px;
+        background-color: brown;
+        color: aliceblue;
+        font-size: 16px;
+    }
+</style>
 
 <body>
-    <div class="container">
-        <button class="back-btn" id="backtomain">← Back to Main</button>
-
-        <h1 class="title">Fix Database</h1>
-
-        <form id="registrationform">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="customDate">Select Date</label>
-                    <input type="date" id="customDate" name="customDate" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="customTime">Select Time</label>
-                    <input type="time" id="customTime" name="customTime" required>
-                </div>
+    <br><button id="backtomain">Backtomain</button>
+    <div id="form-box">
+        <form action="" name="lol" method="post" id="registrationform">
+            <div class="title">
+                Fix Database
             </div>
 
-            <div class="form-group member-select">
-                <label for="name" class="bengali-label">সদস্যর নাম (Member Name)</label>
-                <select id="name" name="NAME" required>
-                    <option value="">Select Member</option>
+            <label for="customDate">Select Date:</label>
+            <input type="date" id="customDate" name="customDate" required><br><br>
+
+            <label for="customTime">Select Time:</label>
+            <input type="time" id="customTime" name="customTime" required><br><br>
+            <div class="alert">Data submitted successfully!</div>
+            <h3>
+                <label class="labelname" for="name">সদস্যর নাম</label>
+                <select class="select" id="name" name="NAME" required>
+                    <option value=""></option>
                 </select>
+            </h3>
+
+            <div id="little-box">
+                <label class="label" for="kg">KG:</label>
+                <input type="number" placeholder="Kg" value="" id="kg" step="any" required oninput="rateandtotal();" />
+                <br>
+                <label class="label" for="fat">FAT:</label>
+                <input type="number" placeholder="FAT" value="" id="fat" step="any" oninput="rateandtotal();" />
+                <br>
+                <label class="label" for="snf">SNF:</label>
+                <input type="number" placeholder="SNF" value="" id="snf" step="any" required
+                    oninput="rateandtotal();" />
+                <br>
+                <label for="rate">Rate:</label>
+                <input type="number" value="" id="rate" step="any" required />
+                <br>
+                <label for="total">Total:</label>
+                <input type="number" value="" id="total" step="any" required />
+                <br>
+                <button id="submit" class="submit-btn"
+                    onclick="if(validateInput()) { sendEmail();playSound();multiplyNumbers(); }">Calculate</button>
+                <audio id="myAudio">
+                    <source src="button.wav" type="audio/mp3">
+                </audio>
             </div>
-
-            <div class="metrics-grid">
-                <div class="metric-item">
-                    <label for="kg">Weight (KG)</label>
-                    <input type="number" id="kg" step="any" placeholder="0.00" required>
-                </div>
-
-                <div class="metric-item">
-                    <label for="fat">Fat (%)</label>
-                    <input type="number" id="fat" step="any" placeholder="0.00">
-                </div>
-
-                <div class="metric-item">
-                    <label for="snf">SNF (%)</label>
-                    <input type="number" id="snf" step="any" placeholder="0.00" required>
-                </div>
-
-                <div class="metric-item">
-                    <label for="rate">Rate (₹)</label>
-                    <input type="number" id="rate" step="any" placeholder="0.00" readonly>
-                </div>
-
-                <div class="metric-item">
-                    <label for="total">Total (₹)</label>
-                    <input type="number" id="total" step="any" placeholder="0.00" readonly>
-                </div>
-            </div>
-
-            <button type="submit" class="submit-btn" id="submit">
-                Calculate & Submit
-            </button>
         </form>
     </div>
-
-    <div class="alert" id="alert">
-        ✓ Data submitted successfully!
-    </div>
-
-    <audio id="myAudio">
-        <source src="button.wav" type="audio/mp3">
-    </audio>
-
+   
     <script>
-        // Fetch names from markdown file
         async function fetchNames() {
             try {
                 const response = await fetch('names.md');
                 const data = await response.text();
-                const names = data.split('\n').map(line => line.split(' | ')[0].trim()).filter(name => name);
+                const names = data.split('\n').map(line => line.split(' | ')[0].trim());
 
                 const nameSelect = document.getElementById('name');
                 names.forEach(name => {
@@ -454,113 +173,10 @@
             }
         }
 
-        // Rate calculation (placeholder function - implement your logic)
-        function rateandtotal() {
-            const kg = parseFloat(document.getElementById('kg').value) || 0;
-            const fat = parseFloat(document.getElementById('fat').value) || 0;
-            const snf = parseFloat(document.getElementById('snf').value) || 0;
-
-            // Implement your rate calculation logic here
-            const rate = (fat * 2 + snf * 1.5).toFixed(2); // Example calculation
-            const total = (kg * rate).toFixed(2);
-
-            document.getElementById('rate').value = rate;
-            document.getElementById('total').value = total;
-        }
-
-        // Add event listeners for real-time calculation
-        ['kg', 'fat', 'snf'].forEach(id => {
-            document.getElementById(id).addEventListener('input', rateandtotal);
-        });
-
-        // Form validation
-        function validateInput() {
-            const requiredFields = ['name', 'customDate', 'customTime', 'kg', 'snf'];
-            for (let field of requiredFields) {
-                const element = document.getElementById(field);
-                if (!element.value.trim()) {
-                    element.focus();
-                    showAlert(`Please fill in ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`, 'error');
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        // Show alert
-        function showAlert(message, type = 'success') {
-            const alert = document.getElementById('alert');
-            alert.textContent = message;
-            alert.className = `alert ${type}`;
-            alert.classList.add('show');
-
-            setTimeout(() => {
-                alert.classList.remove('show');
-            }, 3000);
-        }
-
-        // Play sound
-        function playSound() {
-            const audio = document.getElementById('myAudio');
-            audio.play().catch(e => console.log('Audio play failed:', e));
-        }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function () {
-            fetchNames();
-
-            // Set current date and time
-            const now = new Date();
-            document.getElementById('customDate').value = now.toISOString().split('T')[0];
-            document.getElementById('customTime').value = now.toTimeString().substr(0, 5);
-
-            // Set date input format to dd/mm/yyyy display
-            const dateInput = document.getElementById('customDate');
-            dateInput.addEventListener('change', function () {
-                // The browser will handle the display format based on locale
-                // For dd/mm/yyyy format, we can add a data attribute or use Intl
-                console.log('Selected date:', this.value);
-            });
-        });
-
-        // Form submission
-        document.getElementById('registrationform').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            if (!validateInput()) return;
-
-            const submitBtn = document.getElementById('submit');
-            submitBtn.classList.add('loading');
-            submitBtn.textContent = 'Processing...';
-
-            // Simulate processing
-            setTimeout(() => {
-                // Here you would integrate with Firebase or your backend
-                playSound();
-                showAlert('Data submitted successfully!');
-
-                // Reset form
-                this.reset();
-                document.getElementById('rate').value = '';
-                document.getElementById('total').value = '';
-
-                submitBtn.classList.remove('loading');
-                submitBtn.textContent = 'Calculate & Submit';
-
-                // Reset date/time to current
-                const now = new Date();
-                document.getElementById('customDate').value = now.toISOString().split('T')[0];
-                document.getElementById('customTime').value = now.toTimeString().substr(0, 5);
-            }, 1500);
-        });
-
-        // Back to main
-        document.getElementById('backtomain').addEventListener('click', function () {
-            window.location.href = 'index.html';
-        });
+        document.addEventListener('DOMContentLoaded', fetchNames);
     </script>
 
-    <!-- Firebase integration would go here -->
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
@@ -654,6 +270,19 @@
             }
         }
     </script>
+
+    <script>
+        // Get the button element
+        var billButton = document.getElementById('backtomain');
+
+        // Add a click event listener to the button
+        billButton.addEventListener('click', function () {
+            // Redirect to bill.html
+            window.location.href = 'index.html';
+        });
+    </script>
+    <script src="js/rate.js?v=1.0.2"></script>
+
 </body>
 
 </html>
