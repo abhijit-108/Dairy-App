@@ -8,178 +8,295 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="logo.png" type="image/png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/loginpage.css?v=1.0.2">
-</head>
-<style>
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  body {
-    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
-    font-family: Arial, sans-serif;
-    display: block;
-    margin-top: 0;
-    align-items: center;
-    height: 100vh;
-    padding: 20px;
-  }
-
-  .login-container {
-    background: #fff;
-    width: 95%;
-    max-width: 350px;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    text-align: center;
-  }
-
-
-  .guest-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px;
-    width: max-content;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 0px;
-  }
-
-  .guest-btn:hover {
-    background: #008824;
-  }
-
-  .form-group {
-    margin-bottom: 20px;
-    text-align: left;
-  }
-
-  .user-label {
-    font-size: 18px;
-    font-weight: bold;
-    background: #f0f0f0;
-    padding: 12px;
-    border-radius: 4px;
-    text-align: center;
-    cursor: not-allowed;
-  }
-
-  .form-group input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-    background: #f9f9f9;
-    cursor: not-allowed;
-  }
-
-  .form-group input:focus {
-    border-color: #74ebd5;
-    outline: none;
-  }
-
-  .error {
-    color: red;
-    margin-top: 0.8rem;
-    font-size: 1.2rem;
-    min-height: 20px;
-  }
-
-  .keyboard {
-    margin-top: 20px;
-  }
-
-  .keyboard .key-row {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 10px;
-  }
-
-  .keyboard button {
-    flex: 1;
-    margin: 0 5px;
-    padding: 15px;
-    font-size: 18px;
-    border: none;
-    background: #f0f0f0;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bolder;
-    transition: background 0.2s;
-  }
-
-  .loginbutton {
-    color: rgb(60, 140, 20);
-    background: red;
-    font-weight: bold;
-  }
-
-  .clearbutton {
-    color: red;
-    background: red;
-    font-weight: bold;
-  }
-
-  .keyboard button:hover {
-    background: #ddd;
-  }
-
-  @media (max-width: 480px) {
-    .login-container {
-      padding: 15px;
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    .keyboard button {
-      padding: 15px;
+    :root {
+      --bg1: #74ebd5;
+      --bg2: #acb6e5;
+      --primary: #4f46e5;
+      --primary-2: #06b6d4;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --glass: rgba(255, 255, 255, 0.18);
+      --border: rgba(255, 255, 255, 0.35);
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(-45deg, var(--bg1), var(--bg2), #c3e4ff, #e0c3fc);
+      background-size: 400% 400%;
+      animation: gradientShift 18s ease infinite;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    /* Floating shapes for subtle motion */
+    .floaters div {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.35;
+      animation: float 16s ease-in-out infinite;
+      z-index: 0;
+    }
+
+    .floaters .f1 { width: 260px; height: 260px; background: #8ec5fc; top: -60px; left: -80px; }
+    .floaters .f2 { width: 220px; height: 220px; background: #d8b4fe; bottom: -70px; right: -40px; animation-delay: 2s; }
+    .floaters .f3 { width: 180px; height: 180px; background: #99f6e4; top: 40%; left: -70px; animation-delay: 4s; }
+
+    .wrapper {
+      width: 100%;
+      max-width: 420px;
+      padding: 28px;
+      z-index: 1;
+    }
+
+    .login-card {
+      position: relative;
+      width: 100%;
+      padding: 28px 26px 22px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.75), rgba(255,255,255,0.45));
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+      transform: translateY(20px);
+      opacity: 0;
+      animation: cardIn 700ms ease forwards 200ms;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .brand img.logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.25);
+    }
+    .brand .title {
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      font-size: 20px;
+    }
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .guest-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      border: 0;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(6, 182, 212, 0.25);
+      transition: transform 160ms ease, box-shadow 200ms ease, filter 200ms ease;
+      margin: 0 auto 12px;
+    }
+    .guest-btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
+    .guest-btn:active { transform: translateY(0); }
+
+    .form-group { margin-bottom: 16px; }
+    .user-label {
+      font-size: 14px;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.04);
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-align: center;
+      color: var(--text);
+      border: 1px dashed rgba(15,23,42,0.15);
+      user-select: none;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .input {
+      width: 100%;
+      padding: 14px 14px;
+      border: 2px solid rgba(15, 23, 42, 0.08);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.7);
       font-size: 16px;
+      letter-spacing: 2px;
+      text-align: center;
+      transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
     }
-  }
-</style>
+    .input[readonly] { cursor: default; }
+    .input:focus {
+      outline: none;
+      border-color: rgba(6, 182, 212, 0.6);
+      box-shadow: 0 0 0 6px rgba(6, 182, 212, 0.18);
+      background: rgba(255,255,255,0.9);
+    }
+
+    .keyboard { margin-top: 10px; }
+    .key-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+    .key-row:last-child { margin-bottom: 0; }
+
+    .key {
+      position: relative;
+      overflow: hidden;
+      border: 0;
+      padding: 16px 0;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff, #f4f6fb);
+      color: #111827;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+      transition: transform 120ms ease, box-shadow 200ms ease, background 200ms ease;
+      isolation: isolate;
+    }
+    .key:hover { transform: translateY(-1px); box-shadow: 0 14px 26px rgba(15,23,42,0.12); }
+    .key:active { transform: translateY(0); }
+    .key::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(300px 300px at var(--x) var(--y), rgba(79,70,229,0.15), transparent 40%);
+      opacity: 0;
+      transition: opacity 240ms ease;
+      z-index: -1;
+    }
+    .key:hover::after { opacity: 1; }
+
+    .key.clear { background: linear-gradient(180deg, #fff1f2, #ffe4e6); color: #b91c1c; font-weight: 800; }
+    .key.login { background: linear-gradient(135deg, #16a34a, #22c55e); color: #f0fdf4; font-weight: 800; }
+
+    .error {
+      color: var(--danger);
+      margin-top: 10px;
+      font-weight: 600;
+      min-height: 22px;
+      text-align: center;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 12px;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes cardIn {
+      from { transform: translateY(22px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      50% { transform: translateY(-16px) translateX(10px); }
+    }
+
+    @media (max-width: 480px) {
+      .wrapper { padding: 18px; }
+      .login-card { padding: 22px 18px 18px; }
+    }
+  </style>
 </head>
 
 <body>
-  <div class="login-container">
-    <button class="guest-btn" onclick="guestLogin()">Login as Guest</button>
-    <div class="form-group">
-      <div class="user-label">User: Abhijit</div>
-      <input type="hidden" id="email" value="abhijit722141@gmail.com">
-    </div>
+  <!-- Subtle animated background floaters -->
+  <div class="floaters">
+    <div class="f1"></div>
+    <div class="f2"></div>
+    <div class="f3"></div>
+  </div>
 
-    <div class="form-group">
-      <label for="password">Password:</label>
-      <input type="number" id="password" placeholder="Enter your password" readonly>
-    </div>
+  <div class="wrapper">
+    <div class="login-card">
+      <div class="brand">
+        <img src="logo.png" alt="Dairy App Logo" class="logo" />
+        <div class="title">Dairy App</div>
+      </div>
+      <p class="subtitle">Welcome back! Please enter your PIN to continue.</p>
 
-    <div class="keyboard">
-      <div class="key-row">
-        <button onclick="appendToPassword('1')">1</button>
-        <button onclick="appendToPassword('2')">2</button>
-        <button onclick="appendToPassword('3')">3</button>
-      </div>
-      <div class="key-row">
-        <button onclick="appendToPassword('4')">4</button>
-        <button onclick="appendToPassword('5')">5</button>
-        <button onclick="appendToPassword('6')">6</button>
-      </div>
-      <div class="key-row">
-        <button onclick="appendToPassword('7')">7</button>
-        <button onclick="appendToPassword('8')">8</button>
-        <button onclick="appendToPassword('9')">9</button>
-      </div>
-      <div class="key-row">
-        <button onclick="clearPassword()" class="clearbutton">Clear</button>
-        <button onclick="appendToPassword('0')">0</button>
-        <button onclick="login()" class="loginbutton">Login</button>
-      </div>
-    </div>
-    <div id="error" class="error"></div>
+      <button class="guest-btn" onclick="guestLogin()">
+        <i class="fa-solid fa-user"></i>
+        Login as Guest
+      </button>
 
+      <div class="form-group">
+        <div class="user-label" aria-label="Logged in user is Abhijit">User: Abhijit</div>
+        <input type="hidden" id="email" value="abhijit722141@gmail.com">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input class="input" type="number" id="password" placeholder="Enter your password" readonly>
+      </div>
+
+      <div class="keyboard">
+        <div class="key-row">
+          <button class="key" onclick="appendToPassword('1')">1</button>
+          <button class="key" onclick="appendToPassword('2')">2</button>
+          <button class="key" onclick="appendToPassword('3')">3</button>
+        </div>
+        <div class="key-row">
+          <button class="key" onclick="appendToPassword('4')">4</button>
+          <button class="key" onclick="appendToPassword('5')">5</button>
+          <button class="key" onclick="appendToPassword('6')">6</button>
+        </div>
+        <div class="key-row">
+          <button class="key" onclick="appendToPassword('7')">7</button>
+          <button class="key" onclick="appendToPassword('8')">8</button>
+          <button class="key" onclick="appendToPassword('9')">9</button>
+        </div>
+        <div class="key-row">
+          <button class="key clear" onclick="clearPassword()">Clear</button>
+          <button class="key" onclick="appendToPassword('0')">0</button>
+          <button class="key login" onclick="login()">Login</button>
+        </div>
+      </div>
+
+      <div id="error" class="error" role="alert"></div>
+
+      <div class="footer-note">Tip: You can also continue as a guest.</div>
+    </div>
   </div>
 
   <script type="module">
@@ -234,6 +351,18 @@
     window.clearPassword = function clearPassword() {
       document.getElementById('password').value = "";
     };
+
+    // Enhance keys with pointer-position aware hover glow
+    const keys = document.querySelectorAll('.key');
+    keys.forEach((key) => {
+      key.addEventListener('mousemove', (e) => {
+        const rect = (e.currentTarget).getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        (e.currentTarget).style.setProperty('--x', `${x}px`);
+        (e.currentTarget).style.setProperty('--y', `${y}px`);
+      });
+    });
   </script>
 </body>
 

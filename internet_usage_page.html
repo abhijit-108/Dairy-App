@@ -4,619 +4,545 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wi-Fi Usage</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-</head>
-<style>
-    /* Global Styles */
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 20px;
-        color: #333;
-        transition: background-color 0.3s, color 0.3s;
-    }
-
-    h2 {
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 26px;
-        color: inherit;
-        background: linear-gradient(90deg, #a21b09, #2b00ff);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    #fix {
-        display: block;
-        width: 80%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    /* Form Controls */
-    label {
-        font-weight: bold;
-        margin-right: 10px;
-        color: inherit;
-        background: linear-gradient(90deg, #a21b09, #2b00ff);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    select {
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        margin-right: 20px;
-        font-size: 15px;
-        background-color: #fff;
-        color: #333;
-        margin-bottom: 10px;
-        /* Added space between select menus */
-        transition: box-shadow 0.3s;
-    }
-
-    select:focus {
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-    }
-
-    /* Table Styles */
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        background-color: #fff;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        max-width: 90%;
-        /* Adjust table width to be smaller on larger displays */
-        margin-left: auto;
-        margin-right: auto;
-        border-radius: 8px;
-        overflow: hidden;
-        animation: fadeIn 0.5s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
+    <title>WiFi Usage Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    th,
-    td {
-        padding: 8px;
-        text-align: center;
-        border-bottom: 1px solid #ddd;
-        transition: background-color 0.3s, color 0.3s;
-    }
-
-    th {
-        font-weight: normal;
-        font-size: 14px;
-        color: inherit;
-        background: linear-gradient(90deg, #a21b09, #2b00ff);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    tbody tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-
-    tbody tr:hover {
-        background-color: #e0e0e0;
-        /* Hover effect on rows */
-        color: #007BFF;
-        animation: pulse 0.5s infinite alternate;
-    }
-
-    @keyframes pulse {
-        from {
-            transform: scale(1);
-        }
-
-        to {
-            transform: scale(1.02);
-        }
-    }
-
-    tfoot {
-        color: inherit;
-        background: linear-gradient(90deg, #a21b09, #2b00ff);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: bold;
-        font-size: 16px;
-    }
-
-    #total-row td {
-        padding: 8px;
-        text-align: center;
-    }
-
-    #total-download,
-    #total-upload,
-    #total-total {
-        font-size: 16px;
-        font-weight: bold;
-    }
-
-    /* Responsive Design */
-    /* Mobile - 6.5 inch and smaller */
-    @media (max-width: 768px) {
         body {
-            padding: 10px;
-        }
-
-        select {
-            font-size: 14px;
-            padding: 6px;
-            margin-right: 10px;
-        }
-
-        h2 {
-            font-size: 20px;
-        }
-
-        table {
-            font-size: 14px;
-            max-width: 100%;
-            /* Table takes full width on mobile */
-        }
-
-        th,
-        td {
-            padding: 6px;
-        }
-
-        #total-download,
-        #total-upload,
-        #total-total {
-            font-size: 14px;
-        }
-
-        label {
-            margin-right: 5px;
-        }
-    }
-
-    /* Tablet - 11 inch */
-    @media (min-width: 769px) and (max-width: 1024px) {
-        body {
-            padding: 15px;
-        }
-
-        select {
-            font-size: 16px;
-            padding: 8px;
-        }
-
-        h2 {
-            font-size: 22px;
-        }
-
-        table {
-            font-size: 15px;
-        }
-
-        th,
-        td {
-            padding: 10px;
-        }
-
-        #total-download,
-        #total-upload,
-        #total-total {
-            font-size: 16px;
-        }
-    }
-
-    /* Desktop - 15 inch and above */
-    @media (min-width: 1025px) {
-        body {
+            font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #010206 0%, #43186f 100%);
+            min-height: 100vh;
             padding: 20px;
         }
 
-        select {
-            font-size: 16px;
-            padding: 10px;
+        .container {
+            max-width: 1000px;
+            margin: 10px auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
         }
 
-        h2 {
-            font-size: 26px;
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: bolder;
+            margin-bottom: 5px;
+        }
+
+        .status-info {
+            background: rgba(248, 249, 255, 0.8);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin: 20px 30px;
+            border: 1px solid #e0e4ff;
+            backdrop-filter: blur(5px);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 20px;
+            font-size: 0.85rem;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-label {
+            font-weight: bold;
+            color: #4a5568;
+        }
+
+        .status-value {
+            font-weight: bold;
+            color: #4a6af9;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .last-updated {
+            text-align: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
+            font-size: 0.75rem;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .refresh-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #d70000;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .filter-section {
+            padding: 25px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        select {
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        select:hover {
+            border-color: #667eea;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .table-container {
+            padding: 0;
+            overflow-x: auto;
         }
 
         table {
-            font-size: 14px;
-            /* Adjusted font size to make the table more compact */
-            max-width: 80%;
-            /* Table is smaller on larger screens */
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
         }
 
         th,
         td {
-            padding: 8px;
-            /* Reduced padding for smaller table */
-        }
-
-        #total-download,
-        #total-upload,
-        #total-total {
-            font-size: 16px;
-        }
-    }
-
-    /* Dark Mode Styles */
-    @media (prefers-color-scheme: dark) {
-        body {
-            background-color: #121212;
-            color: #e0e0e0;
-        }
-
-        h2 {
-            color: #fff;
-            background: linear-gradient(90deg, #0066cc, #00BFFF);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            color: #0066cc;
-            /* Fallback color */
-        }
-
-        select {
-            background-color: #444;
-            color: #ddd;
-            border-color: #555;
-        }
-
-        table {
-            background-color: #1e1e1e;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+            padding: 18px 25px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
         }
 
         th {
-            background: linear-gradient(90deg, #6daffe, #89cfff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        tbody tr:nth-child(even) {
-            background-color: #232323;
+        tbody tr {
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        tfoot {
-            color: inherit;
-            background: linear-gradient(90deg, #e9d5d3, #2b00ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: #839eff;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        #total-row td {
-            background-color: #555;
-        }
-
-        #total-download,
-        #total-upload,
-        #total-total {
-            font-size: 16px;
-            font-weight: bold;
-        }
 
         tbody tr:hover {
-            background-color: #333;
-            color: #6daffe;
-            animation: pulseDark 0.5s infinite alternate;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+            transform: translateY(-1px);
         }
 
-        @keyframes pulseDark {
+        .device-name {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .data-cell {
+            font-weight: 500;
+        }
+
+        .footer-row {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        .footer-row td {
+            border-bottom: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            background: white;
+            margin: 5% auto;
+            width: 90%;
+            max-width: 900px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
             from {
-                transform: scale(1);
+                transform: translateY(-50px);
+                opacity: 0;
             }
 
             to {
-                transform: scale(1.02);
+                transform: translateY(0);
+                opacity: 1;
             }
         }
-    }
 
-
-    /* New Elements Styles */
-    #lastUpdated {
-        font-size: 14px;
-        color: #777;
-        margin-top: 20px;
-        text-align: left;
-        /* Left-aligned */
-    }
-
-    .loading-bubble {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        background-color: #007BFF;
-        border-radius: 50%;
-        margin-right: 5px;
-        vertical-align: middle;
-        animation: pulseBubble 1.5s infinite ease-in-out;
-    }
-
-    @keyframes pulseBubble {
-
-        0%,
-        100% {
-            transform: scale(1);
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        50% {
-            transform: scale(1.5);
-        }
-    }
-
-    p {
-        font-size: 14px;
-        color: #555;
-        margin: 10px 2px;
-        text-align: left;
-        /* Left-aligned */
-    }
-
-    button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        background-color: #007BFF;
-        color: white;
-        font-size: 14px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.3s;
-        margin: 10px 0;
-    }
-
-    button:hover {
-        background-color: #0056b3;
-        transform: translateY(-2px);
-    }
-
-    button:active {
-        transform: translateY(0);
-    }
-
-    /* Button Alignment */
-    #backtomain {
-        float: left;
-        /* Left-aligned */
-    }
-
-    #refreshButton {
-        float: right;
-        /* Right-aligned */
-    }
-
-    /* Container for New Elements */
-    .new-elements-container {
-        width: 90%;
-        /* Same width as the table */
-        max-width: 80%;
-        /* Same max-width as the table */
-        margin-left: auto;
-        margin-right: auto;
-        overflow: hidden;
-        /* Clearfix */
-        margin-top: 20px;
-        /* Space above the container */
-    }
-
-    /* Dark Mode Styles for New Elements */
-    @media (prefers-color-scheme: dark) {
-        #lastUpdated {
-            color: #aaa;
+        .modal-title {
+            font-size: 1rem;
+            font-weight: bolder;
         }
 
-        .loading-bubble {
-            background-color: #00BFFF;
+        .close {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s ease;
         }
 
-        p {
-            color: #ccc;
+        .close:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
-        button {
-            background-color: #0066cc;
+        .pdf-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
 
-        button:hover {
-            background-color: #004080;
+        .pdf-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
         }
-    }
-</style>
 
+        .close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-filter {
+            padding: 4px 6px;
+            width: min-content;
+            border-bottom: 1px solid #e0e0e0;
+            background: rgba(248, 249, 255, 0.5);
+        }
+
+        .modal-table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #e74c3c;
+            font-size: 1.1rem;
+        }
+
+        .filter-section select {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.2rem;
+                font-weight: bolder;
+            }
+
+            .filter-section {
+                padding: 15px;
+                width: min-content;
+            }
+
+            .filter-section select {
+                padding: 5px;
+                font-size: 13px;
+                font-weight: bold;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .status-info {
+                padding: 12px 15px;
+                margin: 15px;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .status-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 3px;
+            }
+
+            .status-value {
+                margin-left: 0;
+            }
+
+            select {
+                min-width: 100%;
+            }
+
+            th,
+            td {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                margin: 2% auto;
+                width: 95%;
+            }
+
+            .pdf-btn {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                padding: 2px 4px;
+                border-radius: 10px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+            }
+
+            .pdf-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+                border-color: rgba(255, 255, 255, 0.5);
+                transform: translateY(-1px);
+            }
+        }
+    </style>
+</head>
 
 <body>
-    <h2>Delsgade Wifi-Data Usage</h2>
-    <!-- Filter Menus -->
-    <div id="fix">
-        <label for="month-select">Month:</label>
-        <select id="month-select">
-            <option value="">All Months</option>
-        </select>
-    </div>
-    <div id="fix">
-        <label for="date-select">Date:</label>
-        <select id="date-select">
-            <option value="">All Dates</option>
-        </select>
-    </div>
-    <div id="fix">
-        <select id="device-select">
-            <option value="">All Devices</option>
-        </select>
-    </div>
-
-
-
-    <!-- Data Table -->
-    <table border="1" id="data-table-container">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Device</th>
-                <th>Download (GB)</th>
-                <th>Upload (GB)</th>
-                <th>Total (GB)</th>
-            </tr>
-        </thead>
-        <tbody id="data-table">
-            <!-- Data will be populated here -->
-        </tbody>
-        <tfoot>
-            <tr id="total-row">
-                <td colspan="2">Total</td>
-                <td id="total-download">0</td>
-                <td id="total-upload">0</td>
-                <td id="total-total">0</td>
-            </tr>
-        </tfoot>
-    </table>
-
-    <div class="new-elements-container">
-        <p id="lastUpdated">
-            <span class="loading-bubble"></span> Last Updated At
-        </p>
-
-        <p>
-            <span class="loading-bubble"></span> Delsgade off from 10:00 pm to 05:00 am
-        </p>
-
-        <p>
-            <span class="loading-bubble"></span> Speed 300kbps After 2 GB(No Limit Now)
-        </p>
-        <p>
-            <span class="loading-bubble"></span> Block After 3 GB(No Limit Now)
-        </p>
-        <p>
-            <span class="loading-bubble"></span>10:00 PM - 12:30 AM (Game-Mode , speed 12 Mbps)
-        </p>
-
-        <div>
-            <button id="backtomain" class="filter">Go Back</button>
-            <button id="refreshButton" class="filter">Refresh Data</button>
-
+    
+    <div class="container">
+        <div class="header">
+            <h1>📊 WiFi Usage Dashboard</h1>
         </div>
 
+        <div class="filter-section">
+            <div class="filter-group">
+                <label class="filter-label">📅 Date:</label>
+                <select id="dateFilter">
+                    <option value="">Loading dates...</option>
+                </select>
+            </div>
+        </div>
 
+        <div class="table-container">
+            <div id="loading" class="loading">
+                🔄 Loading data...
+            </div>
+            <div id="error" class="error" style="display: none;">
+                ❌ Error loading data. Please check your connection.
+            </div>
+            <table id="dataTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>🖥️ Device</th>
+                        <th>⬆️ Up (GB)</th>
+                        <th>⬇️ Down (GB)</th>
+                        <th>📊 Total (GB)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+                <tfoot>
+                    <tr class="footer-row">
+                        <td><strong>Total</strong></td>
+                        <td id="totalUpload"><strong>0.00</strong></td>
+                        <td id="totalDownload"><strong>0.00</strong></td>
+                        <td id="totalData"><strong>0.00</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="status-info">
+            <div class="status-grid">
+                <div class="status-item">
+                    <span class="status-label">🚫 Delsgade Off:</span>
+                    <span class="status-value">10:00 PM - 05:00 AM</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">🐌 Speed Limit:</span>
+                    <span class="status-value">300kbps After 2 GB (No Limit Now)</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">🚫 Block After:</span>
+                    <span class="status-value">3 GB (No Limit Now)</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">🎮 Game Mode:</span>
+                    <span class="status-value">10:00 PM - 12:30 AM (12 Mbps)</span>
+                </div>
+            </div>
+
+            <div class="last-updated">
+                <span class="refresh-indicator"></span>
+                Last Updated: <span id="lastUpdatedTime">11:40 AM</span>
+                <span style="margin-left: 8px; opacity: 0.7;">• Auto-refresh every 10 minutes</span>
+            </div>
+        </div>
     </div>
-    <!-- Download Button -->
-    <div style="margin-top: 20px; margin-left: 50px;">
-        <button id="downloadPdfButton">Download as PDF</button>
+
+    <!-- Modal -->
+    <div id="deviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Device Details</h2>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <button id="downloadPdfBtn" class="pdf-btn">📄 Download PDF</button>
+                    <span class="close" onclick="closeModal()">&times;</span>
+                </div>
+            </div>
+            <div class="modal-filter">
+                <div class="filter-group">
+                    <label class="filter-label">📅 Month:</label>
+                    <select id="monthFilter">
+                        <option value="">Select Month</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>📅 Date</th>
+                            <th>⬆️ Up (GB)</th>
+                            <th>⬇️ Down (GB)</th>
+                            <th>📊 Total (GB)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalTableBody">
+                    </tbody>
+                    <tfoot>
+                        <tr class="footer-row">
+                            <td><strong>Total</strong></td>
+                            <td id="modalTotalUpload"><strong>0.000</strong></td>
+                            <td id="modalTotalDownload"><strong>0.000</strong></td>
+                            <td id="modalTotalData"><strong>0.000</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <script>
-        document.getElementById('backtomain').addEventListener('click', function () {
-            window.location.href = 'index.html';
-        });
-    </script>
-
-
-    <script>
-        document.getElementById('downloadPdfButton').addEventListener('click', function () {
-            // Use jsPDF to generate the PDF
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            // Get selected filter values
-            const selectedMonth = document.getElementById('month-select').value || "All Months";
-            const selectedDate = document.getElementById('date-select').value || "All Dates";
-            const selectedDevice = document.getElementById('device-select').value || "All Devices";
-
-            // Simulate shadow and strap with layering
-            const strapX = 10; // X position for the strap
-            const strapY = 20; // Y position for the strap
-            const strapWidth = 190; // Width of the strap
-            const strapHeight = 15; // Height of the strap
-
-            // Shadow effect (darker rectangle offset slightly)
-            doc.setFillColor(200, 200, 200); // Light gray shadow
-            doc.rect(strapX + 2, strapY + 2, strapWidth, strapHeight, 'F'); // Offset for shadow
-
-            // Main strap background
-            doc.setFillColor(240, 248, 255); // Very light blue (AliceBlue)
-            doc.rect(strapX, strapY, strapWidth, strapHeight, 'F');
-
-            // Border for the strap
-            doc.setDrawColor(169, 169, 169); // Gray border color
-            doc.rect(strapX, strapY, strapWidth, strapHeight, 'S'); // Draw border
-
-            // Add filters text in a single row over the strap
-            doc.setTextColor(0, 0, 0); // Black text color
-            doc.setFontSize(12);
-            const filtersText = `Month: ${selectedMonth}  |  Date: ${selectedDate}  |  Device: ${selectedDevice}`;
-            doc.text(filtersText, strapX + 5, strapY + 10); // Add text inside the strap (adjust Y for vertical centering)
-
-            // Add title
-            doc.setFontSize(16);
-            doc.text("Wi-Fi Data Usage", 10, 10);
-
-            // Get the table element
-            const table = document.getElementById('data-table-container');
-
-            // Format the table for PDF
-            doc.autoTable({
-                html: table,        // Automatically parse the table
-                startY: strapY + strapHeight + 10, // Start the table below the strap
-                headStyles: { fillColor: [22, 160, 133] }, // Style the header row
-                margin: { left: 10, right: 10 },          // Margins for the table
-                styles: { fontSize: 10 }                  // Font size for the table data
-            });
-
-            // Save the PDF
-            const fileName = `${selectedDevice}_${selectedMonth}.pdf`;
-            doc.save(fileName);
-        });
-    </script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-
-    <script>
-        function getPreviousTenMinuteMark() {
-            const now = new Date();
-            const minutes = now.getMinutes();
-            const roundedMinutes = minutes - (minutes % 10);
-            now.setMinutes(roundedMinutes);
-            now.setSeconds(0);
-
-            const options = { hour: 'numeric', minute: 'numeric', hour12: true };
-            return now.toLocaleTimeString([], options);
-        }
-
-        document.getElementById('lastUpdated').innerHTML += getPreviousTenMinuteMark();
-
-        document.getElementById('refreshButton').onclick = function () {
-            location.reload();
-        };
-    </script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script type="module">
-        // Import the Firebase modules
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
         import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js';
 
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAd_MRd9qzhoYYMEBKRyGBDuIUTFsLr5QM",
             authDomain: "wifi-usage.firebaseapp.com",
@@ -626,229 +552,421 @@
             appId: "1:1062426364160:web:117526cc0725c912008be5"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const dataRef = ref(db, 'data');
-        const tableBody = document.getElementById("data-table");
+        let allData = {};
+        let currentSelectedDevice = null;
+        let refreshInterval;
 
-        // Select elements for filters
-        const monthSelect = document.getElementById("month-select");
-        const dateSelect = document.getElementById("date-select");
-        const deviceSelect = document.getElementById("device-select");
+        // Load data from Firebase
+        async function loadData() {
+            try {
+                const dataRef = ref(db, 'data');
+                const snapshot = await get(dataRef);
 
-        // Variables to store unique months, dates, and devices
-        const uniqueMonths = new Set();
-        const uniqueDates = new Set();
-        const uniqueDevices = new Set();
-
-        // Get current month and today's date in required format
-        const today = new Date();
-        const currentMonth = today.toISOString().slice(0, 7); // Format YYYY-MM
-        const currentDate = today.toISOString().slice(0, 10); // Format YYYY-MM-DD
-
-        // Function to extract device name or format as "Unknown.<last_two_parts_of_IP>"
-        function extractDeviceName(ipAddress) {
-            const deviceNameMatch = ipAddress.match(/^(.+?) \((\d+\.\d+\.\d+\.\d+)\)$/);
-            if (deviceNameMatch) {
-                const [_, deviceName, ip] = deviceNameMatch;
-                return deviceName !== '*' ? deviceName : `Unknown.${ip.split('.').slice(-2).join('.')}`;
-            } else {
-                const ipOnlyMatch = ipAddress.match(/(\d+\.\d+\.\d+\.\d+)$/);
-                return ipOnlyMatch ? `Unknown.${ipOnlyMatch[0].split('.').slice(-2).join('.')}` : "Unknown";
-            }
-        }
-
-        // Get the device from the URL query string (if available)
-        function getUrlParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
-        }
-
-        const deviceFromUrl = getUrlParameter("device");
-
-        // Function to format the month string from YYYY-MM to "Month YYYY"
-        function formatMonth(month) {
-            const [year, monthNum] = month.split("-");
-            const date = new Date(year, monthNum - 1); // Month is zero-based
-            return date.toLocaleString('default', { month: 'long', year: 'numeric' });
-        }
-        // Function to populate select menus
-        // Function to populate select menus
-        function populateSelectMenus() {
-            uniqueMonths.forEach(month => {
-                const option = document.createElement("option");
-                option.value = month;
-                option.textContent = formatMonth(month); // Format month display
-                monthSelect.appendChild(option);
-            });
-
-            uniqueDates.forEach(date => {
-                const option = document.createElement("option");
-                option.value = date;
-                option.textContent = date;
-                dateSelect.appendChild(option);
-            });
-
-            uniqueDevices.forEach(device => {
-                const option = document.createElement("option");
-                option.value = device;
-                option.textContent = device;
-                deviceSelect.appendChild(option);
-            });
-
-            // Set default selected values
-            monthSelect.value = currentMonth;
-
-            // If there's a 'device' query parameter, set the device filter to it and date filter to "All Dates"
-            if (deviceFromUrl) {
-                deviceSelect.value = deviceFromUrl;
-                dateSelect.value = ""; // Set date to "All Dates"
-            } else {
-                // If no device selected, set date to today's date
-                dateSelect.value = currentDate;
-            }
-
-            // Apply initial filter after setting defaults
-            filterTable();
-        }
-
-        // Fetch data from Firebase and populate table and filters
-        get(dataRef).then((snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-
-                for (const date in data) {
-                    const month = date.slice(0, 7);
-
-                    uniqueMonths.add(month);
-                    uniqueDates.add(date);
-
-                    data[date].forEach(entry => {
-                        const device = extractDeviceName(entry["IP Address"]);
-                        uniqueDevices.add(device);
-                    });
-                }
-
-                populateSelectMenus();
-            } else {
-                console.log("No data available");
-            }
-        }).catch((error) => {
-            console.error("Error fetching data:", error);
-        });
-
-        // Function to format the date string from YYYY-MM-DD to "DD-MMM"
-        function formatDate(date) {
-            const [year, month, day] = date.split("-");
-            const dateObj = new Date(year, month - 1, day); // Month is zero-based
-            return dateObj.toLocaleString('default', { day: '2-digit', month: 'short' });
-        }
-
-        // Function to create and append a row to the table
-        function appendRow(date, device, download, upload, total) {
-            const formattedDate = formatDate(date); // Format date display
-            const row = document.createElement("tr");
-            row.innerHTML = `
-        <td>${formattedDate}</td>
-        <td>${device}</td>
-        <td>${download.toFixed(3)}</td>
-        <td>${upload.toFixed(3)}</td>
-        <td>${total.toFixed(3)}</td>
-    `;
-            tableBody.appendChild(row);
-        }
-
-        // Function to calculate and update total values
-        function updateTotalValues() {
-            let totalDownload = 0;
-            let totalUpload = 0;
-            let totalData = 0;
-
-            const rows = tableBody.querySelectorAll('tr');
-            rows.forEach(row => {
-                const download = parseFloat(row.cells[2].textContent);
-                const upload = parseFloat(row.cells[3].textContent);
-                const total = parseFloat(row.cells[4].textContent);
-
-                totalDownload += download;
-                totalUpload += upload;
-                totalData += total;
-            });
-
-            document.getElementById('total-download').textContent = totalDownload.toFixed(3);
-            document.getElementById('total-upload').textContent = totalUpload.toFixed(3);
-            document.getElementById('total-total').textContent = totalData.toFixed(3);
-        }
-
-        // Function to filter the table based on select menus
-        // Function to filter the table based on select menus
-        function filterTable() {
-            const selectedMonth = monthSelect.value;
-            const selectedDate = dateSelect.value;
-            const selectedDevice = deviceSelect.value;
-
-            tableBody.innerHTML = "";
-
-            get(dataRef).then((snapshot) => {
                 if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    const allRows = [];
-
-                    for (const date in data) {
-                        const month = date.slice(0, 7);
-
-                        if ((selectedMonth && month !== selectedMonth) ||
-                            (selectedDate && date !== selectedDate)) {
-                            continue;
-                        }
-
-                        const deviceDataMap = {};
-
-                        data[date].forEach(entry => {
-                            const device = extractDeviceName(entry["IP Address"]);
-                            if (selectedDevice && device !== selectedDevice) return;
-
-                            if (!deviceDataMap[device]) {
-                                deviceDataMap[device] = { download: 0, upload: 0, total: 0 };
-                            }
-
-                            deviceDataMap[device].download += entry["Download (GB)"];
-                            deviceDataMap[device].upload += entry["Upload (GB)"];
-                            deviceDataMap[device].total += entry["Total Data (GB)"];
-                        });
-
-                        for (const [device, values] of Object.entries(deviceDataMap)) {
-                            allRows.push({ device, date, ...values });
-                        }
-                    }
-
-                    // Sort rows by total data usage in descending order
-                    allRows.sort((a, b) => b.total - a.total);
-
-                    // If device is selected, sort by date (ascending)
-                    if (selectedDevice) {
-                        allRows.sort((a, b) => new Date(a.date) - new Date(b.date));
-                    }
-
-                    // Append sorted rows to the table
-                    allRows.forEach(row => appendRow(row.date, row.device, row.download, row.upload, row.total));
-                    updateTotalValues();
+                    allData = snapshot.val();
+                    populateDateFilter();
+                    selectTodayDate();
+                    populateMonthFilter();
+                    updateLastUpdatedTime();
+                    document.getElementById('loading').style.display = 'none';
+                } else {
+                    throw new Error('No data available');
                 }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        function updateLastUpdatedTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+            document.getElementById('lastUpdatedTime').textContent = timeString;
+        }
+
+        function startAutoRefresh() {
+            // Refresh every 10 minutes (600,000 milliseconds)
+            refreshInterval = setInterval(() => {
+                console.log('Auto-refreshing data...');
+                loadData();
+            }, 600000);
+        }
+
+        function stopAutoRefresh() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        }
+
+        function populateDateFilter() {
+            const dateFilter = document.getElementById('dateFilter');
+            const dates = Object.keys(allData).sort().reverse(); // Latest dates first
+
+            dateFilter.innerHTML = '';
+            dates.forEach(date => {
+                const option = document.createElement('option');
+                option.value = date;
+                option.textContent = formatDate(date);
+                dateFilter.appendChild(option);
             });
         }
 
-        // Add event listeners for filter changes
-        monthSelect.addEventListener('change', filterTable);
-        dateSelect.addEventListener('change', filterTable);
-        deviceSelect.addEventListener('change', () => {
-            // When a device is selected, set date to "All Dates"
-            dateSelect.value = "";
-            filterTable();
+        function populateMonthFilter() {
+            const monthFilter = document.getElementById('monthFilter');
+            const dates = Object.keys(allData);
+            const months = new Set();
+
+            dates.forEach(date => {
+                const monthYear = date.substring(0, 7); // YYYY-MM
+                months.add(monthYear);
+            });
+
+            const sortedMonths = Array.from(months).sort().reverse();
+            monthFilter.innerHTML = '';
+
+            sortedMonths.forEach(month => {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = formatMonth(month);
+                monthFilter.appendChild(option);
+            });
+
+            // Select current month
+            const currentMonth = new Date().toISOString().substring(0, 7);
+            if (sortedMonths.includes(currentMonth)) {
+                monthFilter.value = currentMonth;
+            } else {
+                monthFilter.value = sortedMonths[0];
+            }
+        }
+
+        function selectTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            const dateFilter = document.getElementById('dateFilter');
+
+            // Check if today's date exists in data
+            if (allData[today]) {
+                dateFilter.value = today;
+            } else {
+                // Select the latest available date
+                const latestDate = Object.keys(allData).sort().reverse()[0];
+                dateFilter.value = latestDate;
+            }
+
+            displayData(dateFilter.value);
+        }
+
+        function displayData(selectedDate) {
+            if (!selectedDate || !allData[selectedDate]) {
+                document.getElementById('dataTable').style.display = 'none';
+                return;
+            }
+
+            const data = allData[selectedDate];
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            let totalUpload = 0, totalDownload = 0, totalData = 0;
+
+            data.forEach(device => {
+                const deviceName = device['IP Address'].split(' (')[0];
+                const upload = parseFloat(device['Upload (GB)']) || 0;
+                const download = parseFloat(device['Download (GB)']) || 0;
+                const total = parseFloat(device['Total Data (GB)']) || 0;
+
+                totalUpload += upload;
+                totalDownload += download;
+                totalData += total;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="device-name">${deviceName}</td>
+                    <td class="data-cell">${upload.toFixed(3)}</td>
+                    <td class="data-cell">${download.toFixed(3)}</td>
+                    <td class="data-cell">${total.toFixed(3)}</td>
+                `;
+
+                row.addEventListener('click', () => openDeviceModal(deviceName, device));
+                tableBody.appendChild(row);
+            });
+
+            // Sort table rows by total data (highest first)
+            const rows = Array.from(tableBody.querySelectorAll('tr'));
+            rows.sort((a, b) => {
+                const totalA = parseFloat(a.cells[3].textContent);
+                const totalB = parseFloat(b.cells[3].textContent);
+                return totalB - totalA;
+            });
+
+            // Clear and re-append sorted rows
+            tableBody.innerHTML = '';
+            rows.forEach(row => tableBody.appendChild(row));
+
+            // Update totals
+            document.getElementById('totalUpload').innerHTML = `<strong>${totalUpload.toFixed(3)}</strong>`;
+            document.getElementById('totalDownload').innerHTML = `<strong>${totalDownload.toFixed(3)}</strong>`;
+            document.getElementById('totalData').innerHTML = `<strong>${totalData.toFixed(3)}</strong>`;
+
+            document.getElementById('dataTable').style.display = 'table';
+        }
+
+        function openDeviceModal(deviceName, deviceInfo) {
+            currentSelectedDevice = deviceName;
+            document.getElementById('modalTitle').textContent = `User -📱 ${deviceName}`;
+            document.getElementById('deviceModal').style.display = 'block';
+
+            // Load device data for the selected month
+            const selectedMonth = document.getElementById('monthFilter').value;
+            displayDeviceData(deviceName, selectedMonth);
+        }
+
+        function displayDeviceData(deviceName, selectedMonth) {
+            const modalTableBody = document.getElementById('modalTableBody');
+            modalTableBody.innerHTML = '';
+
+            if (!selectedMonth) return;
+
+            // Filter data for the selected month and device
+            const monthlyData = [];
+            Object.keys(allData).forEach(date => {
+                if (date.startsWith(selectedMonth)) {
+                    const dayData = allData[date];
+                    const deviceData = dayData.find(d => d['IP Address'].split(' (')[0] === deviceName);
+                    if (deviceData) {
+                        monthlyData.push({
+                            date: date,
+                            ...deviceData
+                        });
+                    }
+                }
+            });
+
+            // Sort by date
+            monthlyData.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            let modalTotalUpload = 0, modalTotalDownload = 0, modalTotalData = 0;
+
+            monthlyData.forEach(data => {
+                const upload = parseFloat(data['Upload (GB)']) || 0;
+                const download = parseFloat(data['Download (GB)']) || 0;
+                const total = parseFloat(data['Total Data (GB)']) || 0;
+
+                modalTotalUpload += upload;
+                modalTotalDownload += download;
+                modalTotalData += total;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDateShort(data.date)}</td>
+                    <td class="data-cell">${upload.toFixed(3)}</td>
+                    <td class="data-cell">${download.toFixed(3)}</td>
+                    <td class="data-cell">${total.toFixed(3)}</td>
+                `;
+                modalTableBody.appendChild(row);
+            });
+
+            // Update modal totals
+            document.getElementById('modalTotalUpload').innerHTML = `<strong>${modalTotalUpload.toFixed(3)}</strong>`;
+            document.getElementById('modalTotalDownload').innerHTML = `<strong>${modalTotalDownload.toFixed(3)}</strong>`;
+            document.getElementById('modalTotalData').innerHTML = `<strong>${modalTotalData.toFixed(3)}</strong>`;
+        }
+
+        function formatDateShort(dateStr) {
+            const date = new Date(dateStr);
+            return date.getDate(); // Returns just the day number (1-31)
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function formatMonth(monthStr) {
+            const [year, month] = monthStr.split('-');
+            const date = new Date(year, month - 1);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long'
+            });
+        }
+
+        function downloadPDF() {
+            const selectedMonth = document.getElementById('monthFilter').value;
+
+            if (!currentSelectedDevice || !selectedMonth) {
+                alert('No data available for download');
+                return;
+            }
+
+            // Get data for current selected month only
+            const monthlyData = [];
+            Object.keys(allData).forEach(date => {
+                if (date.startsWith(selectedMonth)) {
+                    const dayData = allData[date];
+                    const deviceData = dayData.find(d => d['IP Address'].split(' (')[0] === currentSelectedDevice);
+                    if (deviceData) {
+                        const upload = parseFloat(deviceData['Upload (GB)']) || 0;
+                        const download = parseFloat(deviceData['Download (GB)']) || 0;
+                        const total = parseFloat(deviceData['Total Data (GB)']) || 0;
+
+                        monthlyData.push({
+                            date: date,
+                            deviceName: currentSelectedDevice,
+                            upload: upload,
+                            download: download,
+                            total: total
+                        });
+                    }
+                }
+            });
+
+            // Sort by date (newest first)
+            monthlyData.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (monthlyData.length === 0) {
+                alert('No data available for the selected month');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Compact header - single line
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            const monthName = formatMonth(selectedMonth);
+            doc.text(`WiFi Usage: ${currentSelectedDevice} - ${monthName}`, 20, 20);
+
+            // Prepare table data
+            const tableData = monthlyData.map(item => [
+                formatDateShort(item.date),
+                item.upload.toFixed(2),
+                item.download.toFixed(2),
+                item.total.toFixed(2)
+            ]);
+
+            // Calculate totals
+            const totalUpload = monthlyData.reduce((sum, item) => sum + item.upload, 0);
+            const totalDownload = monthlyData.reduce((sum, item) => sum + item.download, 0);
+            const totalData = monthlyData.reduce((sum, item) => sum + item.total, 0);
+
+            // Add total row
+            tableData.push([
+                'TOTAL',
+                totalUpload.toFixed(2),
+                totalDownload.toFixed(2),
+                totalData.toFixed(2)
+            ]);
+
+            // Create compact table
+            doc.autoTable({
+                head: [['Day', 'Upload (GB)', 'Download (GB)', 'Total (GB)']],
+                body: tableData,
+                startY: 30,
+                theme: 'striped',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.1
+                },
+                headStyles: {
+                    fillColor: [102, 126, 234],
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold',
+                    fontSize: 9
+                },
+                columnStyles: {
+                    0: { halign: 'center', cellWidth: 25 },
+                    1: { halign: 'right', cellWidth: 35 },
+                    2: { halign: 'right', cellWidth: 35 },
+                    3: { halign: 'right', cellWidth: 35 }
+                },
+                didParseCell: function (data) {
+                    // Style the total row
+                    if (data.row.index === tableData.length - 1) {
+                        data.cell.styles.fillColor = [102, 126, 234];
+                        data.cell.styles.textColor = [255, 255, 255];
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                }
+            });
+
+            // Compact summary in two columns
+            const finalY = doc.lastAutoTable.finalY + 15;
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Summary:', 20, finalY);
+
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'normal');
+            // Left column
+            doc.text(`Days: ${monthlyData.length}`, 20, finalY + 10);
+            doc.text(`Avg/Day: ${(totalData / monthlyData.length).toFixed(2)} GB`, 20, finalY + 18);
+
+            // Right column
+            doc.text(`Total Upload: ${totalUpload.toFixed(2)} GB`, 80, finalY + 10);
+            doc.text(`Total Download: ${totalDownload.toFixed(2)} GB`, 80, finalY + 18);
+
+            // Save the PDF with compact filename
+            const fileName = `${currentSelectedDevice}_${selectedMonth.replace('-', '_')}.pdf`;
+            doc.save(fileName);
+        }
+
+        // Event Listeners
+        document.getElementById('dateFilter').addEventListener('change', (e) => {
+            displayData(e.target.value);
         });
 
+        document.getElementById('monthFilter').addEventListener('change', (e) => {
+            if (currentSelectedDevice) {
+                displayDeviceData(currentSelectedDevice, e.target.value);
+            }
+        });
+
+        document.getElementById('downloadPdfBtn').addEventListener('click', downloadPDF);
+
+        // Modal functions
+        function closeModal() {
+            document.getElementById('deviceModal').style.display = 'none';
+        }
+
+        // Make it available globally for the onclick handler
+        window.closeModal = closeModal;
+
+        window.onclick = function (event) {
+            const modal = document.getElementById('deviceModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Initialize
+        loadData();
+        startAutoRefresh();
+
+        // Stop auto-refresh when page is hidden/closed
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else {
+                startAutoRefresh();
+            }
+        });
     </script>
+
+    
 
 </body>
 

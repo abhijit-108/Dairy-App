@@ -260,23 +260,23 @@ body {
 
 @media (prefers-color-scheme: dark) {
     body {
-        background: #494949;
+        background: #1e1e2e;
         color: #e0e0e0;
         padding-top: 6rem;
     }
 
     .container {
-        background: #333333;
-        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        background: #2a2a3c;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .title-bar {
-        background: #1a1a1a;
+        background: #181825;
         border-bottom: 1px solid #333;
     }
 
     .side-panel {
-        background: #2d2d2d;
+        background: #1e1e2e;
     }
 
     .panel-item a {
@@ -284,19 +284,19 @@ body {
     }
 
     .styled-select {
-        background-color: #444444;
-        border: 2px solid #666666;
+        background-color: #313244;
+        border: 2px solid #45475a;
         color: #e0e0e0;
     }
 
     .input-field input {
-        background-color: #444444;
+        background-color: #313244;
         color: #fffcfc;
-        border: 2px solid #666666;
+        border: 2px solid #45475a;
     }
 
     .input-field label {
-        background: #333333;
+        background: #2a2a3c;
         color: #e4e4e4;
     }
 
@@ -309,85 +309,227 @@ body {
     }
 
     .modal-content {
-        background: #333333;
+        background: #2a2a3c;
         color: #e0e0e0;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     }
 
     .modal-row {
-        border-bottom: 1px solid #555555;
+        border-bottom: 1px solid #45475a;
         color: #e0e0e0;
     }
 
     .close-btn {
         color: #e0e0e0;
     }
+    
+    .todaybox {
+        background: linear-gradient(145deg, #2a2a3c, #313244);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    }
+    
+    .todaybox-title {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .todaybox-title h2 {
+        color: #e0e0e0;
+    }
+    
+    #table_today {
+        color: #e0e0e0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    #table_today td {
+        border-bottom: 1px solid #45475a;
+    }
+    
+    #table_today tbody tr:hover {
+        background-color: rgba(79, 70, 229, 0.1);
+    }
 }
 
 #table_today {
     display: relative;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     border-radius: 10px;
-    margin-top: 40px;
-    overflow-y: auto;
+    margin-top: 10px;
+    overflow-x: auto;
     width: 100%;
-    padding: 10px;
-    color: #000000d4;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 #table_today td {
-    padding: 6px;
+    padding: 12px 8px;
     text-align: center;
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 500;
+    border-bottom: 1px solid #eee;
 }
 
 #table_today th {
-    font-size: 12px;
-    color: #dfdfdf;
+    padding: 15px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
 
-    background-color: #080c82;
+#table_today th:first-child {
+    border-top-left-radius: 10px;
+}
+
+#table_today th:last-child {
+    border-top-right-radius: 10px;
 }
 
 #table_today tfoot {
-    color: #eaffa7;
+    color: #fff;
     font-weight: bold;
-    background-color: #102402;
+    background: linear-gradient(135deg, #1e293b, #334155);
+}
+
+#table_today tfoot td {
+    padding: 12px 8px;
+    border-bottom: none;
 }
 
 #table_today tfoot td:first-child {
     text-align: center;
     font-size: 16px;
+    border-bottom-left-radius: 10px;
+}
+
+#table_today tfoot td:last-child {
+    border-bottom-right-radius: 10px;
 }
 
 #table_today tbody tr:nth-child(1) {
-    color: #2316db;
+    color: #4f46e5;
+}
+
+#table_today tbody tr:hover {
+    background-color: rgba(79, 70, 229, 0.05);
 }
 
 #table_today tbody td:nth-child(2) {
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 #table_today td:nth-child(6),
-td:nth-child(7) {
-    color: hsl(0, 100%, 44%);
+#table_today td:nth-child(7) {
+    color: #e11d48;
     font-size: 15px;
-    font-weight: bolder;
+    font-weight: 700;
 }
 
 .todaybox {
-    width: 96%;
+    width: 99%;
     max-width: 650px;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 20px;
     margin-bottom: 50px;
-    box-shadow: 0 8px 32px 0;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    padding: 15px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.todaybox-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.todaybox-title i {
+    font-size: 1.5rem;
+    color: #4f46e5;
+    margin-right: 10px;
+}
+
+.todaybox-title h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.todaybox::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #4f46e5, #6366f1);
+    animation: shimmer 2s infinite linear;
+    background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+/* Responsive styles for mobile devices */
+@media (max-width: 768px) {
+    .todaybox {
+        width: 100%;
+        padding: 10px;
+    }
+    
+    .todaybox-title h2 {
+        font-size: 1.1rem;
+    }
+    
+    #table_today th,
+    #table_today td {
+        padding: 8px 5px;
+        font-size: 12px;
+    }
+    
+    #table_today td:nth-child(6),
+    #table_today td:nth-child(7) {
+        font-size: 15px;
+    }
+    #table_today tbody td:nth-child(2) {
+    font-size: 12px;
+    font-weight: 600;
+}
+  
 }
 
 .todaybox:hover {
-    transform: scale(1.02);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
 }
 
 

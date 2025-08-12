@@ -5,6 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dairy Records</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
     /* Transparent Loading Screen Styles */
     #loading-screen {
@@ -13,185 +15,450 @@
       left: 0;
       width: 100%;
       height: 100%;
-      /* A semi-transparent white so the background can be seen */
       background: rgba(0, 0, 0, 0.8);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 1000;
+      backdrop-filter: blur(5px);
     }
 
     .spinner {
-      border: 8px solid #f3f3f3;
-      border-top: 8px solid #3498db;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top: 4px solid #4CAF50;
       border-radius: 50%;
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       animation: spin 1s linear infinite;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
 
     @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     .Pleasewait {
       color: white;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
     }
 
     /* General Styles */
-    body {
-      font-family: 'Arial', sans-serif;
+    * {
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
       margin: 0;
       padding: 0;
-      background: #a4a4a4;
+    }
+
+    body {
+      background: #f5f5f7;
+      margin: 0;
+      padding: 0;
+      padding-top: 1rem;
       color: #333;
       transition: background 0.3s, color 0.3s;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      color: #1e293b;
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: white;
+    }
+
+    .page-header p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1rem;
     }
 
     .filter-container {
       display: flex;
       flex-wrap: wrap;
+      justify-content: center;
       gap: 15px;
-      padding: 25px;
-      width: max-content;
-      margin: 1rem auto;
-      background: #ffffff;
-      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.4);
-      border-radius: 8px;
+      padding: 20px;
+      width: 90%;
+      max-width: 800px;
+      margin: 0 auto 1.5rem auto;
+      background: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      animation: fadeIn 0.5s ease-out forwards;
     }
 
     .select-wrapper {
       position: relative;
       display: flex;
       align-items: center;
-      width: 150px;
+      width: 160px;
     }
 
     .select-wrapper select {
       width: 100%;
-      padding: 10px;
-      border: 2px solid #ccc;
-      border-radius: 5px;
+      padding: 12px 15px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
       font-size: 14px;
-      font-weight: bold;
-      background: transparent;
-      color: rgb(0, 0, 0);
+      font-weight: 500;
+      background: #f8fafc;
+      color: #334155;
       appearance: none;
       outline: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .select-wrapper select:hover {
+      border-color: #cbd5e1;
+      background: #f1f5f9;
+    }
+
+    .select-wrapper select:focus {
+      border-color: #4CAF50;
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+
+    .select-wrapper::after {
+      content: '\f107';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      right: 15px;
+      color: #64748b;
+      pointer-events: none;
     }
 
     .select-wrapper label {
       position: absolute;
       top: -10px;
       left: 10px;
-      background: #0c8925;
-      padding: 0 5px;
+      background: #4CAF50;
+      padding: 0 8px;
       font-size: 12px;
       color: white;
-      font-weight: bold;
+      font-weight: 500;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
     }
 
-    /* Table Container for Small Screens */
+    /* Table Container */
     .table-container {
       overflow-x: auto;
       overflow-y: auto;
       max-height: 600px;
-      padding: 10px;
+      padding: 15px;
       width: 90%;
-      margin: 0 auto;
-      margin-top: 0.5rem;
+      max-width: 800px;
+      margin: 0 auto 1.5rem auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      animation: slideInRight 0.6s ease-out forwards;
+      opacity: 0;
+    }
+    
+    .table-container:nth-child(4) {
+      animation-delay: 0.2s;
+    }
+
+    .table-container:hover {
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+
+    /* Table Header Styles */
+    .table-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .table-header h2 {
+      font-size: 20px;
+      margin: 0;
+      color: #2E7D32;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     /* Table Styling */
     table {
       width: 100%;
-      max-width: 750px;
-      margin-left: auto;
-      margin-right: auto;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
       background: white;
-      border-radius: 10px;
+      border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
     }
 
-    th,
-    td {
-      border: 1px solid #ddd;
-      padding: 4px;
+    th, td {
+      padding: 12px 15px;
       text-align: center;
       font-size: 14px;
-      white-space: nowrap;
     }
 
     th {
-      background: linear-gradient(135deg, #28a745, #218838);
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
       color: white;
-      font-weight: bold;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 12px;
+      border: none;
+    }
+
+    th:first-child {
+      border-top-left-radius: 8px;
+    }
+
+    th:last-child {
+      border-top-right-radius: 8px;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #e2e8f0;
+      transition: background 0.2s;
+    }
+
+    tbody tr:hover {
+      background-color: #f5f9f5;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    td {
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    tfoot {
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #1e293b;
     }
 
     tfoot td {
-      font-weight: bold;
-      background: #e9ecef;
+      border-top: 2px solid #cbd5e1;
+      color: #2E7D32;
     }
 
-    /* Target the last column (header and cells) */
+    tfoot td:first-child {
+      border-bottom-left-radius: 8px;
+    }
 
+    tfoot td:last-child {
+      border-bottom-right-radius: 8px;
+    }
+
+    /* Target specific columns */
     table tr td:last-child {
-      color: rgb(30, 21, 21);
-      font-weight: bolder;
-      /* Change to your desired color */
+      color: #1e293b;
+      font-weight: 700;
     }
 
-    /* Target the second-to-last column (header and cells) */
-    table tr th:nth-last-child(2),
     table tr td:nth-last-child(2) {
-      color: rgb(0, 0, 153);
-      font-weight: bold;
-      /* Change to your desired color */
+      color: #2E7D32;
+      font-weight: 600;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    /* Back Button Styles */
+    .back-button-container {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    .back-button:hover {
+      background-color: #3e8e41;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+      animation: pulse 1s infinite;
     }
 
     /* Mobile-Friendly Adjustments */
-    @media screen and (max-width: 500px) {
-
-      th,
-      td {
-        padding: 5px;
-        font-size: 12px;
+    @media screen and (max-width: 768px) {
+      .page-header h1 {
+        font-size: 1.5rem;
       }
 
       .filter-container {
-        flex-direction: column;
-        align-items: stretch;
+        padding: 15px;
+        width: 95%;
       }
 
-      .filter-container select {
+      .select-wrapper {
+        width: 140px;
+      }
+
+      th, td {
+        padding: 10px 8px;
+        font-size: 13px;
+      }
+
+      .table-container {
+        padding: 10px;
+        width: 95%;
+        max-height: 500px;
+      }
+      
+      .back-button {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
+
+    @media screen and (max-width: 500px) {
+      .filter-container {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 15px 10px;
+      }
+
+      .select-wrapper {
+        width: 100%;
+      }
+
+      th, td {
+        padding: 8px 5px;
         font-size: 12px;
       }
 
-      /* Table Container for Small Screens */
-      /* Table Container for Small Screens */
       .table-container {
-        overflow-x: auto;
-        overflow-y: auto;
-        max-height: 400px;
         padding: 8px;
-        width: 98%;
-        margin: 0 auto;
-        margin-top: 0.5rem;
+        max-height: 400px;
       }
     }
 
     .disabled {
       display: none;
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #1e1e2e;
+        color: #e0e0e0;
+      }
+
+      .page-header {
+        color: #e0e0e0;
+        background: linear-gradient(135deg, #388E3C, #1B5E20);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      .page-header p {
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .filter-container,
+      .table-container {
+        background: #2a2a3c;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .select-wrapper select {
+        background: #313244;
+        border-color: #45475a;
+        color: #e0e0e0;
+      }
+
+      .select-wrapper select:hover {
+        border-color: #585b70;
+        background: #3a3c4e;
+      }
+      
+      .select-wrapper select:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+      }
+      
+      .table-header h2 {
+        color: #81C784;
+      }
+
+      table {
+        background: #2a2a3c;
+      }
+
+      tbody tr:hover {
+        background-color: #313244;
+      }
+
+      td {
+        border-bottom: 1px solid #45475a;
+        color: #e0e0e0;
+      }
+
+      tfoot {
+        background: #313244;
+        color: #e0e0e0;
+      }
+
+      tfoot td {
+        border-top: 2px solid #45475a;
+        color: #81C784;
+      }
+      
+      table tr td:nth-last-child(2) {
+        color: #81C784;
+      }
+      
+      .back-button {
+        background-color: #388E3C;
+        box-shadow: 0 4px 12px rgba(56, 142, 60, 0.3);
+      }
+      
+      .back-button:hover {
+        background-color: #2E7D32;
+      }
     }
   </style>
 </head>
@@ -201,6 +468,12 @@
   <div id="loading-screen">
     <div class="spinner"></div>
     <div class="Pleasewait">Please wait...</div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1><i class="fas fa-users"></i> Dairy Records</h1>
+    <p>View and filter all member records</p>
   </div>
 
   <!-- Main Filters -->
@@ -233,6 +506,9 @@
 
   <!-- Main Data Table -->
   <div class="table-container">
+    <div class="table-header">
+      <h2><i class="fas fa-calendar-day"></i> Daily Records</h2>
+    </div>
     <table id="dataTable">
       <thead>
         <tr>
@@ -263,6 +539,9 @@
 
   <!-- Aggregated Data Table by Name -->
   <div class="table-container">
+    <div class="table-header">
+      <h2><i class="fas fa-chart-pie"></i> Summary by Name</h2>
+    </div>
     <table id="nameAggregateTable">
       <thead>
         <tr>
@@ -283,6 +562,13 @@
         </tr>
       </tfoot>
     </table>
+  </div>
+  
+  <!-- Back to Home Button -->
+  <div class="back-button-container">
+    <a href="index.html" class="back-button">
+      <i class="fas fa-home"></i> Back to Home
+    </a>
   </div>
 
   <script type="module">
