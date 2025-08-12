@@ -151,14 +151,19 @@ body {
 
 #kg {
     border: 2px solid red;
+    font-size: 1.3rem;
+
 }
 
 #fat {
     border: 2px solid rgb(2, 221, 111);
+    font-size: 1.3rem;
+
 }
 
 #snf {
     border: 2px solid rgb(106, 0, 255);
+    font-size: 1.3rem;
 }
 
 .input-field label {
