@@ -32,17 +32,18 @@ body {
     font-size: 1.5rem;
     cursor: pointer;
     transition: transform 0.2s;
-    margin-right: 1rem;
+    margin-right: 20px;
 }
 
 .heading {
-    color: rgb(3, 237, 50);
+    color: rgb(0, 200, 40);
     display: block;
     overflow: hidden;
     padding: 4px;
     border-radius: 5px;
     background-color: #979d95;
     font-weight: bolder;
+    margin-right: auto;
 
 }
 
@@ -153,18 +154,21 @@ body {
 #kg {
     border: 2px solid red;
     font-size: 1.3rem;
+    color: rgb(95, 0, 0);
 
 }
 
 #fat {
     border: 2px solid rgb(2, 221, 111);
     font-size: 1.3rem;
+    color: #125300;
 
 }
 
 #snf {
     border: 2px solid rgb(106, 0, 255);
     font-size: 1.3rem;
+    color: #37006f;
 }
 
 .input-field label {
@@ -323,29 +327,29 @@ body {
     .close-btn {
         color: #e0e0e0;
     }
-    
+
     .todaybox {
         background: linear-gradient(145deg, #2a2a3c, #313244);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
     }
-    
+
     .todaybox-title {
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
+
     .todaybox-title h2 {
         color: #e0e0e0;
     }
-    
+
     #table_today {
         color: #e0e0e0;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
-    
+
     #table_today td {
         border-bottom: 1px solid #45475a;
     }
-    
+
     #table_today tbody tr:hover {
         background-color: rgba(79, 70, 229, 0.1);
     }
@@ -432,7 +436,7 @@ body {
 
 .todaybox {
     width: 99%;
-    max-width: 650px;
+    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
     margin-top: 20px;
@@ -440,7 +444,7 @@ body {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     border-radius: 15px;
     background: linear-gradient(145deg, #ffffff, #f0f0f0);
-    padding: 15px;
+    padding: 10px;
     transition: all 0.3s ease;
     overflow: hidden;
     position: relative;
@@ -473,6 +477,7 @@ body {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -495,6 +500,7 @@ body {
     0% {
         background-position: 100% 0;
     }
+
     100% {
         background-position: -100% 0;
     }
@@ -506,26 +512,27 @@ body {
         width: 100%;
         padding: 10px;
     }
-    
+
     .todaybox-title h2 {
         font-size: 1.1rem;
     }
-    
+
     #table_today th,
     #table_today td {
         padding: 8px 5px;
         font-size: 12px;
     }
-    
+
     #table_today td:nth-child(6),
     #table_today td:nth-child(7) {
         font-size: 15px;
     }
+
     #table_today tbody td:nth-child(2) {
-    font-size: 12px;
-    font-weight: 600;
-}
-  
+        font-size: 12px;
+        font-weight: 600;
+    }
+
 }
 
 .todaybox:hover {
@@ -535,9 +542,10 @@ body {
 
 
 #fixcurrentrate {
-    color: rgb(147, 92, 3);
+    color: rgb(248, 153, 0);
     font-weight: bolder;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    margin-right: auto;
 }
 
 .pm-row {
@@ -593,4 +601,7 @@ body {
 .headerloginguest {
     background-color: rgb(152, 0, 0);
     color: rgb(255, 240, 240);
+
+
 }
+
