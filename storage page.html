@@ -14,102 +14,141 @@
 
         body {
             font-family: 'Lato', sans-serif;
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d30 100%);
+            color: #e0e0e0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             text-align: center;
         }
 
-
         .content-box {
             width: 310px;
             margin: 10px auto;
-            padding: 10px;
-            background-color: #f1f1f1;
-            border: 1px solid #838181;
-            border-radius: 4px;
+            padding: 20px;
+            background: rgba(40, 40, 40, 0.9);
+            border: 1px solid #555;
+            border-radius: 12px;
             display: grid;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
-        .disabled{
+
+        .disabled {
             display: none;
         }
+
         h1 {
-            font-size: 25px;
-            margin-top: 15px;
-            color: #333;
+            font-size: 28px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #64b5f6, #42a5f5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         input[type="file"],
         select {
             margin: 10px;
-            padding: 10px 15px;
-            border: 1.5px solid #000000;
-            border-radius: 4px;
+            padding: 12px 16px;
+            border: 2px solid #555;
+            border-radius: 8px;
             font-size: 16px;
             width: calc(100% - 40px);
             max-width: 300px;
+            background-color: #2d2d30;
+            color: #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        input[type="file"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #64b5f6;
+            box-shadow: 0 0 10px rgba(100, 181, 246, 0.3);
+        }
+
+        input[type="file"]:hover,
+        select:hover {
+            border-color: #777;
         }
 
         #backtomain {
             position: fixed;
-            right: 10px;
-            top: 50px;
-            padding: 10px 18px;
-            background-color: #dfdf14;
+            right: 20px;
+            top: 20px;
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #ffd54f, #ffca28);
             font-weight: bold;
-            color: #4e1d87;
-            border: 1.2px solid rgb(72, 148, 46);
-            border-radius: 5px;
+            color: #1e1e1e;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(255, 213, 79, 0.3);
         }
 
         #backtomain:hover {
-            background-color: #dd4b0d;
+            background: linear-gradient(45deg, #ff8a65, #ff7043);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 138, 101, 0.4);
         }
 
         #uploadButton {
-            background-color: #4CAF50;
+            background: linear-gradient(45deg, #66bb6a, #4caf50);
             color: white;
             border: none;
             cursor: pointer;
-            padding: 10px 15px;
-            width: 140px;
-            margin-top: 15px;
+            padding: 12px 18px;
+            width: 160px;
+            margin-top: 20px;
             font-size: 16px;
+            font-weight: bold;
             margin-left: auto;
             margin-right: auto;
-            transition: background-color 0.3s;
-            border-radius: 5px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
         }
 
         #uploadButton:hover {
-            background-color: #cf4848;
+            background: linear-gradient(45deg, #ef5350, #f44336);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+        }
+
+        #uploadButton:active {
+            transform: translateY(0);
         }
 
         #status {
-            color: #f44336;
-            margin-top: 10px;
+            color: #ff8a80;
+            margin-top: 15px;
             font-size: 16px;
+            font-weight: 500;
         }
 
         #progressBar {
             width: 100%;
             max-width: 300px;
-            height: 15px;
-            background-color: #e35c5c;
-            margin: 10px auto;
+            height: 8px;
+            background-color: #333;
+            margin: 15px auto;
             display: none;
-            border-radius: 5px;
+            border-radius: 10px;
             overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         #progress {
             height: 100%;
-            background-color: #4CAF50;
+            background: linear-gradient(90deg, #4caf50, #66bb6a);
             width: 0%;
-            transition: width 0.3s;
+            transition: width 0.3s ease;
+            border-radius: 10px;
         }
 
         #photoContainer {
@@ -117,9 +156,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #fff;
-            padding: 20px 0;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: rgba(30, 30, 30, 0.8);
+            padding: 30px 0;
+            backdrop-filter: blur(10px);
         }
 
         .display-box {
@@ -132,76 +171,104 @@
 
         .photoBox {
             width: 100%;
+            max-width: 400px;
             text-align: center;
-            box-shadow: 0 8px 32px 0;
-            background-color: #fff;
-            border-radius: 4px;
-            margin: 10px;
-            margin-bottom: 80px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            background: rgba(45, 45, 48, 0.9);
+            border-radius: 12px;
+            margin: 15px;
+            margin-bottom: 20px;
             overflow: hidden;
-            transition: 0.3s ease-in-out ;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .photoBox:hover {
-            transform: scale(1.05);
-            /* Zoom in by 5% */
-
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            border-color: rgba(100, 181, 246, 0.5);
         }
 
         @media (min-width: 768px) {
             .photoBox {
                 width: 500px;
-
-                transition: transform 0.3s ease-in-out;
             }
-
         }
 
         .photoBox img {
-            width: 105%;
-            /* Make the image take the full width of its container */
+            width: 100%;
             height: auto;
-            /* Maintain the aspect ratio */
             object-fit: cover;
-            /* Ensure the image covers the container */
-            /* Crop from the right */
+            transition: transform 0.3s ease;
+        }
+
+        .photoBox:hover img {
+            transform: scale(1.05);
         }
 
         .comment {
-            margin: 10px 0;
+            margin: 15px 0;
             font-size: 18px;
             font-weight: bold;
-            color: #666;
+            color: #b0b0b0;
+            padding: 0 15px;
         }
 
         .downloadButton {
-            margin: 10px 0;
-            padding: 12px 14px;
+            margin: 15px 0 20px 0;
+            padding: 12px 20px;
             font-size: 15px;
-            background-color: #ac3a05;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff7043, #ff5722);
             color: white;
             border: none;
             cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(255, 87, 34, 0.3);
         }
 
         .downloadButton:hover {
-            background-color: #45a049;
+            background: linear-gradient(45deg, #66bb6a, #4caf50);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
         }
 
         footer {
             text-align: center;
-            padding: 10px;
-            background-color: #f1f1f1;
-            margin-top: 20px;
+            padding: 15px;
+            background: rgba(20, 20, 20, 0.8);
+            margin-top: 30px;
+            color: #888;
         }
 
         @media (min-width: 768px) {
             .photoBox {
                 width: calc(50% - 40px);
-                /* Two photos per row on larger screens */
             }
+        }
+
+        /* Custom file input styling */
+        input[type="file"]::file-selector-button {
+            background: linear-gradient(45deg, #64b5f6, #42a5f5);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: linear-gradient(45deg, #42a5f5, #2196f3);
+            transform: translateY(-1px);
+        }
+
+        /* Select dropdown styling */
+        select option {
+            background-color: #2d2d30;
+            color: #e0e0e0;
         }
     </style>
 </head>
@@ -209,7 +276,7 @@
 <body>
     <h1>Upload Photo to Firebase Storage</h1>
     <br><button id="backtomain">Main Page</button>
-    <div id="content_box" class="content-box" >
+    <div id="content_box" class="content-box">
         <input type="file" id="fileInput">
         <select id="commentInput">
             <option value="01_currentmonth_currentyear-07_currentmonth_currentyear">1 to 7</option>
@@ -249,7 +316,7 @@
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getStorage, ref, uploadBytesResumable, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
-        import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
@@ -404,7 +471,6 @@
             }
         }
 
-
         function downloadFile(url, fileName) {
             fetch(url)
                 .then(response => response.blob())
@@ -433,7 +499,7 @@
         window.onload = displayPhotos;
 
         onAuthStateChanged(auth, (user) => {
-             const content_box = document.getElementById('content_box');
+            const content_box = document.getElementById('content_box');
 
             if (user) {
                 content_box.classList.remove('disabled');
