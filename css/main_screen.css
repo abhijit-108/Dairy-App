@@ -264,6 +264,26 @@ body {
 }
 
 @media (prefers-color-scheme: dark) {
+
+    #kg {
+        border: 2px solid red;
+        font-size: 1.3rem;
+        color: rgb(255, 185, 185);
+    
+    }
+    
+    #fat {
+        border: 2px solid rgb(2, 221, 111);
+        font-size: 1.3rem;
+        color: rgb(191, 255, 184);
+    
+    }
+    
+    #snf {
+        border: 2px solid rgb(106, 0, 255);
+        font-size: 1.3rem;
+        color: rgb(221, 179, 255);
+    }
     body {
         background: #1e1e2e;
         color: #e0e0e0;
