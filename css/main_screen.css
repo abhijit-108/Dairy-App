@@ -36,12 +36,12 @@ body {
 }
 
 .heading {
-    color: rgb(0, 200, 40);
+    color: rgb(0, 166, 33);
     display: block;
     overflow: hidden;
     padding: 4px;
     border-radius: 5px;
-    background-color: #979d95;
+    background-color: #dbdbdb;
     font-weight: bolder;
     margin-right: auto;
 
