@@ -104,7 +104,8 @@
 
  .title-sub {
      font-size: 12px;
-     color: rgba(0, 0, 0, 0.5);
+     font-weight: bold;
+     color: rgba(0, 0, 0, 0.6);
  }
 
  .spacer {
@@ -146,7 +147,7 @@
  .sidebar {
      width: 70vw;
      max-width: 300px;
-     height: 92vh;
+     height: 94vh;
      padding: 22px;
      display: flex;
      flex-direction: column;
@@ -177,7 +178,7 @@
  .brand-bubble {
      width: 44px;
      height: 44px;
-     border-radius: 10px;
+     border-radius: 8px;
      display: grid;
      place-items: center;
      background: linear-gradient(180deg, #6c53ff, #3a2fb1);
@@ -400,7 +401,8 @@
 
      .title-sub {
          font-size: 10px;
-         color: rgba(0, 0, 0, 0.5);
+         font-weight: bold;
+         color: rgba(0, 0, 0, 0.6);
      }
 
      .spacer {
@@ -790,6 +792,9 @@
 
  #fix_rate1 {
      font-weight: bold;
+     font-size: 11px;
+     color: #9cfaff;
+     margin-top: 5px;
  }
 
  .milk-dashboard-container {
@@ -1020,6 +1025,14 @@
 
  /* Mobile responsiveness */
  @media (max-width: 768px) {
+
+     #fix_rate1 {
+     font-weight: bolder;
+     font-size: 11px;
+     color: #34ac92;
+     margin-top: 5px;
+ }
+
      .milk-dashboard-container {
          width: 100%;
          max-width: 750px;
