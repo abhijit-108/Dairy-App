@@ -7,8 +7,9 @@
     <title>Dairy CaL</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="logo.png" type="image/png">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main_screen.css?v=6.0.2">
+    <link rel="stylesheet" href="css/main_screen.css?v=6.0.3">
 </head>
 
 <body>
@@ -51,150 +52,128 @@
             </div>
 
             <div class="nav-list" role="list">
+
                 <div class="nav-item" role="listitem" tabindex="0">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M3 12h18" stroke="#fff" stroke-width="1.6" stroke-linecap="round"
-                            stroke-linejoin="round" opacity="0.9" />
-                    </svg>
+                    <i class='bx bx-group'></i>
                     <span>All Members</span>
                 </div>
 
                 <div class="nav-item" role="listitem" tabindex="0">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <rect x="3" y="6" width="18" height="12" rx="2" stroke="#fff" stroke-width="1.4"
-                            opacity="0.9" />
-                    </svg>
+                    <i class='bx bx-receipt'></i>
                     <span>Generate New Bills</span>
                 </div>
 
                 <div class="nav-item" role="listitem" tabindex="0">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.4" opacity="0.9" />
-                    </svg>
+                    <i class='bx bx-photo-album'></i>
                     <span>Old Bills Photos</span>
                 </div>
 
-                <div id="hide_names1"">
-                    <div class=" nav-item" role="listitem" tabindex="0">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M4 6h16M4 12h16M4 18h10" stroke="#fff" stroke-width="1.4" stroke-linecap="round" />
-                    </svg>
-                    <span>Fix Data</span>
+                <div id="hide_names1">
+                    <div class="nav-item" role="listitem" tabindex="0">
+                        <i class='bx bx-cog'></i>
+                        <span>Fix Data</span>
+                    </div>
+                </div>
+
+                <div class="nav-item" role="listitem" tabindex="0">
+                    <i class='bx bx-wifi'></i>
+                    <span>Wifi Usage</span>
+                </div>
+
+                <div class="nav-item" role="listitem" tabindex="0">
+                    <i class='bx bx-globe'></i>
+                    <span>All Guide Website</span>
+                </div>
+
+                <div class="nav-item" role="listitem" tabindex="0">
+                    <i class='bx bx-log-out'></i>
+                    <button id="logoutButton">Logout</button>
+                </div>
+
+            </div>
+
+            <div class="footer">© <span id="currentYear">2025</span> Delsgade</div>
+        </nav>
+
+        <div class="overlay" id="overlay"></div>
+
+        <!-- MAIN content: your Milk page sits here -->
+        <main class="main" id="mainContent">
+            <div class="container">
+                <!-- Audio elements for playing MP3 files -->
+                <div class="audio-elements">
+                    <audio id="successAudio" preload="auto">
+                        <source src="success.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio id="existsAudio" preload="auto">
+                        <source src="already_exist.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio id="failedAudio" preload="auto">
+                        <source src="failed.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio id="warningAudio" preload="auto">
+                        <source src="warning.mp3" type="audio/mpeg">
+                    </audio>
+                </div>
+
+
+                <div class="audio-toggle">
+                    <label>
+                        <input type="checkbox" id="audioEnabled" checked>
+                        🔊 Audio Feedback
+                    </label>
+                </div>
+
+
+                <form id="milkForm">
+
+                    <div id="hide_names">
+                        <div class="form-group">
+                            <label for="nameSelect">Select Name:</label>
+                            <select id="nameSelect">
+                                <option value="" class="loading">Loading names...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <div class="form-group">
+                            <label for="kg">KG:</label>
+                            <input type="number" id="kg" step="0.001" placeholder="">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fat">FAT:</label>
+                            <input type="number" id="fat" step="0.1" placeholder="">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="snf">SNF:</label>
+                            <input type="number" id="snf" step="0.1" placeholder="">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Calculate</button>
+                </form>
+            </div>
+
+            <!-- Popup Overlay (unchanged) -->
+            <div id="popupOverlay" class="popup-overlay">
+                <div id="popupCard" class="popup-card">
+                    <button id="closeBtn" class="close-btn">×</button>
+                    <div id="statusMessage" class="status-message"></div>
+                    <h2 id="popupTitle" class="popup-title"></h2>
+                    <div id="popupDetails" class="popup-details"></div>
+                    <div id="existingEntry" class="existing-entry" style="display: none;">
+                        <h3>Old Entry:</h3>
+                        <div id="existingEntryDetails"></div>
+                    </div>
+                    <div id="actionButtons" class="action-buttons">
+                        <button id="updateBtn" class="update-btn" style="display: none;">Update Entry</button>
+                    </div>
                 </div>
             </div>
-
-            <div class="nav-item" role="listitem" tabindex="0">
-                <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M12 8v8M8 12h8" stroke="#fff" stroke-width="1.6" stroke-linecap="round" />
-                </svg>
-                <span>Wifi Usage</span>
-            </div>
-
-            <div class="nav-item" role="listitem" tabindex="0">
-                <svg viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="1.5" fill="#fff" />
-                    <path
-                        d="M12 3v1.5M12 19.5V21M4.2 5.6l1.1 1.1M18.7 18.1l1.1 1.1M3 12h1.5M19.5 12H21M4.2 18.4l1.1-1.1M18.7 5.9l1.1-1.1"
-                        stroke="#fff" stroke-width="1" stroke-linecap="round" />
-                </svg>
-                <span>All Guide Website</span>
-            </div>
-
-            <div class="nav-item" role="listitem" tabindex="0">
-                <svg viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="1.5" fill="#fff" />
-                    <path
-                        d="M12 3v1.5M12 19.5V21M4.2 5.6l1.1 1.1M18.7 18.1l1.1 1.1M3 12h1.5M19.5 12H21M4.2 18.4l1.1-1.1M18.7 5.9l1.1-1.1"
-                        stroke="#fff" stroke-width="1" stroke-linecap="round" />
-                </svg>
-                <button id="logoutButton">Logout</button>
-            </div>
+        </main>
     </div>
-
-    <div class="footer">© <span id="currentYear">2025</span> Delsgade</div>
-    </nav>
-
-    <div class="overlay" id="overlay"></div>
-
-    <!-- MAIN content: your Milk page sits here -->
-    <main class="main" id="mainContent">
-        <div class="container">
-            <!-- Audio elements for playing MP3 files -->
-            <div class="audio-elements">
-                <audio id="successAudio" preload="auto">
-                    <source src="success.mp3" type="audio/mpeg">
-                </audio>
-                <audio id="existsAudio" preload="auto">
-                    <source src="already_exist.mp3" type="audio/mpeg">
-                </audio>
-                <audio id="failedAudio" preload="auto">
-                    <source src="failed.mp3" type="audio/mpeg">
-                </audio>
-                <audio id="warningAudio" preload="auto">
-                    <source src="warning.mp3" type="audio/mpeg">
-                </audio>
-            </div>
-
-
-            <div class="audio-toggle">
-                <label>
-                    <input type="checkbox" id="audioEnabled" checked>
-                    🔊 Audio Feedback
-                </label>
-            </div>
-
-
-            <form id="milkForm">
-
-                <div id="hide_names">
-                    <div class="form-group">
-                        <label for="nameSelect">Select Name:</label>
-                        <select id="nameSelect">
-                            <option value="" class="loading">Loading names...</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <div class="form-group">
-                        <label for="kg">KG:</label>
-                        <input type="number" id="kg" step="0.001" placeholder="">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="fat">FAT:</label>
-                        <input type="number" id="fat" step="0.1" placeholder="">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="snf">SNF:</label>
-                        <input type="number" id="snf" step="0.1" placeholder="">
-                    </div>
-                </div>
-
-                <button type="submit" class="submit-btn">Calculate</button>
-            </form>
-        </div>
-
-        <!-- Popup Overlay (unchanged) -->
-        <div id="popupOverlay" class="popup-overlay">
-            <div id="popupCard" class="popup-card">
-                <button id="closeBtn" class="close-btn">×</button>
-                <div id="statusMessage" class="status-message"></div>
-                <h2 id="popupTitle" class="popup-title"></h2>
-                <div id="popupDetails" class="popup-details"></div>
-                <div id="existingEntry" class="existing-entry" style="display: none;">
-                    <h3>Old Entry:</h3>
-                    <div id="existingEntryDetails"></div>
-                </div>
-                <div id="actionButtons" class="action-buttons">
-                    <button id="updateBtn" class="update-btn" style="display: none;">Update Entry</button>
-                </div>
-            </div>
-        </div>
-    </main>
-    </div>
-
-
     <div class="milk-dashboard-container">
         <div class="milk-header-section">
             <div class="milk-date-controls">
@@ -213,7 +192,24 @@
         </div>
     </div>
 
+    <script>
+        function enforceDecimals(input, maxDecimals) {
+            input.addEventListener("input", function () {
+                let val = this.value;
+                if (val.includes(".")) {
+                    let [intPart, decPart] = val.split(".");
+                    if (decPart.length > maxDecimals) {
+                        this.value = intPart + "." + decPart.slice(0, maxDecimals);
+                    }
+                }
+            });
+        }
 
+        // Apply rules
+        enforceDecimals(document.getElementById("fat"), 1); // 1 decimal
+        enforceDecimals(document.getElementById("snf"), 1); // 1 decimal
+        enforceDecimals(document.getElementById("kg"), 2);  // 2 decimals
+    </script>
     <script src="js/main_screen.js?v=6.0.2"></script>
     <script type="module" src="js/database.js?v=6.0.4"></script>
 </body>
