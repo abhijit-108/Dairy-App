@@ -2,257 +2,217 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dairy CaL</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="logo.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/alert.css?v=2.0.1">
-    <link rel="stylesheet" href="css/main_screen.css?v=2.1.2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main_screen.css?v=6.0.1">
 </head>
 
 <body>
-    <!-- Title Bar -->
-    <div class="title-bar">
-        <i class="menu-button fas fa-bars" onclick="togglePanel()"></i>
-        <div class="heading" class="headerloginguest" id="headerLogin">Dairy App</div>
-        <div id="fixcurrentrate"></div>
-        <div class="app-info">
-            <div class="time-date">
-                <span id="current-date"></span>
-                <span id="current-time"></span>
-            </div>
+    <!-- TOP NAV (Delsgade) -->
+    <header class="topbar" role="banner">
+        <button class="menu-btn" id="menuToggle" aria-label="Open menu">
+            <span class="menu-icon" aria-hidden="true">
+                <span></span><span></span><span></span>
+            </span>
+        </button>
+
+        <div class="title-block">
+            <div class="title-main" id="headerLogin">Dairy App</div>
+            <div class="title-sub" id="fix_rate"></div>
         </div>
-    </div>
 
-    <div class="side-panel" id="sidePanel">
-        <ul class="panel-items">
-            <li class="panel-item"><a href="all_member.html" class="perfromace_report_toggle"><i
-                        class="fas fa-users sidebar-icon"></i> All Members</a></li>
-            <li class="panel-item" id="Generate_bill"><a href="generate_bill.html"><i
-                        class="fas fa-file-invoice-dollar sidebar-icon"></i> Generate Bill (Manual)</a></li>
-            <li class="panel-item" id="storagepage"><a href="storage_page.html"><i
-                        class="fas fa-archive sidebar-icon"></i> পুরনো Bills (photo)</a></li>
-            <li class="panel-item" id="fixDatabaseItem"><a href="rewrite_Data.html"><i
-                        class="fas fa-database sidebar-icon"></i> Fix Database</a></li>
-            <li class="panel-item"><a href="internet_usage_page.html" class="update-toggle"><i
-                        class="fas fa-history sidebar-icon"></i> Data history (Wifi)</a></li>
-            <li class="panel-item"><a href="http://Dlink2640/active_devices.html" class="update-toggle"><i
-                        class="fas fa-wifi sidebar-icon"></i> Online Devices (Wifi)</a></li>
-            <button id="logoutButton">Logout</button>
-            <div id="guest-info">
+        <div class="spacer" aria-hidden="true"></div>
+
+        <div class="time-block" aria-live="polite">
+            <div class="time" id="timeNow">--:-- AM</div>
+            <div class="date" id="dateNow">Loading date...</div>
+        </div>
+    </header>
+
+    <div class="layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar" aria-label="Main sidebar">
+            <div class="head">
+                <div class="brand-bubble" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M4 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8S4 16.418 4 12z" fill="#fff"
+                            opacity="0.08" />
+                        <path d="M7 12a5 5 0 0 1 5-5v10a5 5 0 0 1-5-5z" fill="#fff" opacity="0.16" />
+                    </svg>
+                </div>
+                <div>
+                    <h2>Dairy App</h2>
+                    <p id="fix_rate1">C</p>
+                </div>
             </div>
-            <div id="error" class="error"></div>
-        </ul>
+
+            <div class="nav-list" role="list">
+                <div class="nav-item" role="listitem" tabindex="0">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M3 12h18" stroke="#fff" stroke-width="1.6" stroke-linecap="round"
+                            stroke-linejoin="round" opacity="0.9" />
+                    </svg>
+                    <span>All Members</span>
+                </div>
+
+                <div class="nav-item" role="listitem" tabindex="0">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="6" width="18" height="12" rx="2" stroke="#fff" stroke-width="1.4"
+                            opacity="0.9" />
+                    </svg>
+                    <span>Generate New Bills</span>
+                </div>
+
+                <div class="nav-item" role="listitem" tabindex="0">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.4" opacity="0.9" />
+                    </svg>
+                    <span>Old Bills Photos</span>
+                </div>
+
+                <div class="nav-item" role="listitem" tabindex="0">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M4 6h16M4 12h16M4 18h10" stroke="#fff" stroke-width="1.4" stroke-linecap="round" />
+                    </svg>
+                    <span>Fix data</span>
+                </div>
+
+                <div class="nav-item" role="listitem" tabindex="0">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 8v8M8 12h8" stroke="#fff" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                    <span>Wifi Usage</span>
+                </div>
+
+                <div class="nav-item" role="listitem" tabindex="0">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="1.5" fill="#fff" />
+                        <path
+                            d="M12 3v1.5M12 19.5V21M4.2 5.6l1.1 1.1M18.7 18.1l1.1 1.1M3 12h1.5M19.5 12H21M4.2 18.4l1.1-1.1M18.7 5.9l1.1-1.1"
+                            stroke="#fff" stroke-width="1" stroke-linecap="round" />
+                    </svg>
+                    <span>All Guide Website</span>
+                </div>
+
+                <div class="nav-item" role="listitem" tabindex="0">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="1.5" fill="#fff" />
+                        <path
+                            d="M12 3v1.5M12 19.5V21M4.2 5.6l1.1 1.1M18.7 18.1l1.1 1.1M3 12h1.5M19.5 12H21M4.2 18.4l1.1-1.1M18.7 5.9l1.1-1.1"
+                            stroke="#fff" stroke-width="1" stroke-linecap="round" />
+                    </svg>
+                    <button id="logoutButton">Logout</button>
+                </div>
+            </div>
+
+            <div class="footer">© <span id="currentYear">2025</span> Delsgade</div>
+        </nav>
+
+        <div class="overlay" id="overlay"></div>
+
+        <!-- MAIN content: your Milk page sits here -->
+        <main class="main" id="mainContent">
+            <div class="container">
+                <!-- Audio elements for playing MP3 files -->
+                <div class="audio-elements">
+                    <audio id="successAudio" preload="auto">
+                        <source src="success.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio id="existsAudio" preload="auto">
+                        <source src="already_exist.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio id="failedAudio" preload="auto">
+                        <source src="failed.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio id="warningAudio" preload="auto">
+                        <source src="warning.mp3" type="audio/mpeg">
+                    </audio>
+                </div>
+
+
+                <div class="audio-toggle">
+                    <label>
+                        <input type="checkbox" id="audioEnabled" checked>
+                        🔊 Audio Feedback
+                    </label>
+                </div>
+
+
+                <form id="milkForm">
+
+                    <div id="hide_names">
+                        <div class="form-group">
+                            <label for="nameSelect">Select Name:</label>
+                            <select id="nameSelect">
+                                <option value="" class="loading">Loading names...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <div class="form-group">
+                            <label for="kg">KG:</label>
+                            <input type="number" id="kg" step="0.001" placeholder="">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fat">FAT:</label>
+                            <input type="number" id="fat" step="0.1" placeholder="">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="snf">SNF:</label>
+                            <input type="number" id="snf" step="0.1" placeholder="">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Calculate</button>
+                </form>
+            </div>
+
+            <!-- Popup Overlay (unchanged) -->
+            <div id="popupOverlay" class="popup-overlay">
+                <div id="popupCard" class="popup-card">
+                    <button id="closeBtn" class="close-btn">×</button>
+                    <div id="statusMessage" class="status-message"></div>
+                    <h2 id="popupTitle" class="popup-title"></h2>
+                    <div id="popupDetails" class="popup-details"></div>
+                    <div id="existingEntry" class="existing-entry" style="display: none;">
+                        <h3>Old Entry:</h3>
+                        <div id="existingEntryDetails"></div>
+                    </div>
+                    <div id="actionButtons" class="action-buttons">
+                        <button id="updateBtn" class="update-btn" style="display: none;">Update Entry</button>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
 
-    <!-- Main Container -->
-    <div class="container">
-        <form action="" name="lol" method="post" id="registrationform">
-            <div class="select-container" id="select-container">
-                <select class="styled-select" id="name" name="NAME" required oninvalid="setCustomMessage(this)">
-                    <option value=""></option>
+    <div class="milk-dashboard-container">
+        <div class="milk-header-section">
+            <div class="milk-date-controls">
+                <select id="milkDateSelector" class="milk-date-dropdown">
                 </select>
             </div>
+        </div>
 
-            <div class="input-group">
-                <div class="input-field">
-                    <input type="number" id="kg" placeholder=" " step="any" required oninput="rateandtotal();">
-                    <label for="kg">KG:</label>
-                </div>
-                <div class="input-field">
-                    <input type="number" id="fat" placeholder=" " step="any" required oninput="rateandtotal();">
-                    <label>FAT</label>
-                </div>
-                <div class="input-field">
-                    <input type="number" id="snf" placeholder=" " step="any" required oninput="rateandtotal();">
-                    <label>SNF</label>
+        <div class="milk-table-wrapper">
+            <div id="milkDataContainer">
+                <div class="milk-loading-state">
+                    <div class="milk-loading-spinner"></div>
+                    <div>Loading records...</div>
                 </div>
             </div>
-            <input type="number" value="" id="rate" step="any" required hidden />
-            <input type="number" value="" id="total" step="any" required hidden />
-            <button class="submit-btn" id="submit" onclick="calculatePayment()">Calculate Payment</button>
-        </form>
-    </div>
-    <div class="todaybox" id="todaybox">
-        <div class="todaybox-title">
-            <i class="fas fa-list-alt"></i>
-            <h2>Today's Records</h2>
-        </div>
-        <table id="table_today">
-            <thead>
-                <tr>
-                    <th>Time</th>
-                    <th>Name</th>
-                    <th>FAT</th>
-                    <th>SNF</th>
-                    <th>RATE</th>
-                    <th>KG</th>
-                    <th>TOTAL</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Table rows will be dynamically added here -->
-            </tbody>
-            <tfoot>
-                <!-- Table footer with sums will be dynamically added here -->
-            </tfoot>
-        </table>
-    </div>
-
-
-    <!-- Modal -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <div class="modal-row"><span>Name:</span><span id="modalName">-</span></div>
-            <div class="modal-row"><span>KG:</span><span id="modalKG">0</span></div>
-            <div class="modal-row"><span>FAT:</span><span id="modalFAT">0</span></div>
-            <div class="modal-row"><span>SNF:</span><span id="modalSNF">0</span></div>
-            <div class="modal-row rate"><span>Rate:</span><span id="modalRate">₹ 0</span></div>
-            <div class="modal-row total"><span>Total Amount:</span><span id="modalTotal">₹ 0</span></div>
         </div>
     </div>
 
-    <!-- Audio Files -->
-    <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2762/2762.wav"></audio>
-    <audio id="closeSound" src="https://assets.mixkit.co/active_storage/sfx/2776/2776.wav"></audio>
-
-
-
-    <script>
-        // Time and Date Update
-        function updateDateTime() {
-            const now = new Date();
-
-            // Format the date to "3 Feb" and add the Bengali day
-            const day = now.getDate();
-            const month = now.toLocaleString('default', { month: 'short' });
-
-            // Get the Bengali day (e.g., "Bangla Bar")
-            const banglaDays = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
-            const banglaDay = banglaDays[now.getDay()];
-
-            // Format time as "10:00 AM"
-            const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            // Update content
-            document.getElementById('current-date').textContent = `${day} ${month}, ${banglaDay}`;
-            document.getElementById('current-time').textContent = formattedTime;
-        }
-
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
-
-
-        // Panel Toggle
-        function togglePanel() {
-            document.getElementById('sidePanel').classList.toggle('open');
-        }
-
-        // Close panel when clicking outside
-        document.addEventListener('click', (event) => {
-            const sidePanel = document.getElementById('sidePanel');
-            const menuButton = document.querySelector('.menu-button');
-
-            if (!sidePanel.contains(event.target) && !menuButton.contains(event.target)) {
-                sidePanel.classList.remove('open');
-            }
-        });
-
-        // Close panel on ESC key
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                document.getElementById('sidePanel').classList.remove('open');
-            }
-        });
-
-        // Sound Functions
-        function playSound(soundId) {
-            let sound = document.getElementById(soundId);
-            sound.currentTime = 0;
-            sound.play();
-        }
-
-        // Payment Calculation
-        function calculatePayment() {
-            playSound('clickSound');
-
-            const name = document.getElementById('name').value || "";
-            const kg = parseFloat(document.getElementById('kg').value) || 0;
-            const fat = parseFloat(document.getElementById('fat').value) || 0;
-            const snf = parseFloat(document.getElementById('snf').value) || 0;
-
-            // Check if fat and snf are within the valid range
-            if (fat < 1.1 || fat > 12.1 || snf < 3.1 || snf > 12.1) {
-                alert('Fat or SNF wrong😒');
-                return; // Stop further execution if the values are invalid
-            }
-
-            const rate = (fat * window.dairy_original_fat) + (snf * window.dairy_original_snf);
-            const total = kg * rate;
-
-            document.getElementById('modalName').textContent = name;
-            document.getElementById('modalKG').textContent = kg.toFixed(3);
-            document.getElementById('modalFAT').textContent = fat.toFixed(1);
-            document.getElementById('modalSNF').textContent = snf.toFixed(1);
-            document.getElementById('modalRate').textContent = `₹ ${rate.toFixed(2)}`;
-            document.getElementById('modalTotal').textContent = `₹ ${total.toFixed(0)}`;
-
-            showModal();
-        }
-
-
-        // Modal Functions
-        function showModal() {
-            const modal = document.getElementById('modal');
-            modal.classList.remove('hide');
-            modal.classList.add('show');
-        }
-
-        function closeModal() {
-            playSound('closeSound');
-            const modal = document.getElementById('modal');
-            modal.classList.remove('show');
-            modal.classList.add('hide');
-        }
-
-        window.onclick = function (event) {
-            const modal = document.getElementById('modal');
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const headerLogin = document.getElementById('headerLogin');
-
-            // Redirect to login.html when the "Dairy App" header is clicked
-            headerLogin.addEventListener('click', () => {
-                window.location.href = 'login.html';
-            });
-        });
-    </script>
-    <script>
-        function setCustomMessage(select) {
-            if (!select.value) {
-                select.setCustomValidity("No Name is selected !");
-            }
-        }
-
-        function resetMessage(select) {
-            select.setCustomValidity(""); // Reset the message when user selects an item
-        }
-    </script>
-    <script type="module" src="js/database.js?v=2.0.4"></script>
-    <script src="js/include_name.js?v=2.0.2"></script>
-    <script src="js/rate.js?v=2.0.2"></script>
-
-
+    <script src="js/main_screen.js?v=6.0.1"></script>
+    <script type="module" src="js/database.js?v=6.0.1"></script>
 </body>
 
 </html>
