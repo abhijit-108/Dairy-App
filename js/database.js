@@ -665,7 +665,6 @@ function displayMilkData(data) {
 }
 
 
-
 document.addEventListener('DOMContentLoaded', function () {
     populateMilkDateDropdown();
 
@@ -677,9 +676,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-
-
-
 document.getElementById('milkForm').addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -690,44 +686,31 @@ document.getElementById('milkForm').addEventListener('submit', function (e) {
     }, 6000);
 });
 
-
-
-// Function to handle logout
 function logout() {
     signOut(auth).then(() => {
-        // Sign-out successful, redirect to login page
         window.location.href = 'login.html';
     }).catch((error) => {
         console.error('Error signing out:', error);
     });
 }
 
-// Attach event listener to logout button
 document.getElementById('logoutButton').addEventListener('click', logout);
-// Check authentication status
 onAuthStateChanged(auth, (user) => {
     const userInfoDiv = document.getElementById('logoutButton');
     const hide_names = document.getElementById('hide_names');
     const hide_names1 = document.getElementById('hide_names1');
-
     const headerLogin = document.getElementById('headerLogin');
 
-
-    // const billvalidate=document.querySelector('.billvalidate')
-
     if (user) {
-        // User is authenticated, show user name
         userInfoDiv.innerText = 'Logout (Abhijit)';
         hide_names.classList.remove('disabled');
         hide_names1.classList.remove('disabled');
         headerLogin.classList.remove('headerloginguest');
 
     } else {
-        // User is not authenticated, show guest
         userInfoDiv.innerText = 'Logout (Guest)';
         hide_names.classList.add('disabled');
         hide_names1.classList.add('disabled');
-
         headerLogin.classList.add('headerloginguest');
     }
 });
