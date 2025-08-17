@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     window.location.href = "storage_page.html";
                     break;
                 case "Fix Data":
-                    window.location.href = "rewrite_Data.html";
+                    window.location.href = "fix_data.html";
                     break;
                 case "Wifi Usage":
                     window.open("https://abhijit-delsgade.vercel.app/internet_usage_page.html", "_blank");
