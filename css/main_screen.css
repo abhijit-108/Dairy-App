@@ -11,9 +11,10 @@
      box-sizing: border-box
  }
 
-.bx{
-    font-size: 24px;
-}
+ .bx {
+     font-size: 24px;
+ }
+
  body {
      font-family: Inter, 'Segoe UI', Roboto, Arial, sans-serif;
      -webkit-font-smoothing: antialiased;
@@ -133,7 +134,6 @@
      color: rgb(0, 0, 0)
  }
 
- /* Layout for sidebar + main */
  .layout {
      display: flex;
      flex: 1;
@@ -141,9 +141,7 @@
      margin-top: 50px;
  }
 
- /* main content offset for fixed topbar */
 
- /* SIDEBAR */
  .sidebar {
      width: 70vw;
      max-width: 300px;
@@ -274,6 +272,10 @@
 
  /* small screen tweaks */
  @media (max-width:700px) {
+
+    
+
+
      .sidebar {
          top: 48px;
          height: 95vh;
@@ -467,7 +469,7 @@
  }
 
  .container {
-     max-width: 600px;
+     max-width: 700px;
      margin: 0 auto;
      background: rgba(255, 255, 255, 0.95);
      padding: 20px;
@@ -1025,13 +1027,12 @@
 
  /* Mobile responsiveness */
  @media (max-width: 768px) {
-
      #fix_rate1 {
-     font-weight: bolder;
-     font-size: 11px;
-     color: #34ac92;
-     margin-top: 5px;
- }
+         font-weight: bolder;
+         font-size: 11px;
+         color: #34ac92;
+         margin-top: 5px;
+     }
 
      .milk-dashboard-container {
          width: 100%;

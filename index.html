@@ -9,11 +9,10 @@
     <link rel="icon" href="logo.png" type="image/png">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main_screen.css?v=6.0.4">
+    <link rel="stylesheet" href="css/main_screen.css?v=6.0.5">
 </head>
 
 <body>
-    <!-- TOP NAV (Delsgade) -->
     <header class="topbar" role="banner">
         <button class="menu-btn" id="menuToggle" aria-label="Open menu">
             <span class="menu-icon" aria-hidden="true">
@@ -35,7 +34,6 @@
     </header>
 
     <div class="layout">
-        <!-- Sidebar -->
         <nav class="sidebar" id="sidebar" aria-label="Main sidebar">
             <div class="head">
                 <div class="brand-bubble" aria-hidden="true">
@@ -97,10 +95,8 @@
 
         <div class="overlay" id="overlay"></div>
 
-        <!-- MAIN content: your Milk page sits here -->
         <main class="main" id="mainContent">
             <div class="container">
-                <!-- Audio elements for playing MP3 files -->
                 <div class="audio-elements">
                     <audio id="successAudio" preload="auto">
                         <source src="success.mp3" type="audio/mpeg">
@@ -156,7 +152,6 @@
                 </form>
             </div>
 
-            <!-- Popup Overlay (unchanged) -->
             <div id="popupOverlay" class="popup-overlay">
                 <div id="popupCard" class="popup-card">
                     <button id="closeBtn" class="close-btn">×</button>
@@ -206,9 +201,9 @@
         }
 
         // Apply rules
-        enforceDecimals(document.getElementById("fat"), 1); // 1 decimal
-        enforceDecimals(document.getElementById("snf"), 1); // 1 decimal
-        enforceDecimals(document.getElementById("kg"), 2);  // 2 decimals
+        enforceDecimals(document.getElementById("fat"), 1);
+        enforceDecimals(document.getElementById("snf"), 1);
+        enforceDecimals(document.getElementById("kg"), 2); 
     </script>
     <script src="js/main_screen.js?v=6.0.2"></script>
     <script type="module" src="js/database.js?v=6.0.5"></script>
