@@ -1203,6 +1203,7 @@
 
      .milk-time-cell {
          color: #000000;
+         font-size: 12px;
      }
 
      .milk-amount-cell {
@@ -1272,7 +1273,7 @@
          padding: 2px 2px;
          background: rgba(79, 172, 254, 0.1);
          border-radius: 4px;
-         font-size: 14px;
+         font-size: 15px;
          color: #0a3a65;
          font-weight: 600;
      }
