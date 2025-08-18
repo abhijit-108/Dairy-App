@@ -511,7 +511,7 @@ async function fetchMilkDataForDate(selectedDate) {
         } else {
             dataContainer.innerHTML = `
                         <div class="milk-empty-state">
-                            📋 No milk records found for ${selectedDate}
+                            📋 No records found for ${selectedDate}
                         </div>
                     `;
         }
@@ -605,17 +605,17 @@ function displayMilkData(data) {
     }
 
     // Averages
-    const avgFat = totalKg ? (totalFat / totalKg).toFixed(1) : '0.00';
-    const avgSnf = totalKg ? (totalSnf / totalKg).toFixed(1) : '0.00';
-    const avgRate = totalKg ? (totalRate / totalKg).toFixed(2) : '0.00';
+    const avgFat = totalKg ? (totalFat / totalKg).toFixed(1) : '0';
+    const avgSnf = totalKg ? (totalSnf / totalKg).toFixed(1) : '0';
+    const avgRate = totalKg ? (totalRate / totalKg).toFixed(2) : '0';
 
-    const avgFatAm = amKg ? (amFat / amKg).toFixed(1) : '0.00';
-    const avgSnfAm = amKg ? (amSnf / amKg).toFixed(1) : '0.00';
-    const avgRateAm = amKg ? (amRate / amKg).toFixed(2) : '0.00';
+    const avgFatAm = amKg ? (amFat / amKg).toFixed(1) : '0';
+    const avgSnfAm = amKg ? (amSnf / amKg).toFixed(1) : '0';
+    const avgRateAm = amKg ? (amRate / amKg).toFixed(2) : '0';
 
-    const avgFatPm = pmKg ? (pmFat / pmKg).toFixed(1) : '0.00';
-    const avgSnfPm = pmKg ? (pmSnf / pmKg).toFixed(1) : '0.00';
-    const avgRatePm = pmKg ? (pmRate / pmKg).toFixed(2) : '0.00';
+    const avgFatPm = pmKg ? (pmFat / pmKg).toFixed(1) : '0';
+    const avgSnfPm = pmKg ? (pmSnf / pmKg).toFixed(1) : '0';
+    const avgRatePm = pmKg ? (pmRate / pmKg).toFixed(2) : '0';
 
     return `
     <table class="milk-records-table">
