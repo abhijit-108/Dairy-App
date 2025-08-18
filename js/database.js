@@ -418,6 +418,11 @@ document.getElementById('updateBtn').addEventListener('click', async function ()
         pendingSaveData = null;
         document.getElementById('milkForm').reset();
         document.getElementById('nameSelect').value = '';
+        // Refresh after 6 seconds
+        setTimeout(() => {
+            fetchMilkDataForDate(dateSelector.value);
+        }, 6000);
+
     } else {
         showPopup('failed', 'Update Failed', pendingSaveData, 'Failed to update the existing entry. Please try again.');
     }
