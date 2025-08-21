@@ -1,6 +1,5 @@
- /* -------- Delsgade navbar/sidebar styles (kept, but removed canvas/body overrides) -------- */
  :root {
-     --panel: linear-gradient(180deg, #1e3157 0%, #38084f 100%);
+     --panel: linear-gradient(180deg, #0a0930 0%, #0d1e03 100%);
      --accent: linear-gradient(90deg, #7c5cff, #4ec5c8);
      --muted: #9aa4b2;
      --glass: rgba(255, 255, 255, 0.03);
@@ -24,9 +23,7 @@
      background: #414141;
  }
 
- /* keep milk body bg visually pleasing */
 
- /* Topbar */
  .topbar {
      display: flex;
      align-items: center;
@@ -284,10 +281,6 @@
 
  /* small screen tweaks */
  @media (max-width:700px) {
-
-
-
-
      .sidebar {
          top: 48px;
          height: 95vh;
@@ -354,7 +347,7 @@
 
      .menu-btn {
          width: 40px;
-         height: 35px;
+         height: 38px;
          display: grid;
          place-items: center;
          border-radius: 6px;
@@ -367,7 +360,7 @@
 
      .menu-icon {
          display: inline-block;
-         width: 18px;
+         width: 20px;
          height: 14px;
          position: relative
      }
@@ -456,9 +449,8 @@
          background: linear-gradient(135deg, #e74250, #650b22);
          color: rgb(255, 255, 255);
          border: none;
-         padding: 8px 12px;
-         font-size: 14px;
-         font-weight: bold;
+         padding: 8px 10px;
+         font-size: 10px;
          border-radius: 8px;
          cursor: pointer;
          transition: all 0.3s ease-in-out;
@@ -1043,7 +1035,7 @@
      #fix_rate1 {
          font-weight: bolder;
          font-size: 12px;
-         color: #2afcce;
+         color: #dba322;
          margin-top: 5px;
      }
 
@@ -1278,7 +1270,7 @@
          font-weight: 600;
      }
 
-      .milk-metric-badge2 {
+     .milk-metric-badge2 {
          display: inline-block;
          padding: 2px 2px;
          background: rgba(143, 197, 166, 0.493);
@@ -1289,6 +1281,7 @@
      }
 
  }
+ 
 
  #logoutButton {
      background: linear-gradient(135deg, #e74250, #650b22);
