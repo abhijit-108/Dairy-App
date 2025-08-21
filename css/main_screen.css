@@ -1154,13 +1154,13 @@
      /* Column width distribution */
      .milk-header-cell:nth-child(1),
      .milk-data-cell:nth-child(1) {
-         width: 12%;
+         width: 10%;
      }
 
      /* Time */
      .milk-header-cell:nth-child(2),
      .milk-data-cell:nth-child(2) {
-         width: 20%;
+         width: 16%;
      }
 
      /* Name */
@@ -1190,7 +1190,7 @@
      /* Weight */
      .milk-header-cell:nth-child(7),
      .milk-data-cell:nth-child(7) {
-         width: 16%;
+         width: 11%;
      }
 
      /* Total */
@@ -1275,6 +1275,16 @@
          border-radius: 4px;
          font-size: 15px;
          color: #0a3a65;
+         font-weight: 600;
+     }
+
+      .milk-metric-badge2 {
+         display: inline-block;
+         padding: 2px 2px;
+         background: rgba(143, 197, 166, 0.493);
+         border-radius: 4px;
+         font-size: 14px;
+         color: #000000;
          font-weight: 600;
      }
 

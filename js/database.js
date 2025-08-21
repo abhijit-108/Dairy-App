@@ -581,8 +581,8 @@ function displayMilkData(data) {
             <td class="milk-data-cell"><span class="milk-metric-badge">${record.fat}</span></td>
             <td class="milk-data-cell"><span class="milk-metric-badge">${record.snf}</span></td>
             <td class="milk-data-cell milk-rate-cell"><span class="milk-metric-badge">₹${record.rate}</span></td>
-            <td class="milk-data-cell">${Number(record.kg).toFixed(2)} kg</td>
-            <td class="milk-data-cell milk-amount-cell">₹${record.total}</td>
+            <td class="milk-data-cell"><span class="milk-metric-badge2">${Number(record.kg).toFixed(2)} kg</span></td>
+            <td class="milk-data-cell milk-amount-cell"><span class="milk-metric-badge2">₹${record.total}</span></td>
         </tr>`;
 
         // Update global totals
