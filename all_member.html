@@ -4,133 +4,201 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dairy Records</title>
+  <title>All_Member Record</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Transparent Loading Screen Styles */
-    #loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+    /* CSS Variables for Theme Management */
+    :root {
+      --primary-color: #4CAF50;
+      --primary-dark: #2E7D32;
+      --primary-light: #81C784;
+      --secondary-color: #f5f5f7;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --border-color: #e2e8f0;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --shadow-hover: rgba(0, 0, 0, 0.15);
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --error-color: #ef4444;
+    }
+
+    [data-theme="dark"] {
+      --primary-color: #4CAF50;
+      --primary-dark: #1B5E20;
+      --primary-light: #81C784;
+      --secondary-color: #1a1a2e;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --bg-primary: #16213e;
+      --bg-secondary: #1e293b;
+      --border-color: #334155;
+      --shadow: rgba(0, 0, 0, 0.3);
+      --shadow-hover: rgba(0, 0, 0, 0.4);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary-color: #4CAF50;
+        --primary-dark: #1B5E20;
+        --primary-light: #81C784;
+        --secondary-color: #1a1a2e;
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --bg-primary: #16213e;
+        --bg-secondary: #1e293b;
+        --border-color: #334155;
+        --shadow: rgba(0, 0, 0, 0.3);
+        --shadow-hover: rgba(0, 0, 0, 0.4);
+      }
+    }
+
+    /* Loading Skeleton Styles - Minimal and Fast */
+    .loading-skeleton {
+      background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--border-color) 50%, var(--bg-secondary) 75%);
+      background-size: 200% 100%;
+      animation: shimmer-loading 1.5s infinite;
+      border-radius: 4px;
+      height: 20px;
+      margin: 4px 0;
+    }
+
+    @keyframes shimmer-loading {
+      0% {
+        background-position: -200% 0;
+      }
+
+      100% {
+        background-position: 200% 0;
+      }
+    }
+
+    .loading-row {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      backdrop-filter: blur(5px);
+      gap: 10px;
+      padding: 8px;
     }
 
-    .spinner {
-      border: 4px solid rgba(255, 255, 255, 0.2);
-      border-top: 4px solid #4CAF50;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-      margin-bottom: 15px;
+    .loading-cell {
+      flex: 1;
+      height: 16px;
+      background: var(--border-color);
+      border-radius: 3px;
     }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .Pleasewait {
-      color: white;
-      font-size: 16px;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-    }
-
-    /* General Styles */
+    /* Reset and Base Styles */
     * {
       box-sizing: border-box;
-      font-family: 'Roboto', sans-serif;
       margin: 0;
       padding: 0;
     }
 
     body {
-      background: #f5f5f7;
-      margin: 0;
-      padding: 0;
-      padding-top: 1rem;
-      color: #333;
-      transition: background 0.3s, color 0.3s;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--secondary-color);
+      color: var(--text-primary);
+      line-height: 1.5;
+      padding: 0.5rem;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
+    /* Page Header */
     .page-header {
       text-align: center;
       margin-bottom: 1.5rem;
-      padding: 1rem;
-      color: #1e293b;
-      background: linear-gradient(135deg, #4CAF50, #2E7D32);
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem 1rem;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      border-radius: 12px;
+      box-shadow: 0 4px 16px var(--shadow);
+      position: relative;
+      overflow: hidden;
     }
 
     .page-header h1 {
-      font-size: 1.8rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: white;
+      font-size: clamp(1.25rem, 3vw, 2rem);
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
     .page-header p {
       color: rgba(255, 255, 255, 0.9);
-      font-size: 1rem;
+      font-size: 0.9rem;
+      font-weight: 400;
     }
 
+    /* Filter Container */
     .filter-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-      padding: 20px;
-      width: 90%;
-      max-width: 800px;
-      margin: 0 auto 1.5rem auto;
-      background: white;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      padding: 1rem;
+      background: var(--bg-primary);
       border-radius: 12px;
-      transition: all 0.3s ease;
-      animation: fadeIn 0.5s ease-out forwards;
+      box-shadow: 0 2px 12px var(--shadow);
+      margin-bottom: 1.5rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Select Wrapper */
     .select-wrapper {
       position: relative;
       display: flex;
-      align-items: center;
-      width: 160px;
+      flex-direction: column;
+    }
+
+    .select-wrapper label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
 
     .select-wrapper select {
       width: 100%;
-      padding: 12px 15px;
-      border: 1px solid #e2e8f0;
+      padding: 0.6rem 0.75rem;
+      border: 1.5px solid var(--border-color);
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 0.8rem;
       font-weight: 500;
-      background: #f8fafc;
-      color: #334155;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
       appearance: none;
       outline: none;
-      transition: all 0.2s ease;
       cursor: pointer;
+      transition: all 0.2s ease;
     }
 
     .select-wrapper select:hover {
-      border-color: #cbd5e1;
-      background: #f1f5f9;
+      border-color: var(--primary-light);
+      background: var(--bg-primary);
     }
 
     .select-wrapper select:focus {
-      border-color: #4CAF50;
-      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
     }
 
     .select-wrapper::after {
@@ -138,107 +206,112 @@
       font-family: 'Font Awesome 6 Free';
       font-weight: 900;
       position: absolute;
-      right: 15px;
-      color: #64748b;
+      right: 0.75rem;
+      bottom: 0.6rem;
+      color: var(--text-secondary);
       pointer-events: none;
-    }
-
-    .select-wrapper label {
-      position: absolute;
-      top: -10px;
-      left: 10px;
-      background: #4CAF50;
-      padding: 0 8px;
-      font-size: 12px;
-      color: white;
-      font-weight: 500;
-      border-radius: 4px;
-      box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+      font-size: 0.75rem;
     }
 
     /* Table Container */
     .table-container {
-      overflow-x: auto;
-      overflow-y: auto;
-      max-height: 600px;
-      padding: 15px;
-      width: 90%;
-      max-width: 800px;
-      margin: 0 auto 1.5rem auto;
-      background: white;
+      background: var(--bg-primary);
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-      animation: slideInRight 0.6s ease-out forwards;
-      opacity: 0;
-    }
-    
-    .table-container:nth-child(4) {
-      animation-delay: 0.2s;
+      box-shadow: 0 3px 15px var(--shadow);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      transition: box-shadow 0.2s ease;
     }
 
     .table-container:hover {
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-      transform: translateY(-2px);
+      box-shadow: 0 5px 20px var(--shadow-hover);
     }
 
-    /* Table Header Styles */
+    /* Table Header */
     .table-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: #ffffff;
     }
 
     .table-header h2 {
-      font-size: 20px;
-      margin: 0;
-      color: #2E7D32;
+      font-size: 1rem;
+      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 0.5rem;
     }
 
-    /* Table Styling */
+    /* Table Styles */
+    .table-wrapper {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 500px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary-color) var(--bg-secondary);
+    }
+
+    .table-wrapper::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 4px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+
     table {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
+      background: var(--bg-primary);
+      font-size: 0.875rem;
     }
 
-    th, td {
-      padding: 12px 15px;
+    th,
+    td {
+      padding: 0.6rem 0.5rem;
       text-align: center;
-      font-size: 14px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.8rem;
     }
 
     th {
-      background: linear-gradient(135deg, #4CAF50, #2E7D32);
-      color: white;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: #ffffff;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-size: 12px;
-      border: none;
-    }
-
-    th:first-child {
-      border-top-left-radius: 8px;
-    }
-
-    th:last-child {
-      border-top-right-radius: 8px;
+      letter-spacing: 0.3px;
+      font-size: 0.7rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     tbody tr {
-      border-bottom: 1px solid #e2e8f0;
-      transition: background 0.2s;
+      transition: all 0.2s ease;
+      position: relative;
     }
 
     tbody tr:hover {
-      background-color: #f5f9f5;
+      background-color: var(--bg-secondary);
+    }
+
+    tbody tr:hover td {
+      color: var(--primary-color);
+      font-weight: 500;
     }
 
     tbody tr:last-child td {
@@ -246,249 +319,254 @@
     }
 
     td {
-      border-bottom: 1px solid #e2e8f0;
+      color: var(--text-primary);
+      font-weight: 400;
     }
 
-    tfoot {
-      font-weight: 600;
-      background: #f1f5f9;
-      color: #1e293b;
-    }
-
-    tfoot td {
-      border-top: 2px solid #cbd5e1;
-      color: #2E7D32;
-    }
-
-    tfoot td:first-child {
-      border-bottom-left-radius: 8px;
-    }
-
-    tfoot td:last-child {
-      border-bottom-right-radius: 8px;
-    }
-
-    /* Target specific columns */
-    table tr td:last-child {
-      color: #1e293b;
+    /* Highlight specific columns */
+    table tr td:nth-last-child(1) {
+      color: var(--primary-color);
       font-weight: 700;
+      font-size: 0.85rem;
     }
 
     table tr td:nth-last-child(2) {
-      color: #2E7D32;
+      color: var(--success-color);
       font-weight: 600;
     }
 
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Footer Styles */
+    tfoot {
+      background: var(--bg-secondary);
+      position: sticky;
+      bottom: 0;
     }
-    
-    @keyframes slideInRight {
-      from { opacity: 0; transform: translateX(30px); }
-      to { opacity: 1; transform: translateX(0); }
+
+    tfoot td {
+      font-weight: 700;
+      color: var(--primary-color);
+      border-top: 2px solid var(--primary-color);
+      border-bottom: none;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
-    
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-    
-    /* Back Button Styles */
+
+    /* Back Button - Improved and Top Position */
     .back-button-container {
-      margin-top: 30px;
-      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .back-button-container.top {
+      position: sticky;
+      top: 0.5rem;
+      z-index: 100;
+      text-align: left;
     }
 
     .back-button {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background-color: #4CAF50;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 30px;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: #ffffff;
+      padding: 0.75rem 1.25rem;
+      border-radius: 25px;
       text-decoration: none;
       font-weight: 600;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+      border: none;
+      cursor: pointer;
+    }
+
+    .back-button.compact {
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      border-radius: 20px;
     }
 
     .back-button:hover {
-      background-color: #3e8e41;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
-      animation: pulse 1s infinite;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
     }
 
-    /* Mobile-Friendly Adjustments */
+    .back-button:active {
+      transform: translateY(0);
+    }
+
+    /* Responsive Design */
     @media screen and (max-width: 768px) {
-      .page-header h1 {
-        font-size: 1.5rem;
+      body {
+        padding: 0.25rem;
+      }
+
+      .back-button.compact {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+      }
+
+      .page-header {
+        padding: 1rem 0.75rem;
+        margin-bottom: 1rem;
       }
 
       .filter-container {
-        padding: 15px;
-        width: 95%;
-      }
-
-      .select-wrapper {
-        width: 140px;
-      }
-
-      th, td {
-        padding: 10px 8px;
-        font-size: 13px;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
       }
 
       .table-container {
-        padding: 10px;
-        width: 95%;
-        max-height: 500px;
-      }
-      
-      .back-button {
-        padding: 10px 20px;
-        font-size: 14px;
-      }
-    }
-
-    @media screen and (max-width: 500px) {
-      .filter-container {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 15px 10px;
+        margin-bottom: 1rem;
       }
 
-      .select-wrapper {
-        width: 100%;
+      .table-header {
+        padding: 0.75rem;
       }
 
-      th, td {
-        padding: 8px 5px;
-        font-size: 12px;
+      .table-header h2 {
+        font-size: 0.9rem;
       }
 
-      .table-container {
-        padding: 8px;
+      th,
+      td {
+        padding: 0.5rem 0.3rem;
+        font-size: 0.75rem;
+      }
+
+      .table-wrapper {
         max-height: 400px;
       }
     }
 
-    .disabled {
-      display: none;
-    }
-
-    /* Dark mode support */
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: #1e1e2e;
-        color: #e0e0e0;
-      }
-
-      .page-header {
-        color: #e0e0e0;
-        background: linear-gradient(135deg, #388E3C, #1B5E20);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      }
-
-      .page-header p {
-        color: rgba(255, 255, 255, 0.9);
-      }
-
-      .filter-container,
-      .table-container {
-        background: #2a2a3c;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    @media screen and (max-width: 480px) {
+      .filter-container {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+        padding: 0.5rem;
       }
 
       .select-wrapper select {
-        background: #313244;
-        border-color: #45475a;
-        color: #e0e0e0;
+        padding: 0.5rem 0.6rem;
+        font-size: 0.75rem;
       }
 
-      .select-wrapper select:hover {
-        border-color: #585b70;
-        background: #3a3c4e;
-      }
-      
-      .select-wrapper select:focus {
-        border-color: #4CAF50;
-        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
-      }
-      
-      .table-header h2 {
-        color: #81C784;
+      .select-wrapper::after {
+        right: 0.6rem;
+        bottom: 0.5rem;
       }
 
-      table {
-        background: #2a2a3c;
+      .page-header h1 {
+        font-size: 1.1rem;
       }
 
-      tbody tr:hover {
-        background-color: #313244;
+      .page-header p {
+        font-size: 0.8rem;
       }
 
+      th,
       td {
-        border-bottom: 1px solid #45475a;
-        color: #e0e0e0;
+        padding: 0.4rem 0.2rem;
+        font-size: 0.7rem;
       }
 
-      tfoot {
-        background: #313244;
-        color: #e0e0e0;
+      .table-wrapper {
+        max-height: 350px;
+      }
+    }
+
+    /* Utility Classes */
+    .disabled {
+      display: none !important;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Enhanced Focus Styles for Accessibility */
+    select:focus-visible,
+    .back-button:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    /* Reduced Motion Support */
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* High Contrast Mode Support */
+    @media (prefers-contrast: high) {
+      :root {
+        --shadow: rgba(0, 0, 0, 0.5);
+        --shadow-hover: rgba(0, 0, 0, 0.7);
       }
 
-      tfoot td {
-        border-top: 2px solid #45475a;
-        color: #81C784;
+      .select-wrapper select {
+        border-width: 3px;
       }
-      
-      table tr td:nth-last-child(2) {
-        color: #81C784;
-      }
-      
+
       .back-button {
-        background-color: #388E3C;
-        box-shadow: 0 4px 12px rgba(56, 142, 60, 0.3);
-      }
-      
-      .back-button:hover {
-        background-color: #2E7D32;
+        border: 2px solid #ffffff;
       }
     }
   </style>
 </head>
 
 <body>
-  <!-- Transparent Loading Screen with Spinner and Text -->
-  <div id="loading-screen">
-    <div class="spinner"></div>
-    <div class="Pleasewait">Please wait...</div>
+  <!-- Back to Home Button - Moved to top -->
+  <div class="back-button-container top">
+    <a href="index.html" class="back-button compact">
+      <i class="fas fa-arrow-left" aria-hidden="true"></i>
+      <span>Back</span>
+    </a>
   </div>
 
   <!-- Page Header -->
-  <div class="page-header">
-    <h1><i class="fas fa-users"></i> Dairy Records</h1>
-    <p>View and filter all member records</p>
-  </div>
+  <header class="page-header">
+    <h1><i class="fas fa-users" aria-hidden="true"></i> Dairy Records</h1>
+    <p>View and filter all member records with advanced analytics</p>
+  </header>
 
   <!-- Main Filters -->
-  <div class="filter-container">
+  <section class="filter-container" role="region" aria-label="Data filters">
     <div class="select-wrapper">
       <label for="monthFilter">Month</label>
-      <select id="monthFilter"></select>
+      <select id="monthFilter" aria-describedby="month-help">
+        <option value="all">All Months</option>
+      </select>
     </div>
+
     <div class="select-wrapper">
       <label for="yearFilter">Year</label>
-      <select id="yearFilter"></select>
+      <select id="yearFilter" aria-describedby="year-help">
+        <option value="all">All Years</option>
+      </select>
     </div>
+
     <div class="select-wrapper">
       <label for="dateRangeFilter">Date Range</label>
-      <select id="dateRangeFilter">
+      <select id="dateRangeFilter" aria-describedby="range-help">
         <option value="all">All Dates</option>
         <option value="1-7">1-7</option>
         <option value="8-15">8-15</option>
@@ -496,78 +574,84 @@
         <option value="24-end">24-end</option>
       </select>
     </div>
+
     <div class="select-wrapper">
       <label for="nameFilter">Name</label>
-      <select id="nameFilter">
+      <select id="nameFilter" aria-describedby="name-help">
         <option value="all">All Names</option>
       </select>
     </div>
-  </div>
+  </section>
 
   <!-- Main Data Table -->
-  <div class="table-container">
+  <section class="table-container" role="region" aria-label="Daily records table">
     <div class="table-header">
-      <h2><i class="fas fa-calendar-day"></i> Daily Records</h2>
+      <h2><i class="fas fa-calendar-day" aria-hidden="true"></i> Daily Records</h2>
     </div>
-    <table id="dataTable">
-      <thead>
-        <tr>
-          <th>Day</th>
-          <th>Session</th>
-          <th>Fat</th>
-          <th>SNF</th>
-          <th>Rate</th>
-          <th>Kg</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody">
-        <!-- Firebase data rows will be inserted here -->
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="2">Total</td>
-          <td id="avgFat">0</td>
-          <td id="avgSnf">0</td>
-          <td id="avgRate">0</td>
-          <td id="totalKg">0</td>
-          <td id="totalAmount">0</td>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
+    <div class="table-wrapper">
+      <table id="dataTable" role="table" aria-label="Daily dairy records">
+        <thead>
+          <tr role="row">
+            <th scope="col">Day</th>
+            <th scope="col">Session</th>
+            <th scope="col">Fat</th>
+            <th scope="col">SNF</th>
+            <th scope="col">Rate</th>
+            <th scope="col">Kg</th>
+            <th scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- Firebase data rows will be inserted here -->
+        </tbody>
+        <tfoot>
+          <tr role="row">
+            <td colspan="2" scope="row">Total</td>
+            <td id="avgFat">0</td>
+            <td id="avgSnf">0</td>
+            <td id="avgRate">0</td>
+            <td id="totalKg">0</td>
+            <td id="totalAmount">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
 
   <!-- Aggregated Data Table by Name -->
-  <div class="table-container">
+  <section class="table-container" role="region" aria-label="Summary by name table">
     <div class="table-header">
-      <h2><i class="fas fa-chart-pie"></i> Summary by Name</h2>
+      <h2><i class="fas fa-chart-pie" aria-hidden="true"></i> Summary by Name</h2>
     </div>
-    <table id="nameAggregateTable">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Rate (Total/KG)</th>
-          <th>Total-KG</th>
-          <th>Total-total</th>
-        </tr>
-      </thead>
-      <tbody id="nameAggregateTableBody">
-        <!-- Aggregated rows by name will be inserted here -->
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="2">Total</td>
-          <td id="aggregateTotalKg">0</td>
-          <td id="aggregateTotalTotal">0</td>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
-  
+    <div class="table-wrapper">
+      <table id="nameAggregateTable" role="table" aria-label="Summary records by member name">
+        <thead>
+          <tr role="row">
+            <th scope="col">Name</th>
+            <th scope="col">Rate (Total/KG)</th>
+            <th scope="col">Total-KG</th>
+            <th scope="col">Total-total</th>
+          </tr>
+        </thead>
+        <tbody id="nameAggregateTableBody">
+          <!-- Aggregated rows by name will be inserted here -->
+        </tbody>
+        <tfoot>
+          <tr role="row">
+            <td colspan="2" scope="row">Total</td>
+            <td id="aggregateTotalKg">0</td>
+            <td id="aggregateTotalTotal">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
   <!-- Back to Home Button -->
   <div class="back-button-container">
-    <a href="index.html" class="back-button">
-      <i class="fas fa-home"></i> Back to Home
+    <a href="index.html" class="back-button" role="button">
+      <i class="fas fa-home" aria-hidden="true"></i>
+      <span>Back to Home</span>
     </a>
   </div>
 
@@ -855,13 +939,121 @@
       // Your authentication handling code (if any)
     });
 
-    // Ensure the loading screen stays visible for a fixed 3 seconds.
+    // Enhanced loading screen with minimum display time
+    let dataLoaded = false;
+    let minimumTimeElapsed = false;
+
+    // Set minimum loading time
     setTimeout(() => {
+      minimumTimeElapsed = true;
+      if (dataLoaded) {
+        hideLoadingScreen();
+      }
+    }, 2000);
+
+    // Function to hide loading screen
+    function hideLoadingScreen() {
       const loadingScreen = document.getElementById('loading-screen');
       if (loadingScreen) {
-        loadingScreen.style.display = 'none';
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 300);
       }
-    }, 3000);
+    }
+
+    // Hide loading screen when data is ready
+    onValue(recordsRef, (snapshot) => {
+      dataLoaded = true;
+      if (minimumTimeElapsed) {
+        hideLoadingScreen();
+      }
+    });
+
+    // Performance optimization: Debounce filter changes
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // Apply debounced filter updates
+    const debouncedUpdateTable = debounce(updateTable, 300);
+    document.querySelectorAll('.filter-container select')
+      .forEach(filter => filter.addEventListener('change', debouncedUpdateTable));
+
+    // Keyboard navigation enhancement
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        // Reset all filters to default
+        document.querySelectorAll('.filter-container select').forEach(select => {
+          select.selectedIndex = 0;
+        });
+        updateTable();
+      }
+    });
+
+    // Add loading states for better UX
+    function showTableLoading() {
+      const tableBody = document.getElementById('tableBody');
+      const nameAggregateTableBody = document.getElementById('nameAggregateTableBody');
+
+      tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-secondary);">Loading data...</td></tr>';
+      nameAggregateTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-secondary);">Loading summary...</td></tr>';
+    }
+
+    // Enhanced error handling
+    onValue(recordsRef, (snapshot) => {
+      try {
+        allData = snapshot.val();
+        if (allData) {
+          populateFilters(allData);
+          updateTable();
+          dataLoaded = true;
+          if (minimumTimeElapsed) {
+            hideLoadingScreen();
+          }
+        } else {
+          console.warn('No data available');
+          document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No records found</td></tr>';
+          document.getElementById('nameAggregateTableBody').innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No summary data available</td></tr>';
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--error-color);">Error loading data</td></tr>';
+        document.getElementById('nameAggregateTableBody').innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--error-color);">Error loading summary</td></tr>';
+      }
+    });
+
+    // Add print styles and functionality
+    function addPrintStyles() {
+      const printStyles = `
+        @media print {
+          body { background: white !important; color: black !important; }
+          .filter-container, .back-button-container { display: none !important; }
+          .table-container { box-shadow: none !important; margin-bottom: 1rem !important; }
+          .page-header { background: white !important; color: black !important; border: 2px solid black; }
+          table { font-size: 12px !important; }
+          th { background: #f0f0f0 !important; color: black !important; }
+          .table-header { background: #f0f0f0 !important; color: black !important; }
+        }
+      `;
+      const styleSheet = document.createElement('style');
+      styleSheet.textContent = printStyles;
+      document.head.appendChild(styleSheet);
+    }
+
+    // Initialize print styles
+    addPrintStyles();
+
+    // Add keyboard shortcuts info (optional)
+    console.log('Keyboard Shortcuts:\n- Press ESC to reset all filters\n- Use Tab to navigate between filters');
   </script>
 </body>
 
