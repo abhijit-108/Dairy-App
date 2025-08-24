@@ -56,6 +56,203 @@
       }
     }
 
+    /* Loading Screen Styles */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    /* Dark mode loading screen */
+    [data-theme="dark"] #loading-screen {
+      background: rgba(22, 33, 62, 0.85);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #loading-screen {
+        background: rgba(22, 33, 62, 0.85);
+      }
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loading-container {
+      text-align: center;
+      color: var(--text-primary);
+      animation: fadeInUp 0.8s ease-out;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 3rem 2rem;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Dark mode loading container */
+    [data-theme="dark"] .loading-container {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .loading-container {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .loading-icon {
+      font-size: 4rem;
+      margin-bottom: 2rem;
+      animation: bounce 2s infinite;
+      color: var(--primary-color);
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-20px);
+      }
+      60% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .loading-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      color: var(--text-primary);
+    }
+
+    .loading-subtitle {
+      font-size: 1.1rem;
+      margin-bottom: 3rem;
+      opacity: 0.8;
+      font-weight: 400;
+      color: var(--text-secondary);
+    }
+
+    .progress-container {
+      width: 300px;
+      max-width: 80vw;
+      margin: 0 auto;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 50px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+      border-radius: 50px;
+      width: 0%;
+      transition: width 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    }
+
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .progress-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .progress-status {
+      font-size: 0.9rem;
+      opacity: 0.7;
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    .loading-dots {
+      display: inline-block;
+    }
+
+    .loading-dots::after {
+      content: '';
+      animation: dots 2s infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: ''; }
+      40% { content: '.'; }
+      60% { content: '..'; }
+      80%, 100% { content: '...'; }
+    }
+
+    /* Mobile responsiveness for loading screen */
+    @media (max-width: 768px) {
+      .loading-title {
+        font-size: 1.5rem;
+      }
+      .loading-subtitle {
+        font-size: 1rem;
+      }
+      .loading-icon {
+        font-size: 3rem;
+      }
+      .progress-container {
+        width: 250px;
+      }
+    }
+
     /* Loading Skeleton Styles - Minimal and Fast */
     .loading-skeleton {
       background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--border-color) 50%, var(--bg-secondary) 75%);
@@ -107,31 +304,7 @@
       margin: 0 auto;
     }
 
-    /* Page Header */
-    .page-header {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      padding: 1.5rem 1rem;
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-      border-radius: 12px;
-      box-shadow: 0 4px 16px var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
 
-    .page-header h1 {
-      font-size: clamp(1.25rem, 3vw, 2rem);
-      font-weight: 700;
-      margin-bottom: 0.25rem;
-      color: #ffffff;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    }
-
-    .page-header p {
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 0.9rem;
-      font-weight: 400;
-    }
 
     /* Filter Container */
     .filter-container {
@@ -534,6 +707,24 @@
 </head>
 
 <body>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-container">
+      <div class="loading-icon">
+        <i class="fas fa-cow" aria-hidden="true"></i>
+      </div>
+      <h1 class="loading-title">Dairy Records</h1>
+      <p class="loading-subtitle">Loading your dairy management system<span class="loading-dots"></span></p>
+      <div class="progress-container">
+        <div class="progress-bar-bg">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="progress-text" id="progress-text">0%</div>
+        <div class="progress-status" id="progress-status">Initializing application...</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Back to Home Button - Moved to top -->
   <div class="back-button-container top">
     <a href="index.html" class="back-button compact">
@@ -541,12 +732,6 @@
       <span>Back</span>
     </a>
   </div>
-
-  <!-- Page Header -->
-  <header class="page-header">
-    <h1><i class="fas fa-users" aria-hidden="true"></i> Dairy Records</h1>
-    <p>View and filter all member records with advanced analytics</p>
-  </header>
 
   <!-- Main Filters -->
   <section class="filter-container" role="region" aria-label="Data filters">
@@ -677,6 +862,90 @@
     const database = getDatabase(app);
     const recordsRef = ref(database, 'records');
 
+    // Loading Progress Management
+    let currentProgress = 0;
+    let isDataLoaded = false;
+    let progressInterval;
+
+    // Progress stages with status messages
+    const progressStages = [
+      { progress: 10, status: "Initializing Firebase connection..." },
+      { progress: 25, status: "Authenticating user..." },
+      { progress: 40, status: "Loading dairy records..." },
+      { progress: 60, status: "Processing member data..." },
+      { progress: 80, status: "Preparing filters and tables..." },
+      { progress: 95, status: "Finalizing setup..." },
+      { progress: 100, status: "Complete! Welcome to your dairy system." }
+    ];
+
+    // Function to update progress bar
+    function updateProgress(targetProgress, status) {
+      const progressBar = document.getElementById('progress-bar');
+      const progressText = document.getElementById('progress-text');
+      const progressStatus = document.getElementById('progress-status');
+
+      // Smooth animation to target progress
+      const currentProgressValue = parseInt(progressBar.style.width) || 0;
+      const progressStep = (targetProgress - currentProgressValue) / 20;
+
+      let stepProgress = currentProgressValue;
+      const progressAnimation = setInterval(() => {
+        stepProgress += progressStep;
+        if (stepProgress >= targetProgress) {
+          stepProgress = targetProgress;
+          clearInterval(progressAnimation);
+        }
+        
+        progressBar.style.width = stepProgress + '%';
+        progressText.textContent = Math.round(stepProgress) + '%';
+        
+        if (status) {
+          progressStatus.textContent = status;
+        }
+      }, 20);
+
+      currentProgress = targetProgress;
+    }
+
+    // Auto-progress function for smooth loading experience
+    function startAutoProgress() {
+      let stageIndex = 0;
+      
+      progressInterval = setInterval(() => {
+        if (stageIndex < progressStages.length && !isDataLoaded) {
+          const stage = progressStages[stageIndex];
+          updateProgress(stage.progress, stage.status);
+          stageIndex++;
+          
+          // If we reach 95% and data isn't loaded yet, hold there
+          if (stage.progress >= 95 && !isDataLoaded) {
+            clearInterval(progressInterval);
+            updateProgress(95, "Waiting for data...");
+          }
+        } else if (isDataLoaded && currentProgress < 100) {
+          // Data is loaded, complete the progress
+          updateProgress(100, "Complete! Welcome to your dairy system.");
+          setTimeout(hideLoadingScreen, 800);
+          clearInterval(progressInterval);
+        }
+      }, 600); // Adjust timing as needed
+    }
+
+    // Function to hide loading screen
+    function hideLoadingScreen() {
+      const loadingScreen = document.getElementById('loading-screen');
+      if (loadingScreen) {
+        loadingScreen.classList.add('hidden');
+        // Remove from DOM after transition
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 500);
+      }
+    }
+
+    // Start loading progress immediately
+    startAutoProgress();
+
     // -------------------------------------------------------------------------
     // Check query parameters for overrides
     const urlParams = new URLSearchParams(window.location.search);
@@ -727,8 +996,26 @@
 
     onValue(recordsRef, (snapshot) => {
       allData = snapshot.val();
-      populateFilters(allData);
-      updateTable();
+      if (allData) {
+        populateFilters(allData);
+        updateTable();
+        
+        // Mark data as loaded and complete progress
+        isDataLoaded = true;
+        if (currentProgress < 100) {
+          clearInterval(progressInterval);
+          updateProgress(100, "Complete! Welcome to your dairy system.");
+          setTimeout(hideLoadingScreen, 800);
+        }
+      } else {
+        // Handle empty data case
+        isDataLoaded = true;
+        updateProgress(100, "No data found - System ready");
+        setTimeout(hideLoadingScreen, 800);
+        
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No records found</td></tr>';
+        document.getElementById('nameAggregateTableBody').innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No summary data available</td></tr>';
+      }
     });
 
     function populateFilters(data) {
@@ -939,37 +1226,6 @@
       // Your authentication handling code (if any)
     });
 
-    // Enhanced loading screen with minimum display time
-    let dataLoaded = false;
-    let minimumTimeElapsed = false;
-
-    // Set minimum loading time
-    setTimeout(() => {
-      minimumTimeElapsed = true;
-      if (dataLoaded) {
-        hideLoadingScreen();
-      }
-    }, 2000);
-
-    // Function to hide loading screen
-    function hideLoadingScreen() {
-      const loadingScreen = document.getElementById('loading-screen');
-      if (loadingScreen) {
-        loadingScreen.style.opacity = '0';
-        setTimeout(() => {
-          loadingScreen.style.display = 'none';
-        }, 300);
-      }
-    }
-
-    // Hide loading screen when data is ready
-    onValue(recordsRef, (snapshot) => {
-      dataLoaded = true;
-      if (minimumTimeElapsed) {
-        hideLoadingScreen();
-      }
-    });
-
     // Performance optimization: Debounce filter changes
     function debounce(func, wait) {
       let timeout;
@@ -1015,17 +1271,27 @@
         if (allData) {
           populateFilters(allData);
           updateTable();
-          dataLoaded = true;
-          if (minimumTimeElapsed) {
-            hideLoadingScreen();
+          isDataLoaded = true;
+          if (currentProgress < 100) {
+            clearInterval(progressInterval);
+            updateProgress(100, "Complete! Welcome to your dairy system.");
+            setTimeout(hideLoadingScreen, 800);
           }
         } else {
           console.warn('No data available');
+          isDataLoaded = true;
+          updateProgress(100, "No data found - System ready");
+          setTimeout(hideLoadingScreen, 800);
+          
           document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No records found</td></tr>';
           document.getElementById('nameAggregateTableBody').innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No summary data available</td></tr>';
         }
       } catch (error) {
         console.error('Error loading data:', error);
+        isDataLoaded = true;
+        updateProgress(100, "Error loading data");
+        setTimeout(hideLoadingScreen, 800);
+        
         document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--error-color);">Error loading data</td></tr>';
         document.getElementById('nameAggregateTableBody').innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--error-color);">Error loading summary</td></tr>';
       }
@@ -1035,10 +1301,10 @@
     function addPrintStyles() {
       const printStyles = `
         @media print {
+          #loading-screen { display: none !important; }
           body { background: white !important; color: black !important; }
           .filter-container, .back-button-container { display: none !important; }
           .table-container { box-shadow: none !important; margin-bottom: 1rem !important; }
-          .page-header { background: white !important; color: black !important; border: 2px solid black; }
           table { font-size: 12px !important; }
           th { background: #f0f0f0 !important; color: black !important; }
           .table-header { background: #f0f0f0 !important; color: black !important; }
@@ -1054,6 +1320,15 @@
 
     // Add keyboard shortcuts info (optional)
     console.log('Keyboard Shortcuts:\n- Press ESC to reset all filters\n- Use Tab to navigate between filters');
+
+    // Fallback: If data doesn't load within 10 seconds, hide loading screen
+    setTimeout(() => {
+      if (!isDataLoaded) {
+        console.warn('Data loading timeout - showing interface anyway');
+        updateProgress(100, "Timeout - Please refresh if data is missing");
+        setTimeout(hideLoadingScreen, 500);
+      }
+    }, 10000);
   </script>
 </body>
 
