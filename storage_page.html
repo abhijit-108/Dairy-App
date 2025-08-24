@@ -12,6 +12,177 @@
             padding: 0;
         }
 
+        /* Loading Screen Styles */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 30, 30, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-container {
+            text-align: center;
+            color: #e0e0e0;
+            animation: fadeInUp 0.8s ease-out;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading-icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            animation: bounce 2s infinite;
+            color: #64b5f6;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .loading-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+        }
+
+        .loading-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            opacity: 0.8;
+            font-weight: 400;
+            color: #b0b0b0;
+        }
+
+        .progress-container {
+            width: 300px;
+            max-width: 80vw;
+            margin: 0 auto;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #64b5f6, #42a5f5);
+            border-radius: 50px;
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(100, 181, 246, 0.3);
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .progress-status {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-style: italic;
+            color: #b0b0b0;
+        }
+
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 2s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        /* Mobile responsiveness for loading screen */
+        @media (max-width: 768px) {
+            .loading-title {
+                font-size: 1.5rem;
+            }
+            .loading-subtitle {
+                font-size: 1rem;
+            }
+            .loading-icon {
+                font-size: 3rem;
+            }
+            .progress-container {
+                width: 250px;
+            }
+        }
+
         body {
             font-family: 'Lato', sans-serif;
             background: linear-gradient(135deg, #1e1e1e 0%, #2d2d30 100%);
@@ -270,10 +441,62 @@
             background-color: #2d2d30;
             color: #e0e0e0;
         }
+
+        /* Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Loading spinner for infinite scroll */
+        .scroll-loader {
+            display: none;
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .scroll-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #64b5f6;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-container">
+            <div class="loading-icon">
+                <i class="fas fa-file-upload" aria-hidden="true"></i>
+            </div>
+            <h1 class="loading-title">Bills Upload System</h1>
+            <p class="loading-subtitle">Loading your file management system<span class="loading-dots"></span></p>
+            <div class="progress-container">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="progress-text" id="progress-text">0%</div>
+                <div class="progress-status" id="progress-status">Initializing application...</div>
+            </div>
+        </div>
+    </div>
+
     <h1>Upload Photo to Firebase Storage</h1>
     <br><button id="backtomain">Main Page</button>
     <div id="content_box" class="content-box">
@@ -299,6 +522,10 @@
     <div id="photoContainer">
         <div class="display-box" id="displayBox">
             <!-- Photos and comments will be displayed here -->
+        </div>
+        <div class="scroll-loader" id="scrollLoader">
+            <div class="scroll-spinner"></div>
+            <p>Loading more files...</p>
         </div>
     </div>
     <!-- Firebase SDKs -->
@@ -332,6 +559,96 @@
         const app = initializeApp(firebaseConfig);
         const storage = getStorage(app);
         const auth = getAuth();
+
+        // Variables for infinite scroll
+        let allItems = [];
+        let currentIndex = 0;
+        const itemsPerLoad = 6; // Number of items to load at a time
+        let isLoading = false;
+
+        // Loading Progress Management
+        let currentProgress = 0;
+        let isDataLoaded = false;
+        let progressInterval;
+        let loadingTimeout;
+
+        // Progress stages with status messages
+        const progressStages = [
+            { progress: 10, status: "Initializing Firebase connection..." },
+            { progress: 25, status: "Authenticating user..." },
+            { progress: 40, status: "Loading storage system..." },
+            { progress: 60, status: "Fetching existing files..." },
+            { progress: 80, status: "Preparing upload interface..." },
+            { progress: 95, status: "Finalizing setup..." },
+            { progress: 100, status: "Complete! Ready to upload files." }
+        ];
+
+        // Function to update progress bar
+        function updateProgress(targetProgress, status) {
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const progressStatus = document.getElementById('progress-status');
+
+            // Smooth animation to target progress
+            const currentProgressValue = parseInt(progressBar.style.width) || 0;
+            const progressStep = (targetProgress - currentProgressValue) / 20;
+
+            let stepProgress = currentProgressValue;
+            const progressAnimation = setInterval(() => {
+                stepProgress += progressStep;
+                if (stepProgress >= targetProgress) {
+                    stepProgress = targetProgress;
+                    clearInterval(progressAnimation);
+                }
+                
+                progressBar.style.width = stepProgress + '%';
+                progressText.textContent = Math.round(stepProgress) + '%';
+                
+                if (status) {
+                    progressStatus.textContent = status;
+                }
+            }, 20);
+
+            currentProgress = targetProgress;
+        }
+
+        // Auto-progress function for smooth loading experience
+        function startAutoProgress() {
+            let stageIndex = 0;
+            
+            progressInterval = setInterval(() => {
+                if (stageIndex < progressStages.length && !isDataLoaded) {
+                    const stage = progressStages[stageIndex];
+                    updateProgress(stage.progress, stage.status);
+                    stageIndex++;
+                }
+            }, 600); // Adjust timing as needed
+        }
+
+        // Function to hide loading screen
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+                // Remove from DOM after transition
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }
+        }
+
+        // Start loading progress immediately
+        startAutoProgress();
+
+        // Set timeout to hide loading screen after 5-6 seconds
+        loadingTimeout = setTimeout(() => {
+            if (!isDataLoaded) {
+                console.log('Loading screen dismissed by timeout');
+                updateProgress(100, "Loading complete");
+                setTimeout(hideLoadingScreen, 800);
+                clearInterval(progressInterval);
+            }
+        }, 5500); // 5.5 seconds
 
         async function uploadFile() {
             const fileInput = document.getElementById('fileInput');
@@ -406,7 +723,12 @@
                 () => {
                     // Completion function
                     document.getElementById('status').textContent = 'Upload successful!';
-                    displayPhotos(); // Refresh the displayed photos after a new upload
+                    // Reset and reload all photos
+                    allItems = [];
+                    currentIndex = 0;
+                    loadAllItems().then(() => {
+                        loadMoreItems();
+                    });
 
                     // Reset progress bar
                     progress.style.width = '0%';
@@ -415,32 +737,57 @@
             );
         }
 
-        async function displayPhotos() {
-            const displayBox = document.getElementById('displayBox');
-            displayBox.innerHTML = ''; // Clear the display box
+        // Function to load all items from Firebase Storage
+        async function loadAllItems() {
+            try {
+                // List all files in the 'uploads' folder
+                const listRef = ref(storage, 'uploads/');
+                const listResult = await listAll(listRef);
 
-            // List all files in the 'uploads' folder
-            const listRef = ref(storage, 'uploads/');
-            const listResult = await listAll(listRef);
+                // Custom sorting function based on date range
+                const sortByDateRange = (fileName) => {
+                    const dateRangeString = fileName.split('_')[0]; // Assuming date range is at the beginning of the file name
+                    const startDateString = dateRangeString.split(' ')[0]; // Get the start date part
+                    const [day, month, year] = startDateString.split('-'); // Split by '-' assuming "DD-MM-YYYY" format
+                    return new Date(year, month - 1, day); // Return Date object for sorting
+                };
 
-            // Custom sorting function based on date range
-            const sortByDateRange = (fileName) => {
-                const dateRangeString = fileName.split('_')[0]; // Assuming date range is at the beginning of the file name
-                const startDateString = dateRangeString.split(' ')[0]; // Get the start date part
-                const [day, month, year] = startDateString.split('-'); // Split by '-' assuming "DD-MM-YYYY" format
-                return new Date(year, month - 1, day); // Return Date object for sorting
-            };
+                // Sort files based on date range
+                allItems = listResult.items.sort((a, b) => {
+                    const dateA = sortByDateRange(a.name);
+                    const dateB = sortByDateRange(b.name);
+                    return dateB - dateA; // Descending order (latest date first)
+                });
 
-            // Sort files based on date range
-            listResult.items.sort((a, b) => {
-                const dateA = sortByDateRange(a.name);
-                const dateB = sortByDateRange(b.name);
-                return dateB - dateA; // Descending order (latest date first)
-            });
+                // Mark data as loaded
+                isDataLoaded = true;
+                if (currentProgress < 100) {
+                    clearInterval(progressInterval);
+                    clearTimeout(loadingTimeout);
+                    updateProgress(100, "Complete! Ready to upload files.");
+                    setTimeout(hideLoadingScreen, 800);
+                }
+            } catch (error) {
+                console.error('Error loading photos:', error);
+                isDataLoaded = true;
+                clearTimeout(loadingTimeout);
+                updateProgress(100, "Error loading files");
+                setTimeout(hideLoadingScreen, 800);
+            }
+        }
 
-            // Display sorted files
-            for (let i = 0; i < listResult.items.length; i++) {
-                const itemRef = listResult.items[i];
+        // Function to load more items (for infinite scroll)
+        async function loadMoreItems() {
+            if (isLoading || currentIndex >= allItems.length) return;
+            
+            isLoading = true;
+            const scrollLoader = document.getElementById('scrollLoader');
+            scrollLoader.style.display = 'block';
+            
+            const endIndex = Math.min(currentIndex + itemsPerLoad, allItems.length);
+            
+            for (let i = currentIndex; i < endIndex; i++) {
+                const itemRef = allItems[i];
                 try {
                     const url = await getDownloadURL(itemRef);
 
@@ -449,6 +796,7 @@
 
                     const imgElement = document.createElement('img');
                     imgElement.src = url;
+                    imgElement.loading = "lazy"; // Enable native lazy loading
 
                     const fileName = document.createElement('p');
                     fileName.classList.add('comment');
@@ -464,12 +812,37 @@
                     photoBox.appendChild(imgElement);
                     photoBox.appendChild(fileName);
                     photoBox.appendChild(downloadButton);
-                    displayBox.appendChild(photoBox);
+                    document.getElementById('displayBox').appendChild(photoBox);
                 } catch (error) {
                     console.error('Error getting download URL:', error);
                 }
             }
+            
+            currentIndex = endIndex;
+            isLoading = false;
+            scrollLoader.style.display = 'none';
+            
+            // If we've loaded all items, hide the loader
+            if (currentIndex >= allItems.length) {
+                scrollLoader.style.display = 'none';
+            }
         }
+
+        // Function to handle scroll events for infinite loading
+        function handleScroll() {
+            const scrollLoader = document.getElementById('scrollLoader');
+            if (isLoading || currentIndex >= allItems.length) {
+                return;
+            }
+            
+            // Check if we're near the bottom of the page
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+                loadMoreItems();
+            }
+        }
+
+        // Add scroll event listener
+        window.addEventListener('scroll', handleScroll);
 
         function downloadFile(url, fileName) {
             fetch(url)
@@ -495,15 +868,18 @@
         const uploadButton = document.getElementById('uploadButton');
         uploadButton.addEventListener('click', uploadFile);
 
-        // Display photos on initial load
-        window.onload = displayPhotos;
+        // Load all items on initial load, then load the first batch
+        window.onload = function() {
+            loadAllItems().then(() => {
+                loadMoreItems();
+            });
+        };
 
         onAuthStateChanged(auth, (user) => {
             const content_box = document.getElementById('content_box');
 
             if (user) {
                 content_box.classList.remove('disabled');
-
             } else {
                 content_box.classList.add('disabled');
             }
