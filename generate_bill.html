@@ -65,10 +65,11 @@
             padding: 15px;
             background: #f5f5f5;
             border-radius: 5px;
+
         }
 
         .billbox-section {
-            margin: 20px 0;
+            margin: 0;
             padding: 10px;
             margin-left: auto;
             margin-right: auto;
@@ -241,13 +242,16 @@
                 background-color: #007bff;
                 color: white;
                 padding: 4px;
-                font-size: 13px;
+                font-size: 12px;
                 text-align: center;
                 font-weight: bold;
             }
 
             /* First column min 100px */
-            th:first-child,
+            th:first-child {
+                text-align: center;
+            }
+
             td:first-child {
                 min-width: 100px;
                 text-align: left;
@@ -303,6 +307,8 @@
 
             .billbox-section {
                 background: #2c3e50;
+                margin: 0;
+                padding: 5px;
             }
 
             table {
@@ -328,6 +334,7 @@
 
             #tableContainer {
                 background: #2d2d2d;
+                padding: 8px;
             }
 
             .dated_bill {
@@ -336,82 +343,128 @@
                 border-color: #3498db;
             }
         }
+
+        /* container: allows wrapping */
+        .responsive-pair {
+            display: flex;
+            flex-wrap: wrap;
+            /* lets items wrap to next line when needed */
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        /* panels: flexible but with a preferred width */
+        .panel {
+            flex: 1 1 320px;
+            /* grow | shrink | basis (preferred width) */
+            min-width: 260px;
+            /* when container < 260px each will force wrap */
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            box-sizing: border-box;
+        }
+
+
+        /* Variant: fixed left width + flexible right (still no media queries) */
+        .fixed-left .panel-left {
+            flex: 0 0 300px;
+            min-width: 200px;
+        }
+
+        .fixed-left .panel-right {
+            flex: 1 1 0;
+            min-width: 200px;
+        }
+
+        /* small tweak to avoid overflow on very small containers */
+        .responsive-pair,
+        .panel {
+            max-width: 100%;
+        }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Bill Auto Genarated</h1>
+    <div class="responsive-pair">
+        <div class="panel panel-left">
+            <div class="container">
+                <h1>Bill Auto Genarated</h1>
 
-        <div class="date-range-selector">
-            <div class="date-range-buttons">
-                <button class="date-btn" data-range="1-7">1-7</button>
-                <button class="date-btn" data-range="8-15">8-15</button>
-                <button class="date-btn" data-range="16-23">16-23</button>
-                <button class="date-btn" data-range="24-rest">24-Rest</button>
+                <div class="date-range-selector">
+                    <div class="date-range-buttons">
+                        <button class="date-btn" data-range="1-7">1-7</button>
+                        <button class="date-btn" data-range="8-15">8-15</button>
+                        <button class="date-btn" data-range="16-23">16-23</button>
+                        <button class="date-btn" data-range="24-rest">24-Rest</button>
+                    </div>
+                </div>
+
+                <div class="checkbox-section">
+                    <h3>Select Names</h3>
+                    <div class="checkbox-grid" id="nameCheckboxes">
+                        <!-- Checkboxes will be populated here -->
+                    </div>
+                    <button class="refresh-btn" onclick="loadData()">Refresh Data</button>
+                </div>
+
             </div>
         </div>
 
-        <div class="checkbox-section">
-            <h3>Select Names</h3>
-            <div class="checkbox-grid" id="nameCheckboxes">
-                <!-- Checkboxes will be populated here -->
+        <div class="panel panel-right">
+
+            <div class="billbox-section">
+                <div id="errorMessage"></div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
+                    <div>
+                        <label for="billKg" style="margin-right: 4px;">মোট দুধ :</label>
+                        <input type="number" id="billKg" step="0.01" min="0" value="" onchange="updateTable() "
+                            placeholder="0 kg" oninput="updateTable()"
+                            style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 70px;font-size: 1.2rem;">
+                    </div>
+                    <div>
+                        <label for="billTotalRupee" style="margin-right:4px;">মোট টাকা :</label>
+                        <input type="number" id="billTotalRupee" step="0.01" min="0" value="" onchange="updateTable()"
+                            placeholder="₹ 0" oninput="updateTable()"
+                            style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 70px;font-size: 1.2rem;">
+                    </div>
+                </div>
+
+                <div id="tableContainer">
+                    <div class="dated_bill">
+                        <!-- Date range will appear here -->
+                    </div>
+                    <table id="billTable">
+                        <thead>
+                            <tr>
+                                <th>নাম</th>
+                                <th>পরিমাণ (Kg)</th>
+                                <th>29 টাকা</th>
+                                <th>40.5 টাকা</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr class="loading">
+                                <td colspan="4">Loading data...</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="footer-row">
+                                <td><strong>Total</strong></td>
+                                <td class="numeric" id="totalKg">0.00</td>
+                                <td class="numeric" id="totalTakaLess">0.00</td>
+                                <td class="numeric" id="totalTakaMain">0.00</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <button class="download-btn" onclick="downloadTableScreenshot()" id="downloadBtn">
+                    📷 Download Table Screenshot
+                </button>
             </div>
-            <button class="refresh-btn" onclick="loadData()">Refresh Data</button>
         </div>
-
-    </div>
-    <div class="billbox-section">
-        <div id="errorMessage"></div>
-
-
-        <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
-            <div>
-                <label for="billKg" style="margin-right: 4px;">মোট দুধ :</label>
-                <input type="number" id="billKg" step="0.01" min="0" value="" onchange="updateTable() "
-                    placeholder="0 kg" oninput="updateTable()"
-                    style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 70px;font-size: 1.2rem;">
-            </div>
-            <div>
-                <label for="billTotalRupee" style="margin-right:4px;">মোট টাকা :</label>
-                <input type="number" id="billTotalRupee" step="0.01" min="0" value="" onchange="updateTable()"
-                    placeholder="₹ 0" oninput="updateTable()"
-                    style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 70px;font-size: 1.2rem;">
-            </div>
-        </div>
-
-        <div id="tableContainer">
-            <div class="dated_bill">
-                <!-- Date range will appear here -->
-            </div>
-            <table id="billTable">
-                <thead>
-                    <tr>
-                        <th>নাম</th>
-                        <th>পরিমাণ (Kg)</th>
-                        <th>29 টাকা</th>
-                        <th>40.5 টাকা</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr class="loading">
-                        <td colspan="4">Loading data...</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr class="footer-row">
-                        <td><strong>Total</strong></td>
-                        <td class="numeric" id="totalKg">0.00</td>
-                        <td class="numeric" id="totalTakaLess">0.00</td>
-                        <td class="numeric" id="totalTakaMain">0.00</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-
-        <button class="download-btn" onclick="downloadTableScreenshot()" id="downloadBtn">
-            📷 Download Table Screenshot
-        </button>
     </div>
 
     <!-- Add html2canvas library -->
