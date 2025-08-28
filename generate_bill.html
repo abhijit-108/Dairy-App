@@ -13,10 +13,10 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
             background: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
@@ -70,12 +70,13 @@
         .billbox-section {
             margin: 20px 0;
             padding: 10px;
+            margin-left: auto;
+            margin-right: auto;
             max-width: 600px;
             background: #d8ecff;
             border-radius: 5px;
             margin-bottom: 60px;
         }
-
 
         .checkbox-section h3 {
             margin-top: 0;
@@ -118,7 +119,6 @@
             color: white;
             font-weight: bold;
             text-align: right;
-
         }
 
         .fixed-row {
@@ -153,18 +153,19 @@
         .error {
             color: #dc3545;
             text-align: center;
-            padding: 14px;
-            font-size: 0.9rem;
+            padding: 12px;
+            width: max-content;
+            font-size: 0.8rem;
             background: #f8d7da;
             border-radius: 5px;
-            margin: 5px 0;
+            margin: 10px 0;
         }
 
         .refresh-btn {
             background: #28a745;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 6px 16px;
             border-radius: 5px;
             cursor: pointer;
             margin: 10px;
@@ -204,9 +205,13 @@
 
         /* Responsive adjustments */
         @media (max-width: 768px) {
-
             .checkbox-section {
                 padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.3rem;
+                font-weight: bolder;
             }
 
             .checkbox-grid {
@@ -247,7 +252,6 @@
                 min-width: 100px;
                 text-align: left;
             }
-
         }
 
         .dated_bill {
@@ -271,6 +275,66 @@
             padding: 20px;
             border-radius: 8px;
             margin: 20px 0;
+        }
+
+        /* Dark theme media query */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1a1a1a;
+                color: #e0e0e0;
+            }
+
+            .container {
+                background: #2d2d2d;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            }
+
+            h1 {
+                color: #e0e0e0;
+            }
+
+            .checkbox-section {
+                background: #3d3d3d;
+            }
+
+            .checkbox-section h3 {
+                color: #e0e0e0;
+            }
+
+            .billbox-section {
+                background: #2c3e50;
+            }
+
+            table {
+                color: #e0e0e0;
+            }
+
+            th,
+            td {
+                border-color: #555;
+            }
+
+            .fixed-row {
+                background-color: #3d3d3d;
+            }
+
+            .database-row {
+                background-color: #3d3d3d;
+            }
+
+            .database-row:nth-child(even) {
+                background-color: #2d2d2d;
+            }
+
+            #tableContainer {
+                background: #2d2d2d;
+            }
+
+            .dated_bill {
+                background: #2c3e50;
+                color: #e0e0e0;
+                border-color: #3498db;
+            }
         }
     </style>
 </head>
@@ -772,14 +836,14 @@
         }
 
         // Download screenshot function
-        window.downloadTableScreenshot = async function() {
+        window.downloadTableScreenshot = async function () {
             const downloadBtn = document.getElementById('downloadBtn');
             const tableContainer = document.getElementById('tableContainer');
-            
+
             // Disable button and show loading state
             downloadBtn.disabled = true;
             downloadBtn.textContent = '📸 Capturing Screenshot...';
-            
+
             try {
                 // Configure html2canvas options for better quality
                 const canvas = await html2canvas(tableContainer, {
@@ -794,37 +858,37 @@
                 });
 
                 // Convert canvas to blob
-                canvas.toBlob(function(blob) {
+                canvas.toBlob(function (blob) {
                     // Create download link
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
-                    
+
                     // Get current date for filename
                     const now = new Date();
                     const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD format
                     const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS format
-                    
+
                     link.href = url;
                     link.download = `Bill_Table_${dateStr}_${timeStr}.jpg`;
-                    
+
                     // Trigger download
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    
+
                     // Clean up
                     URL.revokeObjectURL(url);
-                    
+
                     // Reset button
                     downloadBtn.disabled = false;
                     downloadBtn.textContent = '📷 Download Table Screenshot';
-                    
+
                 }, 'image/jpeg', 0.95); // High quality JPEG
-                
+
             } catch (error) {
                 console.error('Error capturing screenshot:', error);
                 alert('Failed to capture screenshot. Please try again.');
-                
+
                 // Reset button
                 downloadBtn.disabled = false;
                 downloadBtn.textContent = '📷 Download Table Screenshot';
