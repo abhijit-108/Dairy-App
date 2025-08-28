@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 case "All Members":
                     window.location.href = "all_member.html";
                     break;
-                case "Generate New Bills":
+                case "Auto Bill generate":
                     window.location.href = "generate_bill.html";
                     break;
                 case "Old Bills Photos":
