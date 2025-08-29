@@ -15,23 +15,8 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Retrieve an instance of Firebase Messaging with VAPID key
+// Retrieve an instance of Firebase Messaging
 const messaging = firebase.messaging();
-
-// Set the VAPID key for the service worker
-messaging.onBackgroundMessage((payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  
-  // Customize notification here
-  const notificationTitle = payload.notification?.title || 'New Message';
-  const notificationOptions = {
-    body: payload.notification?.body || 'You have a new message',
-    icon: '/logo.png',
-    data: payload.data || {}
-  };
-
-  return self.registration.showNotification(notificationTitle, notificationOptions);
-});
 
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {
@@ -41,7 +26,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || 'New Message';
   const notificationOptions = {
     body: payload.notification?.body || 'You have a new message',
-    icon: '/logo.png', // Path to your app icon
+    icon: '/Dairy-App/logo.png', // make sure path is correct in GitHub Pages
     data: payload.data || {}
   };
 
@@ -50,19 +35,19 @@ messaging.onBackgroundMessage((payload) => {
 
 // Handle notification click
 self.addEventListener('notificationclick', (event) => {
-  // Close the notification popup
   event.notification.close();
-  
-  // This looks to see if the current is already open and focuses if it is
+
+  const appUrl = 'https://abhijit-108.github.io/Dairy-App/';
+
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((clientList) => {
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
-        if (client.url === '/' && 'focus' in client) {
+        if (client.url === appUrl && 'focus' in client) {
           return client.focus();
         }
       }
       if (clients.openWindow) {
-        return clients.openWindow('/');
+        return clients.openWindow(appUrl);
       }
     })
   );
