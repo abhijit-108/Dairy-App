@@ -272,7 +272,7 @@
     <script>
         async function fetchNames() {
             try {
-                const response = await fetch('names.md');
+                const response = await fetch('name.md');
                 const data = await response.text();
                 const names = data.split('\n').map(line => line.split(' | ')[0].trim()).filter(Boolean);
 
