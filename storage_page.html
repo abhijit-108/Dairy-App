@@ -352,6 +352,20 @@
             border-radius: 10px;
         }
 
+        /* upload speed text directly below upload progress bar */
+        #uploadSpeed {
+            margin-top: 6px;
+            font-size: 0.9rem;
+            color: #cfe8d8;
+            opacity: 0.95;
+            min-height: 1.1em;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+            font-weight: 600;
+        }
+
         #photoContainer {
             width: 100%;
             display: flex;
@@ -476,7 +490,9 @@
         @media (prefers-reduced-motion: reduce) {
 
             *,
+
             *::before,
+
             *::after {
                 animation-duration: 0.01ms !important;
                 animation-iteration-count: 1 !important;
@@ -553,6 +569,8 @@
         <div id="progressBar" class="progress-bar">
             <div id="progress" class="progress"></div>
         </div>
+        <!-- Upload speed / bytes info shown below the upload progress bar -->
+        <div id="uploadSpeed"></div>
     </div>
 
     <div id="photoContainer">
@@ -574,6 +592,53 @@
             // Redirect to bill.html
             window.location.href = 'index.html';
         });
+
+        // Auto-select commentInput using (baseDate - 5 days).
+// baseDate = today if monthSelect === 'current'
+// baseDate = same day-of-month but previous month if monthSelect === 'previous'
+function autoSelectComment() {
+    const commentInput = document.getElementById('commentInput');
+    const monthSelect = document.getElementById('monthSelect');
+    if (!commentInput || !monthSelect) return;
+
+    const today = new Date();
+
+    // choose base date depending on monthSelect
+    let baseDate;
+    if (monthSelect.value === 'previous') {
+        // same day-of-month but previous month
+        // using Date(year, month-1, day) handles short months safely
+        baseDate = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+    } else {
+        baseDate = new Date(today);
+    }
+
+    // reference date = baseDate - 5 days
+    const refDate = new Date(baseDate);
+    refDate.setDate(refDate.getDate() - 5);
+
+    const day = refDate.getDate();
+
+    let valueToSelect = '24_currentmonth_currentyear-rest'; // fallback
+    if (day >= 1 && day <= 7) {
+        valueToSelect = '01_currentmonth_currentyear-07_currentmonth_currentyear';
+    } else if (day >= 8 && day <= 15) {
+        valueToSelect = '08_currentmonth_currentyear-15_currentmonth_currentyear';
+    } else if (day >= 16 && day <= 23) {
+        valueToSelect = '16_currentmonth_currentyear-23_currentmonth_currentyear';
+    } else {
+        valueToSelect = '24_currentmonth_currentyear-rest';
+    }
+
+    commentInput.value = valueToSelect;
+}
+
+// run on DOM ready and whenever monthSelect changes
+document.addEventListener('DOMContentLoaded', autoSelectComment);
+const monthSelectEl = document.getElementById('monthSelect');
+if (monthSelectEl) monthSelectEl.addEventListener('change', autoSelectComment);
+
+        
     </script>
     <script type="module">
         // Import the functions you need from the SDKs you need
@@ -735,7 +800,7 @@
             }
 
             // Append comment to file name
-            const fileName = `${comment}_fixed`;
+            const fileName = `${comment}_bill`;
             const fileRef = ref(storage, `uploads/${fileName}`);
 
             // Upload the file with progress tracking
@@ -743,32 +808,86 @@
 
             const progressBar = document.getElementById('progressBar');
             const progress = document.getElementById('progress');
+            const uploadSpeedEl = document.getElementById('uploadSpeed');
+
             progressBar.style.display = 'block'; // Show progress bar
+            uploadSpeedEl.style.display = 'block'; // show speed element
+            uploadSpeedEl.textContent = ''; // clear
+
+            // Variables to compute speed
+            let uploadStartTime = Date.now();
+            let lastTime = uploadStartTime;
+            let lastBytes = 0;
+
+            // helper to format bytes nicely
+            function formatBytes(bytes) {
+                if (!bytes && bytes !== 0) return '';
+                if (bytes === 0) return '0 B';
+                const k = 1024;
+                const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            function humanPerSec(bytesPerSec) {
+                if (!bytesPerSec && bytesPerSec !== 0) return '';
+                return formatBytes(bytesPerSec);
+            }
 
             uploadTask.on('state_changed',
                 (snapshot) => {
                     // Progress function
                     const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                     progress.style.width = percentage + '%';
+
+                    // compute speeds
+                    const now = Date.now();
+                    // delta from last sample
+                    const deltaBytes = snapshot.bytesTransferred - lastBytes;
+                    const deltaTimeMs = Math.max(now - lastTime, 1);
+                    const instantBps = deltaBytes / (deltaTimeMs / 1000); // bytes per second
+                    const avgBps = snapshot.bytesTransferred / ((now - uploadStartTime) / 1000 || 1); // bytes/sec
+
+                    lastBytes = snapshot.bytesTransferred;
+                    lastTime = now;
+
+                    // Update upload speed display (instant and avg), and bytes transferred / total
+                    uploadSpeedEl.textContent = `${formatBytes(snapshot.bytesTransferred)} of ${formatBytes(snapshot.totalBytes)} — ${humanPerSec(instantBps)}/s (avg ${humanPerSec(avgBps)}/s)`;
                 },
                 (error) => {
                     // Error function
                     document.getElementById('status').textContent = 'Upload failed: ' + error.message;
                     console.error('Upload failed:', error);
+                    // hide progress UI after short delay
+                    setTimeout(() => {
+                        progress.style.width = '0%';
+                        progressBar.style.display = 'none';
+                        uploadSpeedEl.style.display = 'none';
+                    }, 1500);
                 },
-                () => {
+                async () => {
                     // Completion function
                     document.getElementById('status').textContent = 'Upload successful!';
+                    // Clear current displayed photos so refresh shows newest items only
+                    document.getElementById('displayBox').innerHTML = '';
+
                     // Reset and reload all photos
                     allItems = [];
                     currentIndex = 0;
-                    loadAllItems().then(() => {
-                        loadMoreItems();
-                    });
+                    await loadAllItems();
+                    loadMoreItems();
 
-                    // Reset progress bar
+                    // Reset progress bar & speed UI
                     progress.style.width = '0%';
-                    progressBar.style.display = 'none'; // Hide progress bar
+                    setTimeout(() => {
+                        progressBar.style.display = 'none'; // Hide progress bar
+                        uploadSpeedEl.textContent = 'Upload complete';
+                        // hide speed after short pause
+                        setTimeout(() => {
+                            uploadSpeedEl.style.display = 'none';
+                            uploadSpeedEl.textContent = '';
+                        }, 1200);
+                    }, 400);
                 }
             );
         }
