@@ -2,10 +2,11 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bills Upload to Firebase Storage</title>
     <style>
+        /* ... (your CSS unchanged) ... */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -133,8 +134,12 @@
         }
 
         @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
         }
 
         .progress-text {
@@ -161,10 +166,18 @@
         }
 
         @keyframes dots {
-            0%, 20% { content: ''; }
-            40% { content: '.'; }
-            60% { content: '..'; }
-            80%, 100% { content: '...'; }
+            0%, 20% {
+                content: '';
+            }
+            40% {
+                content: '.';
+            }
+            60% {
+                content: '..';
+            }
+            80%, 100% {
+                content: '...';
+            }
         }
 
         /* Mobile responsiveness for loading screen */
@@ -472,8 +485,12 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -500,7 +517,7 @@
     <h1>Upload Photo to Firebase Storage</h1>
     <br><button id="backtomain">Main Page</button>
     <div id="content_box" class="content-box">
-        <input type="file" id="fileInput">
+        <input type="file" id="fileInput" />
         <select id="commentInput">
             <option value="01_currentmonth_currentyear-07_currentmonth_currentyear">1 to 7</option>
             <option value="08_currentmonth_currentyear-15_currentmonth_currentyear">8 to 15</option>
@@ -600,10 +617,10 @@
                     stepProgress = targetProgress;
                     clearInterval(progressAnimation);
                 }
-                
+
                 progressBar.style.width = stepProgress + '%';
                 progressText.textContent = Math.round(stepProgress) + '%';
-                
+
                 if (status) {
                     progressStatus.textContent = status;
                 }
@@ -615,7 +632,7 @@
         // Auto-progress function for smooth loading experience
         function startAutoProgress() {
             let stageIndex = 0;
-            
+
             progressInterval = setInterval(() => {
                 if (stageIndex < progressStages.length && !isDataLoaded) {
                     const stage = progressStages[stageIndex];
@@ -720,15 +737,30 @@
                     document.getElementById('status').textContent = 'Upload failed: ' + error.message;
                     console.error('Upload failed:', error);
                 },
-                () => {
+                async () => {
                     // Completion function
                     document.getElementById('status').textContent = 'Upload successful!';
-                    // Reset and reload all photos
-                    allItems = [];
-                    currentIndex = 0;
-                    loadAllItems().then(() => {
+
+                    // --- NEW: refresh photo container safely ---
+                    try {
+                        const displayBox = document.getElementById('displayBox');
+                        // Clear the display box to avoid duplicates
+                        displayBox.innerHTML = '';
+
+                        // Reset file input so user can upload same file again if needed
+                        fileInput.value = '';
+
+                        // Reset and reload all photos
+                        allItems = [];
+                        currentIndex = 0;
+                        await loadAllItems();
+                        // Scroll to top so user sees refreshed content
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        // Load first batch
                         loadMoreItems();
-                    });
+                    } catch (e) {
+                        console.error('Error refreshing photos after upload:', e);
+                    }
 
                     // Reset progress bar
                     progress.style.width = '0%';
@@ -779,13 +811,13 @@
         // Function to load more items (for infinite scroll)
         async function loadMoreItems() {
             if (isLoading || currentIndex >= allItems.length) return;
-            
+
             isLoading = true;
             const scrollLoader = document.getElementById('scrollLoader');
             scrollLoader.style.display = 'block';
-            
+
             const endIndex = Math.min(currentIndex + itemsPerLoad, allItems.length);
-            
+
             for (let i = currentIndex; i < endIndex; i++) {
                 const itemRef = allItems[i];
                 try {
@@ -817,11 +849,11 @@
                     console.error('Error getting download URL:', error);
                 }
             }
-            
+
             currentIndex = endIndex;
             isLoading = false;
             scrollLoader.style.display = 'none';
-            
+
             // If we've loaded all items, hide the loader
             if (currentIndex >= allItems.length) {
                 scrollLoader.style.display = 'none';
@@ -834,7 +866,7 @@
             if (isLoading || currentIndex >= allItems.length) {
                 return;
             }
-            
+
             // Check if we're near the bottom of the page
             if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
                 loadMoreItems();
@@ -869,7 +901,7 @@
         uploadButton.addEventListener('click', uploadFile);
 
         // Load all items on initial load, then load the first batch
-        window.onload = function() {
+        window.onload = function () {
             loadAllItems().then(() => {
                 loadMoreItems();
             });
