@@ -2,9 +2,230 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bill Page</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Bill Auto Genarated</title>
+
+    <!-- === Loading screen CSS (extracted & self-contained) === -->
+    <style>
+        :root {
+            --bg-a: #667eea;
+            --bg-b: #764ba2;
+            --bg-c: #f093fb;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #loadingScreen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 50%, var(--bg-c) 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 6s ease infinite;
+            z-index: 99999;
+            transition: opacity .8s ease-out, visibility .8s ease-out;
+            overflow: hidden;
+        }
+
+        #loadingScreen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%
+            }
+
+            50% {
+                background-position: 100% 50%
+            }
+
+            100% {
+                background-position: 0% 50%
+            }
+        }
+
+        .particles {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, .6);
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0
+            }
+
+            10% {
+                opacity: 1
+            }
+
+            90% {
+                opacity: 1
+            }
+
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0
+            }
+        }
+
+        .loading-container {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px;
+            background: rgba(255, 255, 255, .08);
+            backdrop-filter: blur(18px);
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, .16);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, .12);
+            animation: containerPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes containerPulse {
+            0% {
+                transform: scale(1) translateY(0)
+            }
+
+            100% {
+                transform: scale(1.02) translateY(-5px)
+            }
+        }
+
+        .loading-spinner {
+            width: 72px;
+            height: 72px;
+            position: relative;
+            margin-bottom: 22px;
+        }
+
+        .spinner-ring {
+            position: absolute;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        .spinner-ring:nth-child(1) {
+            width: 72px;
+            height: 72px;
+            border-top: 3px solid #fff;
+            border-right: 3px solid #fff;
+            animation-duration: 2s;
+        }
+
+        .spinner-ring:nth-child(2) {
+            width: 52px;
+            height: 52px;
+            top: 10px;
+            left: 10px;
+            border-bottom: 3px solid rgba(255, 255, 255, .85);
+            border-left: 3px solid rgba(255, 255, 255, .85);
+            animation-duration: 1.5s;
+            animation-direction: reverse;
+        }
+
+        .spinner-ring:nth-child(3) {
+            width: 32px;
+            height: 32px;
+            top: 20px;
+            left: 20px;
+            border-top: 3px solid rgba(255, 255, 255, .6);
+            border-right: 3px solid rgba(255, 255, 255, .6);
+            animation-duration: 1s;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0)
+            }
+
+            100% {
+                transform: rotate(360deg)
+            }
+        }
+
+        .loading-text {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+            letter-spacing: .6px;
+        }
+
+        .loading-subtext {
+            color: rgba(255, 255, 255, .95);
+            font-size: 14px;
+            text-align: center;
+            font-weight: 400;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+        }
+
+        .progress-container {
+            width: 260px;
+            height: 6px;
+            background: rgba(255, 255, 255, .2);
+            border-radius: 6px;
+            margin-top: 18px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #fff, rgba(255, 255, 255, .85));
+            border-radius: 6px;
+            width: 0%;
+            transition: width .4s ease;
+        }
+
+        @media (max-width:600px) {
+            .loading-text {
+                font-size: 18px
+            }
+
+            .loading-container {
+                padding: 22px
+            }
+
+            .progress-container {
+                width: 200px
+            }
+        }
+
+        @media (prefers-color-scheme:dark) {
+            #loadingScreen {
+                background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #512da8 100%);
+            }
+        }
+    </style>
+
+    <!-- === Your original page CSS (unchanged) === -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,7 +262,7 @@
         }
 
         .date-btn {
-            padding: 10px 15px;
+            padding: 6px 10px;
             border: 2px solid #007bff;
             background: white;
             color: #007bff;
@@ -65,7 +286,6 @@
             padding: 15px;
             background: #f5f5f5;
             border-radius: 5px;
-
         }
 
         .billbox-section {
@@ -204,7 +424,6 @@
             text-align: left;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .checkbox-section {
                 padding: 10px;
@@ -247,7 +466,6 @@
                 font-weight: bold;
             }
 
-            /* First column min 100px */
             th:first-child {
                 text-align: center;
             }
@@ -262,9 +480,7 @@
             display: inline-block;
             padding: 6px 14px;
             background: #f0f8ff;
-            /* soft blue background */
             color: #222;
-            /* dark text */
             font-weight: 700;
             margin-bottom: 5px;
             font-size: 17px;
@@ -281,7 +497,6 @@
             margin: 20px 0;
         }
 
-        /* Dark theme media query */
         @media (prefers-color-scheme: dark) {
             body {
                 background-color: #1a1a1a;
@@ -325,7 +540,7 @@
             }
 
             .database-row {
-                background-color: #3d3d3d;
+                background-color: #3d3e3d;
             }
 
             .database-row:nth-child(even) {
@@ -344,29 +559,22 @@
             }
         }
 
-        /* container: allows wrapping */
         .responsive-pair {
             display: flex;
             flex-wrap: wrap;
-            /* lets items wrap to next line when needed */
             gap: 15px;
             align-items: flex-start;
         }
 
-        /* panels: flexible but with a preferred width */
         .panel {
             flex: 1 1 320px;
-            /* grow | shrink | basis (preferred width) */
             min-width: 260px;
-            /* when container < 260px each will force wrap */
             padding: 0;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             box-sizing: border-box;
         }
 
-
-        /* Variant: fixed left width + flexible right (still no media queries) */
         .fixed-left .panel-left {
             flex: 0 0 300px;
             min-width: 200px;
@@ -377,7 +585,6 @@
             min-width: 200px;
         }
 
-        /* small tweak to avoid overflow on very small containers */
         .responsive-pair,
         .panel {
             max-width: 100%;
@@ -386,6 +593,29 @@
 </head>
 
 <body>
+
+    <!-- Loading screen markup (self-contained) -->
+    <div id="loadingScreen" role="status" aria-live="polite" aria-label="Loading content" style="display:flex">
+        <div class="particles" id="particles"></div>
+
+        <div class="loading-container" id="loadingContainer">
+            <div class="loading-spinner" aria-hidden="true">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+
+            <div class="loading-text" id="loadingText">Loading<span class="loading-dots" aria-hidden="true"></span>
+            </div>
+            <div class="loading-subtext" id="loadingSubtext">Please wait</div>
+
+            <div class="progress-container" aria-hidden="true">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- === Page content (unchanged) === -->
     <div class="responsive-pair">
         <div class="panel panel-left">
             <div class="container">
@@ -470,6 +700,65 @@
     <!-- Add html2canvas library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <!-- === Loading screen JS (self-contained) === -->
+    <script>
+        (function () {
+            const particlesEl = document.getElementById('particles');
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingTextEl = document.getElementById('loadingText');
+            const loadingSubtextEl = document.getElementById('loadingSubtext');
+            const progressBarEl = document.getElementById('progressBar');
+
+            function createParticles(count = 30) {
+                if (!particlesEl) return;
+                particlesEl.innerHTML = '';
+                for (let i = 0; i < count; i++) {
+                    const p = document.createElement('div');
+                    p.className = 'particle';
+                    p.style.left = Math.random() * 100 + '%';
+                    p.style.animationDelay = (Math.random() * 6) + 's';
+                    p.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                    p.style.opacity = (Math.random() * 0.6 + 0.2).toFixed(2);
+                    particlesEl.appendChild(p);
+                }
+            }
+
+            function showLoadingScreen(text = 'Loading', subtext = 'Please wait') {
+                if (loadingTextEl) loadingTextEl.textContent = text;
+                if (loadingSubtextEl) loadingSubtextEl.textContent = subtext;
+                if (progressBarEl) progressBarEl.style.width = '0%';
+                loadingScreen.classList.remove('fade-out');
+                loadingScreen.style.display = 'flex';
+            }
+
+            function hideLoadingScreen() {
+                loadingScreen.classList.add('fade-out');
+                // remove DOM node after fade to avoid blocking interactions
+                setTimeout(() => {
+                    if (loadingScreen && loadingScreen.classList.contains('fade-out')) {
+                        loadingScreen.style.display = 'none';
+                    }
+                }, 800);
+            }
+
+            function setProgress(percent) {
+                const val = Math.max(0, Math.min(100, Number(percent) || 0));
+                if (progressBarEl) progressBarEl.style.width = val + '%';
+            }
+
+            window.LoadingScreen = {
+                createParticles,
+                show: showLoadingScreen,
+                hide: hideLoadingScreen,
+                setProgress
+            };
+
+            // init particles now so they exist when shown
+            createParticles();
+        })();
+    </script>
+
+    <!-- === Main app script (firebase + page logic) === -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
@@ -526,24 +815,11 @@
             let startDay, endDay;
 
             switch (currentDateRange) {
-                case '1-7':
-                    startDay = 1;
-                    endDay = 7;
-                    break;
-                case '8-15':
-                    startDay = 8;
-                    endDay = 15;
-                    break;
-                case '16-23':
-                    startDay = 16;
-                    endDay = 23;
-                    break;
-                case '24-rest':
-                    startDay = 24;
-                    endDay = new Date(year, month + 1, 0).getDate(); // last day of month
-                    break;
-                default:
-                    return;
+                case '1-7': startDay = 1; endDay = 7; break;
+                case '8-15': startDay = 8; endDay = 15; break;
+                case '16-23': startDay = 16; endDay = 23; break;
+                case '24-rest': startDay = 24; endDay = new Date(year, month + 1, 0).getDate(); break;
+                default: return;
             }
 
             // Format dd/mm/yy
@@ -554,8 +830,7 @@
                 return `${dd}/${mm}/${yy}`;
             };
 
-            document.querySelector('.dated_bill').textContent =
-                `${formatDate(startDay)} - ${formatDate(endDay)}`;
+            document.querySelector('.dated_bill').textContent = `${formatDate(startDay)} - ${formatDate(endDay)}`;
         }
 
         function setDefaultDateRange() {
@@ -563,30 +838,20 @@
             const currentDay = today.getDate();
 
             let selectedRange = '';
-            if (currentDay >= 1 && currentDay <= 7) {
-                selectedRange = '1-7';
-            } else if (currentDay >= 8 && currentDay <= 15) {
-                selectedRange = '8-15';
-            } else if (currentDay >= 16 && currentDay <= 23) {
-                selectedRange = '16-23';
-            } else {
-                selectedRange = '24-rest';
-            }
+            if (currentDay >= 1 && currentDay <= 7) selectedRange = '1-7';
+            else if (currentDay >= 8 && currentDay <= 15) selectedRange = '8-15';
+            else if (currentDay >= 16 && currentDay <= 23) selectedRange = '16-23';
+            else selectedRange = '24-rest';
 
             // Adjust for current date - 5
             const adjustedDate = new Date(today);
             adjustedDate.setDate(currentDay - 5);
             const adjustedDay = adjustedDate.getDate();
 
-            if (adjustedDay >= 1 && adjustedDay <= 7) {
-                selectedRange = '1-7';
-            } else if (adjustedDay >= 8 && adjustedDay <= 15) {
-                selectedRange = '8-15';
-            } else if (adjustedDay >= 16 && adjustedDay <= 23) {
-                selectedRange = '16-23';
-            } else {
-                selectedRange = '24-rest';
-            }
+            if (adjustedDay >= 1 && adjustedDay <= 7) selectedRange = '1-7';
+            else if (adjustedDay >= 8 && adjustedDay <= 15) selectedRange = '8-15';
+            else if (adjustedDay >= 16 && adjustedDay <= 23) selectedRange = '16-23';
+            else selectedRange = '24-rest';
 
             currentDateRange = selectedRange;
             updateDateRangeButtons();
@@ -619,24 +884,11 @@
             let startDay, endDay;
 
             switch (range) {
-                case '1-7':
-                    startDay = 1;
-                    endDay = 7;
-                    break;
-                case '8-15':
-                    startDay = 8;
-                    endDay = 15;
-                    break;
-                case '16-23':
-                    startDay = 16;
-                    endDay = 23;
-                    break;
-                case '24-rest':
-                    startDay = 24;
-                    endDay = new Date(year, month + 1, 0).getDate();
-                    break;
-                default:
-                    return dates;
+                case '1-7': startDay = 1; endDay = 7; break;
+                case '8-15': startDay = 8; endDay = 15; break;
+                case '16-23': startDay = 16; endDay = 23; break;
+                case '24-rest': startDay = 24; endDay = new Date(year, month + 1, 0).getDate(); break;
+                default: return dates;
             }
 
             for (let day = startDay; day <= endDay; day++) {
@@ -649,8 +901,20 @@
 
         async function loadData() {
             try {
+                // show small table placeholder (unchanged)
                 showLoading();
                 clearError();
+
+                // show overlay loading screen (added)
+                if (window.LoadingScreen) {
+                    try {
+                        window.LoadingScreen.createParticles();
+                        window.LoadingScreen.show('Loading data', 'Fetching records...');
+                        window.LoadingScreen.setProgress(5);
+                    } catch (e) {
+                        console.warn('LoadingScreen failed to show:', e);
+                    }
+                }
 
                 const dates = getDatesInRange(currentDateRange);
                 databaseData = {};
@@ -658,7 +922,8 @@
 
                 fixedNames.forEach(name => allNames.add(name));
 
-                for (const date of dates) {
+                for (let i = 0; i < dates.length; i++) {
+                    const date = dates[i];
                     try {
                         const snapshot = await get(child(dbRef, `records/${date}`));
                         if (snapshot.exists()) {
@@ -691,14 +956,40 @@
                     } catch (error) {
                         console.warn(`Failed to load data for ${date}:`, error);
                     }
+
+                    // update progress roughly based on dates processed
+                    if (window.LoadingScreen) {
+                        try {
+                            const percent = Math.round(((i + 1) / dates.length) * 90); // up to 90% during fetch
+                            window.LoadingScreen.setProgress(percent);
+                        } catch (e) { /* ignore */ }
+                    }
                 }
 
                 createNameCheckboxes();
                 renderTable();
 
+                // mark complete and hide overlay
+                if (window.LoadingScreen) {
+                    try {
+                        window.LoadingScreen.setProgress(100);
+                        // small delay so user sees 100%
+                        setTimeout(() => {
+                            try { window.LoadingScreen.hide(); } catch (e) { /* ignore */ }
+                        }, 300);
+                    } catch (e) {
+                        console.warn('Failed to hide LoadingScreen:', e);
+                    }
+                }
+
             } catch (error) {
-                showError('Failed to load data: ' + error.message);
+                showError('Failed to load data: ' + (error && error.message ? error.message : error));
                 console.error('Error loading data:', error);
+
+                // ensure overlay hidden on error
+                if (window.LoadingScreen) {
+                    try { window.LoadingScreen.hide(); } catch (e) { /* ignore */ }
+                }
             }
         }
 
@@ -949,9 +1240,7 @@
         };
 
         window.loadData = loadData;
-        window.updateTable = function () {
-            renderTable();
-        };
+        window.updateTable = function () { renderTable(); };
     </script>
 </body>
 
