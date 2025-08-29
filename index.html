@@ -204,6 +204,99 @@
     </script>
     <script src="js/main_screen.js?v=6.0.3"></script>
     <script type="module" src="js/database.js?v=6.0.9"></script>
+
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
+
+    <script type="module">
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
+            authDomain: "dairy-app-abhijit.firebaseapp.com",
+            databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
+            projectId: "dairy-app-abhijit",
+            storageBucket: "dairy-app-abhijit.appspot.com",
+            messagingSenderId: "196152880143",
+            appId: "1:196152880143:web:bec02170e30932a7d5877a"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        // Request notification permission and get FCM token
+        async function requestNotificationPermission() {
+            try {
+                // First, get the service worker registration
+                const registration = await navigator.serviceWorker.ready;
+                
+                // Then request permission
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    console.log('Notification permission granted.');
+                    
+                    // Get FCM token with the service worker registration
+                    const token = await messaging.getToken({
+                        vapidKey: 'BEnkubqEyRwtU2PPOwhcOGWYZY3xkSHANRDMEIhJ7kxB9Zo4uwk7S8TK8VZAZNUvnTfl8rMH7YZmrxlaPQjWqKY',
+                        serviceWorkerRegistration: registration
+                    });
+                    
+                    console.log('FCM Token:', token);
+                    // Here you would typically send this token to your server
+                    // saveTokenToServer(token);
+                } else {
+                    console.log('Unable to get permission to notify.');
+                }
+            } catch (error) {
+                console.error('Error requesting notification permission:', error);
+            }
+        }
+
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    // First, register the service worker
+                    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                    console.log('Service Worker registered with scope:', registration.scope);
+                    
+                    // Wait for the service worker to be ready
+                    if (registration.active) {
+                        console.log('Service worker is active');
+                        // Request notification permission after service worker is ready
+                        requestNotificationPermission();
+                    } else if (registration.installing) {
+                        console.log('Service worker is installing');
+                        registration.installing.addEventListener('statechange', (event) => {
+                            if (event.target.state === 'activated') {
+                                console.log('Service worker is now active');
+                                requestNotificationPermission();
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('Service Worker registration failed:', error);
+                }
+            });
+        }
+
+        // Handle incoming messages when the app is in the foreground
+        messaging.onMessage((payload) => {
+            console.log('Message received in foreground: ', payload);
+            // You can customize the notification here
+            const notificationTitle = payload.notification?.title || 'New Message';
+            const notificationOptions = {
+                body: payload.notification?.body || 'You have a new message',
+                icon: '/logo.png'
+            };
+
+            // Show notification
+            if (Notification.permission === 'granted') {
+                new Notification(notificationTitle, notificationOptions);
+            }
+        });
+    </script>
 </body>
 
 </html>
