@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bills Upload to Firebase Storage</title>
+    <title>Bills Photos</title>
     <style>
         * {
             box-sizing: border-box;
@@ -53,6 +53,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -67,12 +68,19 @@
         }
 
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
                 transform: translateY(0);
             }
+
             40% {
                 transform: translateY(-20px);
             }
+
             60% {
                 transform: translateY(-10px);
             }
@@ -133,8 +141,13 @@
         }
 
         @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
         }
 
         .progress-text {
@@ -161,10 +174,24 @@
         }
 
         @keyframes dots {
-            0%, 20% { content: ''; }
-            40% { content: '.'; }
-            60% { content: '..'; }
-            80%, 100% { content: '...'; }
+
+            0%,
+            20% {
+                content: '';
+            }
+
+            40% {
+                content: '.';
+            }
+
+            60% {
+                content: '..';
+            }
+
+            80%,
+            100% {
+                content: '...';
+            }
         }
 
         /* Mobile responsiveness for loading screen */
@@ -172,12 +199,15 @@
             .loading-title {
                 font-size: 1.5rem;
             }
+
             .loading-subtitle {
                 font-size: 1rem;
             }
+
             .loading-icon {
                 font-size: 3rem;
             }
+
             .progress-container {
                 width: 250px;
             }
@@ -444,6 +474,7 @@
 
         /* Reduced Motion Support */
         @media (prefers-reduced-motion: reduce) {
+
             *,
             *::before,
             *::after {
@@ -472,8 +503,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -497,7 +533,7 @@
         </div>
     </div>
 
-    <h1>Upload Photo to Firebase Storage</h1>
+    <h1>Upload Bills</h1>
     <br><button id="backtomain">Main Page</button>
     <div id="content_box" class="content-box">
         <input type="file" id="fileInput">
@@ -600,10 +636,10 @@
                     stepProgress = targetProgress;
                     clearInterval(progressAnimation);
                 }
-                
+
                 progressBar.style.width = stepProgress + '%';
                 progressText.textContent = Math.round(stepProgress) + '%';
-                
+
                 if (status) {
                     progressStatus.textContent = status;
                 }
@@ -615,7 +651,7 @@
         // Auto-progress function for smooth loading experience
         function startAutoProgress() {
             let stageIndex = 0;
-            
+
             progressInterval = setInterval(() => {
                 if (stageIndex < progressStages.length && !isDataLoaded) {
                     const stage = progressStages[stageIndex];
@@ -699,7 +735,7 @@
             }
 
             // Append comment to file name
-            const fileName = `${comment}_${file.name}`;
+            const fileName = `${comment}_fixed`;
             const fileRef = ref(storage, `uploads/${fileName}`);
 
             // Upload the file with progress tracking
@@ -779,13 +815,13 @@
         // Function to load more items (for infinite scroll)
         async function loadMoreItems() {
             if (isLoading || currentIndex >= allItems.length) return;
-            
+
             isLoading = true;
             const scrollLoader = document.getElementById('scrollLoader');
             scrollLoader.style.display = 'block';
-            
+
             const endIndex = Math.min(currentIndex + itemsPerLoad, allItems.length);
-            
+
             for (let i = currentIndex; i < endIndex; i++) {
                 const itemRef = allItems[i];
                 try {
@@ -817,11 +853,11 @@
                     console.error('Error getting download URL:', error);
                 }
             }
-            
+
             currentIndex = endIndex;
             isLoading = false;
             scrollLoader.style.display = 'none';
-            
+
             // If we've loaded all items, hide the loader
             if (currentIndex >= allItems.length) {
                 scrollLoader.style.display = 'none';
@@ -834,7 +870,7 @@
             if (isLoading || currentIndex >= allItems.length) {
                 return;
             }
-            
+
             // Check if we're near the bottom of the page
             if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
                 loadMoreItems();
@@ -869,7 +905,7 @@
         uploadButton.addEventListener('click', uploadFile);
 
         // Load all items on initial load, then load the first batch
-        window.onload = function() {
+        window.onload = function () {
             loadAllItems().then(() => {
                 loadMoreItems();
             });
