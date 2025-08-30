@@ -311,6 +311,19 @@ async function saveToFirebase(data) {
             timestamp: data.timestamp
         });
 
+        // 🔹 Local notification after successful save
+        if (Notification.permission === "granted") {
+            navigator.serviceWorker.getRegistration().then(reg => {
+                if (reg) {
+                    reg.showNotification(data.name, {
+                        body: `FAT: ${data.fat} | SNF: ${data.snf} | RATE: ₹${data.rate} | TOTAL: ₹${data.total}`,
+                        icon: "/Dairy-App/logo.png",
+                        data: { name: data.name, timestamp: data.timestamp }
+                    });
+                }
+            });
+        }
+
         return true;
     } catch (error) {
         console.error('Error saving to Firebase:', error);
