@@ -316,8 +316,9 @@ async function saveToFirebase(data) {
             navigator.serviceWorker.getRegistration().then(reg => {
                 if (reg) {
                     reg.showNotification(data.name, {
-                        body: `FAT: ${data.fat} | SNF: ${data.snf} | RATE: ₹${data.rate} | TOTAL: ₹${data.total}`,
+                        body: `Fat: ${data.fat} |Snf: ${data.snf} |Rate: ₹${data.rate} |TOTAL: ₹${data.total}`,
                         icon: "/Dairy-App/logo.png",
+                        badge: "/Dairy-App/logo.png",      // Tiny badge icon (monochrome)
                         data: { name: data.name, timestamp: data.timestamp }
                     });
                 }
