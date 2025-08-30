@@ -22,20 +22,15 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
   
-  // Only show notification if the app is not in the foreground
-  if (!payload.data || payload.data.foreground !== 'true') {
-    // Customize notification here
-    const notificationTitle = payload.notification?.title || 'New Message';
-    const notificationOptions = {
-      body: payload.notification?.body || 'You have a new message',
-      icon: '/Dairy-App/logo.png',
-      data: payload.data || {}
-    };
+  // Customize notification here
+  const notificationTitle = payload.notification?.title || 'New Message';
+  const notificationOptions = {
+    body: payload.notification?.body || 'You have a new message',
+    icon: '/Dairy-App/logo.png', // make sure path is correct in GitHub Pages
+    data: payload.data || {}
+  };
 
-    return self.registration.showNotification(notificationTitle, notificationOptions);
-  }
-  
-  return Promise.resolve();
+  return self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 // Handle notification click
