@@ -230,18 +230,18 @@
             try {
                 // First, get the service worker registration
                 const registration = await navigator.serviceWorker.ready;
-                
+
                 // Then request permission
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
                     console.log('Notification permission granted.');
-                    
+
                     // Get FCM token with the service worker registration
                     const token = await messaging.getToken({
                         vapidKey: 'BEnkubqEyRwtU2PPOwhcOGWYZY3xkSHANRDMEIhJ7kxB9Zo4uwk7S8TK8VZAZNUvnTfl8rMH7YZmrxlaPQjWqKY',
                         serviceWorkerRegistration: registration
                     });
-                    
+
                     console.log('FCM Token:', token);
                     // Here you would typically send this token to your server
                     // saveTokenToServer(token);
@@ -258,9 +258,9 @@
             window.addEventListener('load', async () => {
                 try {
                     // First, register the service worker
-            const registration = await navigator.serviceWorker.register('/Dairy-App/firebase-messaging-sw.js');
+                    const registration = await navigator.serviceWorker.register('/Dairy-App/firebase-messaging-sw.js');
                     console.log('Service Worker registered with scope:', registration.scope);
-                    
+
                     // Wait for the service worker to be ready
                     if (registration.active) {
                         console.log('Service worker is active');
@@ -288,7 +288,7 @@
             const notificationTitle = payload.notification?.title || 'New Message';
             const notificationOptions = {
                 body: payload.notification?.body || 'You have a new message',
-                icon: '/logo.png'
+                icon: '/Dairy-App/logo.png'
             };
 
             // Show notification
