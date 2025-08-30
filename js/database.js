@@ -1,6 +1,13 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+import {
+    getDatabase,
+    ref,
+    set,
+    get,
+    child,
+    onChildAdded,
+    onChildChanged
+} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
 
@@ -170,10 +177,6 @@ let rate = calculateRate(fat, snf);
 document.getElementById("fix_rate").textContent = "Current Rate : " + rate;
 document.getElementById("fix_rate1").textContent = "Current Rate : " + rate;
 
-
-
-
-
 function generateKey(name) {
     return name.trim().replace(/\s+/g, '-');
 }
@@ -301,6 +304,7 @@ async function saveToFirebase(data) {
 
         const recordPath = `records/${dateKey}/${nameKey}/${session}`;
 
+        // include createdAt numeric timestamp to help listeners
         await set(ref(database, recordPath), {
             name: data.name,
             kg: data.kg,
@@ -308,7 +312,8 @@ async function saveToFirebase(data) {
             snf: data.snf,
             rate: data.rate,
             total: data.total,
-            timestamp: data.timestamp
+            timestamp: data.timestamp,
+            createdAt: Date.now()
         });
 
         return true;
@@ -328,6 +333,82 @@ Promise.all([
 }).catch(error => {
     console.error('Error loading initial data:', error);
 });
+
+// -------------------- Notification helpers --------------------
+
+async function ensureNotificationPermission() {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'default') {
+        try {
+            await Notification.requestPermission();
+        } catch (e) {
+            console.warn('Notification permission request failed:', e);
+        }
+    }
+}
+
+function notifyEntryLocal(data) {
+    if (!('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
+
+    const title = `Entry ${data.name}`; // as requested: "Entry person name"
+    const body = `Fat: ${data.fat} |Snf: ${data.snf} |Rate: ₹${data.rate} |Total: ₹${data.total}`;
+
+    try {
+        // create notification
+        const n = new Notification(title, {
+            body,
+            icon: '/logo.png' // optional: replace with your icon path
+        });
+
+        // onclick opens the member page with the name parameter (URL-encoded)
+        n.onclick = function (ev) {
+            try {
+                const base = 'https://abhijit-108.github.io/Dairy-App/all_member.html';
+                const url = `${base}?name=${encodeURIComponent(data.name)}`;
+                // open in new tab/window
+                window.open(url, '_blank');
+                // close notification if supported
+                n.close();
+            } catch (e) {
+                console.warn('Failed to open member page from notification:', e);
+            }
+        };
+    } catch (err) {
+        console.warn('Notification creation failed:', err);
+    }
+}
+
+// Attach realtime listeners so other open clients will show notifications
+function attachRealtimeNotificationsForDate(dateKey) {
+    const startTime = Date.now();
+
+    const recordsRef = ref(database, `records/${dateKey}`);
+
+    // When a new person node is added
+    onChildAdded(recordsRef, (snap) => {
+        const personNode = snap.val() || {};
+        for (const sessionKey in personNode) {
+            const rec = personNode[sessionKey];
+            if (rec && rec.createdAt && rec.createdAt >= startTime) {
+                notifyEntryLocal(rec);
+            }
+        }
+    });
+
+    // When an existing person node is changed (e.g., new session added or overwritten)
+    onChildChanged(recordsRef, (snap) => {
+        const personNode = snap.val() || {};
+        for (const sessionKey in personNode) {
+            const rec = personNode[sessionKey];
+            if (rec && rec.createdAt && rec.createdAt >= startTime) {
+                notifyEntryLocal(rec);
+            }
+        }
+    });
+}
+
+// -------------------- Form submit and UI flows --------------------
 
 document.getElementById('milkForm').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -392,6 +473,9 @@ document.getElementById('milkForm').addEventListener('submit', async function (e
     if (saveSuccess) {
         showPopup('success', 'Success', data, 'Data saved successfully!');
 
+        // Fire local/system notification (for this client)
+        notifyEntryLocal(data);
+
         document.getElementById('milkForm').reset();
         document.getElementById('nameSelect').value = '';
     } else {
@@ -418,10 +502,14 @@ document.getElementById('updateBtn').addEventListener('click', async function ()
         pendingSaveData = null;
         document.getElementById('milkForm').reset();
         document.getElementById('nameSelect').value = '';
-        // Refresh after 6 seconds
+        // Refresh after 6 seconds - use DOM selector directly
         setTimeout(() => {
+            const dateSelector = document.getElementById('milkDateSelector');
             fetchMilkDataForDate(dateSelector.value);
         }, 6000);
+
+        // Notify system/local as well
+        notifyEntryLocal(pendingSaveData);
 
     } else {
         showPopup('failed', 'Update Failed', pendingSaveData, 'Failed to update the existing entry. Please try again.');
@@ -452,8 +540,6 @@ document.addEventListener('click', function enableAudio() {
     });
     document.removeEventListener('click', enableAudio);
 }, { once: true });
-
-
 
 const milkApp = initializeApp(firebaseConfig);
 const milkDatabase = getDatabase();
@@ -494,8 +580,6 @@ function extractMilkTime(timestamp) {
     if (!match) return '';
     return `${match[1]} ${match[2].toUpperCase()}`;
 }
-
-
 
 async function fetchMilkDataForDate(selectedDate) {
     const dataContainer = document.getElementById('milkDataContainer');
@@ -679,6 +763,12 @@ document.addEventListener('DOMContentLoaded', function () {
     dateSelector.addEventListener('change', function () {
         fetchMilkDataForDate(this.value);
     });
+
+    // Request notification permission once at startup
+    ensureNotificationPermission();
+
+    // Attach realtime notifications for today's date so other open clients get notified
+    attachRealtimeNotificationsForDate(getCurrentDateKey());
 });
 
 document.getElementById('milkForm').addEventListener('submit', function (e) {
