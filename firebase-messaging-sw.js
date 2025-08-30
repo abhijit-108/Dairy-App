@@ -18,46 +18,37 @@ firebase.initializeApp(firebaseConfig);
 // Retrieve an instance of Firebase Messaging
 const messaging = firebase.messaging();
 
-// Handle background FCM messages
+// Handle background messages
 messaging.onBackgroundMessage((payload) => {
-    console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  
+  // Customize notification here
+  const notificationTitle = payload.notification?.title || 'New Message';
+  const notificationOptions = {
+    body: payload.notification?.body || 'You have a new message',
+    icon: '/Dairy-App/logo.png', // make sure path is correct in GitHub Pages
+    data: payload.data || {}
+  };
 
-    const notificationTitle = payload.notification?.title || 'New Message';
-    const notificationOptions = {
-        body: payload.notification?.body || 'You have a new message',
-        icon: '/Dairy-App/logo.png',
-        data: { 
-            ...payload.data,
-            type: "FCM"   // 👈 mark as FCM for clarity
-        }
-    };
-
-    return self.registration.showNotification(notificationTitle, notificationOptions);
+  return self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-// Handle notification click (both LOCAL + FCM)
+// Handle notification click
 self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
+  event.notification.close();
 
-    let targetUrl = 'https://abhijit-108.github.io/Dairy-App/';
+  const appUrl = 'https://abhijit-108.github.io/Dairy-App/';
 
-    // Distinguish LOCAL vs FCM
-    if (event.notification.data?.type === "LOCAL") {
-        const personName = event.notification.data.name || "";
-        const encodedName = encodeURIComponent(personName);
-        targetUrl = `https://abhijit-108.github.io/Dairy-App/all_member.html?name=${encodedName}`;
-    }
-
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-            for (const client of clientList) {
-                if (client.url.startsWith(targetUrl) && 'focus' in client) {
-                    return client.focus();
-                }
-            }
-            if (clients.openWindow) {
-                return clients.openWindow(targetUrl);
-            }
-        })
-    );
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url === appUrl && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(appUrl);
+      }
+    })
+  );
 });
