@@ -80,13 +80,6 @@
                     <span>All Guide Website</span>
                 </div>
 
-                <!-- New notification section -->
-                <div class="nav-item" role="listitem" tabindex="0" id="notificationToggle">
-                    <i class='bx bx-bell'></i>
-                    <span>Notifications</span>
-                    <span id="notificationStatus" style="font-size: 12px; color: #666; margin-left: 10px;">Off</span>
-                </div>
-
                 <div class="nav-item" role="listitem" tabindex="0">
                     <i class='bx bx-log-out'></i>
                     <button id="logoutButton">Logout</button>
@@ -116,6 +109,7 @@
                     </audio>
                 </div>
 
+
                 <div class="audio-toggle">
                     <label>
                         <input type="checkbox" id="audioEnabled" checked>
@@ -123,25 +117,6 @@
                     </label>
                 </div>
 
-                <!-- Notification Controls -->
-                <div class="notification-controls" style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h3 style="margin: 0 0 15px 0; color: #333; font-size: 16px;">🔔 Notification Center</h3>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                        <button id="enableNotifications" class="notification-btn" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                            Enable Notifications
-                        </button>
-                        <button id="testNotification" class="notification-btn" style="background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;" disabled>
-                            Send Test Notification
-                        </button>
-                        <span id="notificationPermissionStatus" style="font-size: 14px; color: #666;">
-                            Permission: <strong id="permissionText">Unknown</strong>
-                        </span>
-                    </div>
-                    <div id="fcmTokenDisplay" style="margin-top: 10px; padding: 10px; background: white; border-radius: 4px; font-family: monospace; font-size: 12px; word-break: break-all; display: none;">
-                        <strong>FCM Token:</strong><br>
-                        <span id="tokenText"></span>
-                    </div>
-                </div>
 
                 <form id="milkForm">
 
@@ -209,142 +184,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDK imports -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
-            authDomain: "dairy-app-abhijit.firebaseapp.com",
-            databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
-            projectId: "dairy-app-abhijit",
-            storageBucket: "dairy-app-abhijit.appspot.com",
-            messagingSenderId: "196152880143",
-            appId: "1:196152880143:web:bec02170e30932a7d5877a"
-        };
-
-        const vapidKey = 'BEnkubqEyRwtU2PPOwhcOGWYZY3xkSHANRDMEIhJ7kxB9Zo4uwk7S8TK8VZAZNUvnTfl8rMH7YZmrxlaPQjWqKY';
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const messaging = getMessaging(app);
-
-        // Make Firebase instances available globally for other scripts
-        window.firebaseApp = app;
-        window.firebaseMessaging = messaging;
-        window.vapidKey = vapidKey;
-
-        // Register service worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/Dairy-App/service-worker.js')
-                .then((registration) => {
-                    console.log('Service Worker registered successfully:', registration);
-                })
-                .catch((error) => {
-                    console.error('Service Worker registration failed:', error);
-                });
-        }
-
-        // Notification permission status
-        function updatePermissionStatus() {
-            const status = Notification.permission;
-            document.getElementById('permissionText').textContent = status;
-            document.getElementById('notificationStatus').textContent = status === 'granted' ? 'On' : 'Off';
-            
-            if (status === 'granted') {
-                document.getElementById('testNotification').disabled = false;
-                document.getElementById('enableNotifications').textContent = 'Notifications Enabled';
-                document.getElementById('enableNotifications').style.background = '#4CAF50';
-                getFCMToken();
-            } else {
-                document.getElementById('testNotification').disabled = true;
-                document.getElementById('enableNotifications').textContent = 'Enable Notifications';
-                document.getElementById('enableNotifications').style.background = '#FF9800';
-            }
-        }
-
-        // Get FCM token
-        async function getFCMToken() {
-            try {
-                const token = await getToken(messaging, { vapidKey });
-                if (token) {
-                    console.log('FCM Token:', token);
-                    document.getElementById('tokenText').textContent = token;
-                    document.getElementById('fcmTokenDisplay').style.display = 'block';
-                    // Store token in database for sending notifications
-                    // You can implement this based on your database structure
-                } else {
-                    console.log('No registration token available.');
-                }
-            } catch (err) {
-                console.error('An error occurred while retrieving token:', err);
-            }
-        }
-
-        // Request notification permission
-        document.getElementById('enableNotifications').addEventListener('click', async () => {
-            try {
-                const permission = await Notification.requestPermission();
-                updatePermissionStatus();
-                
-                if (permission === 'granted') {
-                    getFCMToken();
-                } else {
-                    alert('Notification permission denied. Please enable notifications in your browser settings.');
-                }
-            } catch (error) {
-                console.error('Error requesting notification permission:', error);
-            }
-        });
-
-        // Send test notification
-        document.getElementById('testNotification').addEventListener('click', () => {
-            if (Notification.permission === 'granted') {
-                new Notification('🥛 Dairy App Test', {
-                    body: 'This is a test notification from your Dairy App!',
-                    icon: '/Dairy-App/logo.png',
-                    badge: '/Dairy-App/logo.png',
-                    tag: 'test-notification',
-                    requireInteraction: true
-                });
-            }
-        });
-
-        // Handle foreground messages
-        onMessage(messaging, (payload) => {
-            console.log('Message received in foreground:', payload);
-            
-            // Show notification even when app is in foreground
-            if (Notification.permission === 'granted') {
-                const notificationTitle = payload.notification?.title || 'Dairy App';
-                const notificationOptions = {
-                    body: payload.notification?.body || 'You have a new message',
-                    icon: '/Dairy-App/logo.png',
-                    badge: '/Dairy-App/logo.png',
-                    tag: 'foreground-notification'
-                };
-                
-                new Notification(notificationTitle, notificationOptions);
-            }
-        });
-
-        // Sidebar notification toggle
-        document.getElementById('notificationToggle').addEventListener('click', () => {
-            if (Notification.permission === 'granted') {
-                // Show notification settings or toggle
-                alert('Notifications are currently enabled. Use the notification center below to manage settings.');
-            } else {
-                document.getElementById('enableNotifications').click();
-            }
-        });
-
-        // Initial permission status check
-        updatePermissionStatus();
-    </script>
-
     <script>
         function enforceDecimals(input, maxDecimals) {
             input.addEventListener("input", function () {
@@ -366,5 +205,98 @@
     <script src="js/main_screen.js?v=6.0.3"></script>
     <script type="module" src="js/database.js?v=6.0.9"></script>
 
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
+
+    <script type="module">
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
+            authDomain: "dairy-app-abhijit.firebaseapp.com",
+            databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
+            projectId: "dairy-app-abhijit",
+            storageBucket: "dairy-app-abhijit.appspot.com",
+            messagingSenderId: "196152880143",
+            appId: "1:196152880143:web:bec02170e30932a7d5877a"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        // Request notification permission and get FCM token
+        async function requestNotificationPermission() {
+            try {
+                // First, get the service worker registration
+                const registration = await navigator.serviceWorker.ready;
+                
+                // Then request permission
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    console.log('Notification permission granted.');
+                    
+                    // Get FCM token with the service worker registration
+                    const token = await messaging.getToken({
+                        vapidKey: 'BEnkubqEyRwtU2PPOwhcOGWYZY3xkSHANRDMEIhJ7kxB9Zo4uwk7S8TK8VZAZNUvnTfl8rMH7YZmrxlaPQjWqKY',
+                        serviceWorkerRegistration: registration
+                    });
+                    
+                    console.log('FCM Token:', token);
+                    // Here you would typically send this token to your server
+                    // saveTokenToServer(token);
+                } else {
+                    console.log('Unable to get permission to notify.');
+                }
+            } catch (error) {
+                console.error('Error requesting notification permission:', error);
+            }
+        }
+
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    // First, register the service worker
+            const registration = await navigator.serviceWorker.register('/Dairy-App/firebase-messaging-sw.js');
+                    console.log('Service Worker registered with scope:', registration.scope);
+                    
+                    // Wait for the service worker to be ready
+                    if (registration.active) {
+                        console.log('Service worker is active');
+                        // Request notification permission after service worker is ready
+                        requestNotificationPermission();
+                    } else if (registration.installing) {
+                        console.log('Service worker is installing');
+                        registration.installing.addEventListener('statechange', (event) => {
+                            if (event.target.state === 'activated') {
+                                console.log('Service worker is now active');
+                                requestNotificationPermission();
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('Service Worker registration failed:', error);
+                }
+            });
+        }
+
+        // Handle incoming messages when the app is in the foreground
+        messaging.onMessage((payload) => {
+            console.log('Message received in foreground: ', payload);
+            // You can customize the notification here
+            const notificationTitle = payload.notification?.title || 'New Message';
+            const notificationOptions = {
+                body: payload.notification?.body || 'You have a new message',
+                icon: '/logo.png'
+            };
+
+            // Show notification
+            if (Notification.permission === 'granted') {
+                new Notification(notificationTitle, notificationOptions);
+            }
+        });
+    </script>
 </body>
+
 </html>
