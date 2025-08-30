@@ -281,21 +281,6 @@
             });
         }
 
-        // Handle incoming messages when the app is in the foreground
-        messaging.onMessage((payload) => {
-            console.log('Message received in foreground: ', payload);
-            // You can customize the notification here
-            const notificationTitle = payload.notification?.title || 'New Message';
-            const notificationOptions = {
-                body: payload.notification?.body || 'You have a new message',
-                icon: '/logo.png'
-            };
-
-            // Show notification
-            if (Notification.permission === 'granted') {
-                new Notification(notificationTitle, notificationOptions);
-            }
-        });
     </script>
 </body>
 
