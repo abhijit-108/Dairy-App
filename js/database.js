@@ -318,7 +318,11 @@ async function saveToFirebase(data) {
                     reg.showNotification(data.name, {
                         body: `FAT: ${data.fat} | SNF: ${data.snf} | RATE: ₹${data.rate} | TOTAL: ₹${data.total}`,
                         icon: "/Dairy-App/logo.png",
-                        data: { name: data.name, timestamp: data.timestamp }
+                        data: { 
+                            type: "LOCAL",   // 👈 added flag to distinguish
+                            name: data.name, 
+                            timestamp: data.timestamp 
+                        }
                     });
                 }
             });
@@ -330,6 +334,7 @@ async function saveToFirebase(data) {
         return false;
     }
 }
+
 
 let pendingSaveData = null;
 
