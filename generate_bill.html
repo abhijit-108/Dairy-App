@@ -9,7 +9,7 @@
     <!-- === Loading screen CSS (extracted & self-contained) === -->
     <style>
         :root {
-            --bg-a: #667eea;
+            --bg-a: #020a2b;
             --bg-b: #764ba2;
             --bg-c: #f093fb;
         }
@@ -21,6 +21,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        /* --- enhanced loading screen styles (keeps original look but adds percent + ticks) --- */
         #loadingScreen {
             position: fixed;
             inset: 0;
@@ -91,19 +92,22 @@
             }
         }
 
+        /* loading container (kept look but slightly tighter to accommodate percent) */
         .loading-container {
             position: relative;
             z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 32px;
+            padding: 22px 28px;
             background: rgba(255, 255, 255, .08);
             backdrop-filter: blur(18px);
             border-radius: 18px;
             border: 1px solid rgba(255, 255, 255, .16);
             box-shadow: 0 20px 40px rgba(0, 0, 0, .12);
             animation: containerPulse 2s ease-in-out infinite alternate;
+            max-width: 420px;
+            width: calc(100% - 40px);
         }
 
         @keyframes containerPulse {
@@ -120,7 +124,7 @@
             width: 72px;
             height: 72px;
             position: relative;
-            margin-bottom: 22px;
+            margin-bottom: 12px;
         }
 
         .spinner-ring {
@@ -169,14 +173,36 @@
             }
         }
 
+        /* header with text + percent */
+        .loading-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 6px;
+            width: 100%;
+            justify-content: center;
+        }
+
         .loading-text {
             color: #fff;
             font-size: 20px;
             font-weight: 700;
             text-align: center;
-            margin-bottom: 8px;
+            margin: 0;
             text-shadow: 0 2px 8px rgba(0, 0, 0, .25);
             letter-spacing: .6px;
+        }
+
+        .loading-percent {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 18px;
+            font-weight: 800;
+            min-width: 60px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.12);
+            padding: 6px 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
         }
 
         .loading-subtext {
@@ -185,42 +211,81 @@
             text-align: center;
             font-weight: 400;
             text-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+            margin-top: 8px;
         }
 
         .progress-container {
-            width: 260px;
-            height: 6px;
-            background: rgba(255, 255, 255, .2);
-            border-radius: 6px;
-            margin-top: 18px;
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, .14);
+            border-radius: 8px;
+            margin-top: 12px;
             overflow: hidden;
+            position: relative;
         }
 
         .progress-bar {
             height: 100%;
             background: linear-gradient(90deg, #fff, rgba(255, 255, 255, .85));
-            border-radius: 6px;
+            border-radius: 8px;
             width: 0%;
             transition: width .4s ease;
         }
 
+        /* legend ticks 10..100 */
+        .progress-legend {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            gap: 6px;
+            width: 100%;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.95);
+            user-select: none;
+        }
+
+        .progress-legend .tick {
+            opacity: 0.45;
+            transition: opacity .25s ease, transform .18s ease, color .18s ease;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transform-origin: center;
+        }
+
+        .progress-legend .tick.active {
+            opacity: 1;
+            transform: translateY(-4px) scale(1.05);
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+        }
+
         @media (max-width:600px) {
+            .loading-container {
+                padding: 18px
+            }
+
             .loading-text {
                 font-size: 18px
             }
 
-            .loading-container {
-                padding: 22px
+            .progress-container {
+                width: 100%
             }
 
-            .progress-container {
-                width: 200px
+            .loading-percent {
+                font-size: 16px;
+                min-width: 48px;
+            }
+
+            .progress-legend {
+                font-size: 10px;
             }
         }
 
         @media (prefers-color-scheme:dark) {
             #loadingScreen {
-                background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #512da8 100%);
+                background: linear-gradient(135deg, #080b2a 0%, #210a37 50%, #512da8 100%);
             }
         }
     </style>
@@ -596,21 +661,29 @@
 
     <!-- Loading screen markup (self-contained) -->
     <div id="loadingScreen" role="status" aria-live="polite" aria-label="Loading content" style="display:flex">
-        <div class="particles" id="particles"></div>
+        <div class="particles" id="particles" aria-hidden="true"></div>
 
-        <div class="loading-container" id="loadingContainer">
+        <div class="loading-container" id="loadingContainer" aria-hidden="false">
             <div class="loading-spinner" aria-hidden="true">
                 <div class="spinner-ring"></div>
                 <div class="spinner-ring"></div>
                 <div class="spinner-ring"></div>
             </div>
 
-            <div class="loading-text" id="loadingText">Loading<span class="loading-dots" aria-hidden="true"></span>
+            <div class="loading-header">
+                <div class="loading-text" id="loadingText">Loading</div>
+                <div class="loading-percent" id="loadingPercent">0%</div>
             </div>
+
             <div class="loading-subtext" id="loadingSubtext">Please wait</div>
 
             <div class="progress-container" aria-hidden="true">
-                <div class="progress-bar" id="progressBar"></div>
+                <div class="progress-bar" id="progressBar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                    aria-valuenow="0"></div>
+            </div>
+
+            <div class="progress-legend" id="progressLegend" aria-hidden="true">
+                <!-- ticks will be inserted by JS -->
             </div>
         </div>
     </div>
@@ -700,7 +773,7 @@
     <!-- Add html2canvas library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- === Loading screen JS (self-contained) === -->
+    <!-- === Loading screen JS (self-contained, enhanced) === -->
     <script>
         (function () {
             const particlesEl = document.getElementById('particles');
@@ -708,6 +781,8 @@
             const loadingTextEl = document.getElementById('loadingText');
             const loadingSubtextEl = document.getElementById('loadingSubtext');
             const progressBarEl = document.getElementById('progressBar');
+            const loadingPercentEl = document.getElementById('loadingPercent');
+            const progressLegendEl = document.getElementById('progressLegend');
 
             function createParticles(count = 30) {
                 if (!particlesEl) return;
@@ -723,10 +798,31 @@
                 }
             }
 
+            // build legend ticks 10..100
+            function createLegend() {
+                if (!progressLegendEl) return;
+                progressLegendEl.innerHTML = '';
+                for (let i = 10; i <= 100; i += 10) {
+                    const tick = document.createElement('div');
+                    tick.className = 'tick';
+                    tick.dataset.percent = String(i);
+                    tick.textContent = i + '%';
+                    progressLegendEl.appendChild(tick);
+                }
+            }
+
             function showLoadingScreen(text = 'Loading', subtext = 'Please wait') {
                 if (loadingTextEl) loadingTextEl.textContent = text;
                 if (loadingSubtextEl) loadingSubtextEl.textContent = subtext;
-                if (progressBarEl) progressBarEl.style.width = '0%';
+                if (progressBarEl) {
+                    progressBarEl.style.width = '0%';
+                    progressBarEl.setAttribute('aria-valuenow', '0');
+                }
+                if (loadingPercentEl) loadingPercentEl.textContent = '0%';
+                // reset ticks
+                const ticks = progressLegendEl?.querySelectorAll('.tick') || [];
+                ticks.forEach(t => t.classList.remove('active'));
+
                 loadingScreen.classList.remove('fade-out');
                 loadingScreen.style.display = 'flex';
             }
@@ -742,19 +838,45 @@
             }
 
             function setProgress(percent) {
-                const val = Math.max(0, Math.min(100, Number(percent) || 0));
-                if (progressBarEl) progressBarEl.style.width = val + '%';
+                const val = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
+                if (progressBarEl) {
+                    progressBarEl.style.width = val + '%';
+                    progressBarEl.setAttribute('aria-valuenow', String(val));
+                }
+                if (loadingPercentEl) loadingPercentEl.textContent = val + '%';
+
+                // update subtext for nicer UX at specific points (optional)
+                if (loadingSubtextEl) {
+                    if (val < 10) loadingSubtextEl.textContent = 'Initializing...';
+                    else if (val < 40) loadingSubtextEl.textContent = 'Fetching records...';
+                    else if (val < 70) loadingSubtextEl.textContent = 'Processing data...';
+                    else if (val < 100) loadingSubtextEl.textContent = 'Finalizing...';
+                    else loadingSubtextEl.textContent = 'Done';
+                }
+
+                // Highlight ticks <= current 10%-step
+                const step = Math.floor(val / 10) * 10;
+                const ticks = progressLegendEl?.querySelectorAll('.tick') || [];
+                ticks.forEach(t => {
+                    const p = parseInt(t.dataset.percent, 10);
+                    if (p <= step) t.classList.add('active');
+                    else t.classList.remove('active');
+                });
             }
 
             window.LoadingScreen = {
                 createParticles,
+                createLegend,
                 show: showLoadingScreen,
                 hide: hideLoadingScreen,
                 setProgress
             };
 
-            // init particles now so they exist when shown
+            // init particles and legend so they exist when shown
             createParticles();
+            createLegend();
+            // set initial progress to 0
+            setProgress(0);
         })();
     </script>
 
@@ -777,7 +899,10 @@
         const database = getDatabase();
         const dbRef = ref(database);
 
+        // --- State ---
         let currentDateRange = '';
+        let currentBaseDate = new Date();      // month/year used when building ranges & display
+        let adjustedBaseDate = null;          // will hold today - 5 (used when day <= 5 to show previous month)
         let allNames = new Set();
         let databaseData = {};
 
@@ -800,18 +925,17 @@
             'বুল্টি দুলে'
         ];
 
-        // Initialize the page
-        window.onload = function () {
-            setDefaultDateRange();
-            setupEventListeners();
-            loadData();
-        };
+        // --- Helpers ---
+        function updateDateRangeButtons() {
+            document.querySelectorAll('.date-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.range === currentDateRange);
+            });
+        }
 
-        // --- New: Show formatted range in .dated_bill ---
         function updateDatedBillDisplay() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = today.getMonth(); // 0-based
+            const base = new Date(currentBaseDate);
+            const year = base.getFullYear();
+            const month = base.getMonth(); // 0-based
             let startDay, endDay;
 
             switch (currentDateRange) {
@@ -819,10 +943,12 @@
                 case '8-15': startDay = 8; endDay = 15; break;
                 case '16-23': startDay = 16; endDay = 23; break;
                 case '24-rest': startDay = 24; endDay = new Date(year, month + 1, 0).getDate(); break;
-                default: return;
+                default:
+                    const elEmpty = document.querySelector('.dated_bill');
+                    if (elEmpty) elEmpty.textContent = '';
+                    return;
             }
 
-            // Format dd/mm/yy
             const formatDate = (d) => {
                 const dd = String(d).padStart(2, '0');
                 const mm = String(month + 1).padStart(2, '0');
@@ -830,55 +956,14 @@
                 return `${dd}/${mm}/${yy}`;
             };
 
-            document.querySelector('.dated_bill').textContent = `${formatDate(startDay)} - ${formatDate(endDay)}`;
-        }
-
-        function setDefaultDateRange() {
-            const today = new Date();
-            const currentDay = today.getDate();
-
-            let selectedRange = '';
-            if (currentDay >= 1 && currentDay <= 7) selectedRange = '1-7';
-            else if (currentDay >= 8 && currentDay <= 15) selectedRange = '8-15';
-            else if (currentDay >= 16 && currentDay <= 23) selectedRange = '16-23';
-            else selectedRange = '24-rest';
-
-            // Adjust for current date - 5
-            const adjustedDate = new Date(today);
-            adjustedDate.setDate(currentDay - 5);
-            const adjustedDay = adjustedDate.getDate();
-
-            if (adjustedDay >= 1 && adjustedDay <= 7) selectedRange = '1-7';
-            else if (adjustedDay >= 8 && adjustedDay <= 15) selectedRange = '8-15';
-            else if (adjustedDay >= 16 && adjustedDay <= 23) selectedRange = '16-23';
-            else selectedRange = '24-rest';
-
-            currentDateRange = selectedRange;
-            updateDateRangeButtons();
-            updateDatedBillDisplay(); // 👈 update div when default set
-        }
-
-        function setupEventListeners() {
-            document.querySelectorAll('.date-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    currentDateRange = this.dataset.range;
-                    updateDateRangeButtons();
-                    updateDatedBillDisplay(); // 👈 update div when button clicked
-                    loadData();
-                });
-            });
-        }
-
-        function updateDateRangeButtons() {
-            document.querySelectorAll('.date-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.range === currentDateRange);
-            });
+            const el = document.querySelector('.dated_bill');
+            if (el) el.textContent = `${formatDate(startDay)} - ${formatDate(endDay)}`;
         }
 
         function getDatesInRange(range) {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = today.getMonth();
+            const base = new Date(currentBaseDate);
+            const year = base.getFullYear();
+            const month = base.getMonth();
             const dates = [];
 
             let startDay, endDay;
@@ -892,6 +977,7 @@
             }
 
             for (let day = startDay; day <= endDay; day++) {
+                // format matches your RTDB keys: "day-month-year"
                 const formattedDate = `${day}-${month + 1}-${year}`;
                 dates.push(formattedDate);
             }
@@ -899,21 +985,87 @@
             return dates;
         }
 
-        async function loadData() {
+        function showLoading() {
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) tableBody.innerHTML = '<tr class="loading"><td colspan="4">Loading data...</td></tr>';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            if (errorDiv) errorDiv.innerHTML = `<div class="error">${message}</div>`;
+        }
+
+        function clearError() {
+            const d = document.getElementById('errorMessage');
+            if (d) d.innerHTML = '';
+        }
+
+        // --- Default date-range selection: compute adjustedBaseDate = today - 5 ---
+        function setDefaultDateRange() {
+            const today = new Date();
+            const currentDay = today.getDate();
+
+            // compute adjustedBaseDate (today - 5)
+            const adjustedDate = new Date(today);
+            adjustedDate.setDate(currentDay - 5);
+            adjustedBaseDate = new Date(adjustedDate);
+
+            // choose default range based on adjustedDate's day-of-month
+            const adjDay = adjustedDate.getDate();
+            let selectedRange = '';
+            if (adjDay >= 1 && adjDay <= 7) selectedRange = '1-7';
+            else if (adjDay >= 8 && adjDay <= 15) selectedRange = '8-15';
+            else if (adjDay >= 16 && adjDay <= 23) selectedRange = '16-23';
+            else selectedRange = '24-rest';
+
+            currentDateRange = selectedRange;
+            currentBaseDate = new Date(adjustedBaseDate); // default view references adjusted (previous) month/year
+            updateDateRangeButtons();
+            updateDatedBillDisplay();
+        }
+
+        // --- Event wiring: while today's date <= 5 use adjustedBaseDate (previous month); after that use current month ---
+        function setupEventListeners() {
+            document.querySelectorAll('.date-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const now = new Date();
+                    // if new month day is 1..5, keep using adjustedBaseDate (previous month). Otherwise use current month.
+                    if (now.getDate() <= 5 && adjustedBaseDate) {
+                        currentBaseDate = new Date(adjustedBaseDate);
+                    } else {
+                        currentBaseDate = new Date(); // real current month/year
+                    }
+
+                    currentDateRange = this.dataset.range;
+                    updateDateRangeButtons();
+                    updateDatedBillDisplay();
+                    // update data without showing big overlay
+                    loadData(false);
+                });
+            });
+
+            // allow pressing refresh button to reload without overlay
+            const refreshBtn = document.querySelector('.refresh-btn');
+            if (refreshBtn) refreshBtn.addEventListener('click', () => loadData(false));
+        }
+
+        // --- Data loader (reads from RTDB keys like "1-9-2025") ---
+        // showOverlay: boolean - when true show the big loading overlay; otherwise only show small inline "Loading data..." row
+        async function loadData(showOverlay = false) {
             try {
-                // show small table placeholder (unchanged)
+                // small inline table loading placeholder always
                 showLoading();
                 clearError();
 
-                // show overlay loading screen (added)
-                if (window.LoadingScreen) {
+                // show overlay only when requested
+                if (showOverlay && window.LoadingScreen) {
                     try {
                         window.LoadingScreen.createParticles();
+                        // ensure legend exists (createLegend) in case it's not created
+                        if (typeof window.LoadingScreen.createLegend === 'function') window.LoadingScreen.createLegend();
                         window.LoadingScreen.show('Loading data', 'Fetching records...');
                         window.LoadingScreen.setProgress(5);
-                    } catch (e) {
-                        console.warn('LoadingScreen failed to show:', e);
-                    }
+                    } catch (e) { console.warn('LoadingScreen failed to show:', e); }
                 }
 
                 const dates = getDatesInRange(currentDateRange);
@@ -957,10 +1109,9 @@
                         console.warn(`Failed to load data for ${date}:`, error);
                     }
 
-                    // update progress roughly based on dates processed
-                    if (window.LoadingScreen) {
+                    if (showOverlay && window.LoadingScreen) {
                         try {
-                            const percent = Math.round(((i + 1) / dates.length) * 90); // up to 90% during fetch
+                            const percent = dates.length ? Math.round(((i + 1) / dates.length) * 90) : 90;
                             window.LoadingScreen.setProgress(percent);
                         } catch (e) { /* ignore */ }
                     }
@@ -969,32 +1120,29 @@
                 createNameCheckboxes();
                 renderTable();
 
-                // mark complete and hide overlay
-                if (window.LoadingScreen) {
+                // hide overlay only if we showed it
+                if (showOverlay && window.LoadingScreen) {
                     try {
                         window.LoadingScreen.setProgress(100);
-                        // small delay so user sees 100%
                         setTimeout(() => {
                             try { window.LoadingScreen.hide(); } catch (e) { /* ignore */ }
                         }, 300);
-                    } catch (e) {
-                        console.warn('Failed to hide LoadingScreen:', e);
-                    }
+                    } catch (e) { console.warn('Failed to hide LoadingScreen:', e); }
                 }
 
             } catch (error) {
                 showError('Failed to load data: ' + (error && error.message ? error.message : error));
                 console.error('Error loading data:', error);
-
-                // ensure overlay hidden on error
-                if (window.LoadingScreen) {
+                if (showOverlay && window.LoadingScreen) {
                     try { window.LoadingScreen.hide(); } catch (e) { /* ignore */ }
                 }
             }
         }
 
+        // --- Checkbox UI builder ---
         function createNameCheckboxes() {
             const checkboxContainer = document.getElementById('nameCheckboxes');
+            if (!checkboxContainer) return;
             checkboxContainer.innerHTML = '';
 
             const sortedNames = Array.from(allNames).sort();
@@ -1011,13 +1159,13 @@
 
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
-                checkbox.id = `checkbox_${name}`;
+                checkbox.id = `checkbox_${counter}_${name}`;
                 checkbox.value = name;
                 checkbox.checked = true;
                 checkbox.addEventListener('change', renderTable);
 
                 const label = document.createElement('label');
-                label.htmlFor = `checkbox_${name}`;
+                label.htmlFor = checkbox.id;
                 label.textContent = `${counter}. ${name}`;
                 counter++;
 
@@ -1033,13 +1181,13 @@
 
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
-                    checkbox.id = `checkbox_${name}`;
+                    checkbox.id = `checkbox_${counter}_${name}`;
                     checkbox.value = name;
                     checkbox.checked = true;
                     checkbox.addEventListener('change', renderTable);
 
                     const label = document.createElement('label');
-                    label.htmlFor = `checkbox_${name}`;
+                    label.htmlFor = checkbox.id;
                     label.textContent = `${counter}. ${name}`;
                     counter++;
 
@@ -1055,13 +1203,13 @@
 
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
-                checkbox.id = `checkbox_${name}`;
+                checkbox.id = `checkbox_${counter}_${name}`;
                 checkbox.value = name;
                 checkbox.checked = false;
                 checkbox.addEventListener('change', renderTable);
 
                 const label = document.createElement('label');
-                label.htmlFor = `checkbox_${name}`;
+                label.htmlFor = checkbox.id;
                 label.textContent = `${counter}. ${name}`;
                 counter++;
 
@@ -1076,22 +1224,10 @@
             return Array.from(checkboxes).map(cb => cb.value);
         }
 
-        function showLoading() {
-            const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = '<tr class="loading"><td colspan="4">Loading data...</td></tr>';
-        }
-
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.innerHTML = `<div class="error">${message}</div>`;
-        }
-
-        function clearError() {
-            document.getElementById('errorMessage').innerHTML = '';
-        }
-
+        // --- Table rendering ---
         function renderTable() {
             const tableBody = document.getElementById('tableBody');
+            if (!tableBody) return;
             const selectedNames = getSelectedNames();
             tableBody.innerHTML = '';
 
@@ -1158,9 +1294,13 @@
                 totalTakaMain += item.takaMain;
             });
 
-            document.getElementById('totalKg').textContent = totalKg.toFixed(1);
-            document.getElementById('totalTakaLess').textContent = Number(totalTakaLess).toFixed(0);
-            document.getElementById('totalTakaMain').textContent = totalTakaMain.toFixed(0);
+            const elTotalKg = document.getElementById('totalKg');
+            const elTotalTakaLess = document.getElementById('totalTakaLess');
+            const elTotalTakaMain = document.getElementById('totalTakaMain');
+
+            if (elTotalKg) elTotalKg.textContent = totalKg.toFixed(1);
+            if (elTotalTakaLess) elTotalTakaLess.textContent = Number(totalTakaLess).toFixed(0);
+            if (elTotalTakaMain) elTotalTakaMain.textContent = totalTakaMain.toFixed(0);
         }
 
         function createTableRow(name, kg, takaMain, isFixed, providedTakaLess = null) {
@@ -1171,28 +1311,28 @@
                 : Math.ceil((takaMain || 0) * conversionFactor_ToMake_original_Less);
 
             row.innerHTML = `
-            <td>${name}</td>
-            <td class="numeric">${(kg || 0).toFixed(1)}</td>
-            <td class="numeric">${Number(takaLess).toFixed(0)}</td>
-            <td class="numeric">${(takaMain || 0).toFixed(0)}</td>
-        `;
+        <td>${name}</td>
+        <td class="numeric">${(kg || 0).toFixed(1)}</td>
+        <td class="numeric">${Number(takaLess).toFixed(0)}</td>
+        <td class="numeric">${(takaMain || 0).toFixed(0)}</td>
+    `;
             return row;
         }
 
-        // Download screenshot function
+        // --- Screenshot (updated filename format) ---
         window.downloadTableScreenshot = async function () {
             const downloadBtn = document.getElementById('downloadBtn');
             const tableContainer = document.getElementById('tableContainer');
 
-            // Disable button and show loading state
-            downloadBtn.disabled = true;
-            downloadBtn.textContent = '📸 Capturing Screenshot...';
+            if (downloadBtn) {
+                downloadBtn.disabled = true;
+                downloadBtn.textContent = '📸 Capturing Screenshot...';
+            }
 
             try {
-                // Configure html2canvas options for better quality
                 const canvas = await html2canvas(tableContainer, {
                     backgroundColor: '#ffffff',
-                    scale: 2, // Higher resolution
+                    scale: 2,
                     useCORS: true,
                     allowTaint: true,
                     height: tableContainer.scrollHeight,
@@ -1201,47 +1341,73 @@
                     scrollY: 0
                 });
 
-                // Convert canvas to blob
                 canvas.toBlob(function (blob) {
-                    // Create download link
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
 
-                    // Get current date for filename
-                    const now = new Date();
-                    const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD format
-                    const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS format
+                    // Determine base date for month label (use currentBaseDate if present, otherwise today)
+                    let baseDate = (typeof currentBaseDate !== 'undefined' && currentBaseDate) ? new Date(currentBaseDate) : new Date();
+
+                    // Month-Year like "Sep-2025"
+                    const monthYear = baseDate.toLocaleString('en-US', { month: 'long', year: 'numeric' }).replace(' ', '-');
+
+                    // Try to get active date-range button label (falls back to currentDateRange)
+                    let activeBtnLabel = '';
+                    const activeBtn = document.querySelector('.date-btn.active') || document.querySelector('.date-btn[data-range="' + (currentDateRange || '') + '"]');
+                    if (activeBtn) activeBtnLabel = activeBtn.textContent.trim();
+                    if (!activeBtnLabel) activeBtnLabel = currentDateRange || 'range';
+
+                    // Sanitize label for filenames: replace spaces with underscore, remove unsafe chars
+                    const sanitize = s => String(s).trim().replace(/\s+/g, '_').replace(/[<>:"\/\\|?*\x00-\x1F]/g, '');
+
+                    const sanitizedLabel = sanitize(activeBtnLabel);
+                    const sanitizedRange = sanitize(currentDateRange || activeBtnLabel);
+
+                    // final filename: bill_<button_label> (<range>)_<Mon-Year>.jpg
+                    const filename = `bill_(${sanitizedRange})_${monthYear}.jpg`;
 
                     link.href = url;
-                    link.download = `Bill_Table_${dateStr}_${timeStr}.jpg`;
+                    link.download = filename;
 
-                    // Trigger download
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
 
-                    // Clean up
                     URL.revokeObjectURL(url);
 
-                    // Reset button
-                    downloadBtn.disabled = false;
-                    downloadBtn.textContent = '📷 Download Table Screenshot';
-
-                }, 'image/jpeg', 0.95); // High quality JPEG
+                    if (downloadBtn) {
+                        downloadBtn.disabled = false;
+                        downloadBtn.textContent = '📷 Download Table Screenshot';
+                    }
+                }, 'image/jpeg', 0.95);
 
             } catch (error) {
                 console.error('Error capturing screenshot:', error);
                 alert('Failed to capture screenshot. Please try again.');
-
-                // Reset button
-                downloadBtn.disabled = false;
-                downloadBtn.textContent = '📷 Download Table Screenshot';
+                if (downloadBtn) {
+                    downloadBtn.disabled = false;
+                    downloadBtn.textContent = '📷 Download Table Screenshot';
+                }
             }
         };
 
-        window.loadData = loadData;
+
+        // Expose helpers to window
+        // default showOverlay = false so calling loadData() from markup won't trigger overlay
+        window.loadData = (showOverlay = false) => loadData(showOverlay);
         window.updateTable = function () { renderTable(); };
+
+        // Initialize on load (functions are already defined above)
+        window.onload = function () {
+            setDefaultDateRange();   // default uses today - 5 as reference month/year
+            setupEventListeners();   // clicking buttons uses adjustedBaseDate while day <= 5
+            // Show overlay only on initial page load:
+            loadData(true);
+        };
     </script>
+
+
+
 </body>
 
 </html>
