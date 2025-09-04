@@ -584,62 +584,57 @@
     </div>
     <!-- Firebase SDKs -->
     <script>
-        // Get the button element
-        var billButton = document.getElementById('backtomain');
+    // Get the button element
+    var billButton = document.getElementById('backtomain');
 
-        // Add a click event listener to the button
+    // Add a click event listener to the button
+    if (billButton) {
         billButton.addEventListener('click', function () {
             // Redirect to bill.html
             window.location.href = 'index.html';
         });
-
-        // Auto-select commentInput using (baseDate - 5 days).
-// baseDate = today if monthSelect === 'current'
-// baseDate = same day-of-month but previous month if monthSelect === 'previous'
-function autoSelectComment() {
-    const commentInput = document.getElementById('commentInput');
-    const monthSelect = document.getElementById('monthSelect');
-    if (!commentInput || !monthSelect) return;
-
-    const today = new Date();
-
-    // choose base date depending on monthSelect
-    let baseDate;
-    if (monthSelect.value === 'previous') {
-        // same day-of-month but previous month
-        // using Date(year, month-1, day) handles short months safely
-        baseDate = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
-    } else {
-        baseDate = new Date(today);
     }
 
-    // reference date = baseDate - 5 days
-    const refDate = new Date(baseDate);
-    refDate.setDate(refDate.getDate() - 5);
+    function autoSelectComment() {
+        const commentInput = document.getElementById('commentInput');
+        const monthSelect = document.getElementById('monthSelect');
+        if (!commentInput || !monthSelect) return;
 
-    const day = refDate.getDate();
+        const today = new Date();
 
-    let valueToSelect = '24_currentmonth_currentyear-rest'; // fallback
-    if (day >= 1 && day <= 7) {
-        valueToSelect = '01_currentmonth_currentyear-07_currentmonth_currentyear';
-    } else if (day >= 8 && day <= 15) {
-        valueToSelect = '08_currentmonth_currentyear-15_currentmonth_currentyear';
-    } else if (day >= 16 && day <= 23) {
-        valueToSelect = '16_currentmonth_currentyear-23_currentmonth_currentyear';
-    } else {
-        valueToSelect = '24_currentmonth_currentyear-rest';
+        // reference date = today - 5 days
+        const refDate = new Date(today);
+        refDate.setDate(refDate.getDate() - 5);
+
+        // auto-select month (current / previous)
+        if (refDate.getMonth() === today.getMonth()) {
+            monthSelect.value = "current";
+        } else {
+            monthSelect.value = "previous";
+        }
+
+        const day = refDate.getDate();
+
+        let valueToSelect = '24_currentmonth_currentyear-rest'; // fallback
+        if (day >= 1 && day <= 7) {
+            valueToSelect = '01_currentmonth_currentyear-07_currentmonth_currentyear';
+        } else if (day >= 8 && day <= 15) {
+            valueToSelect = '08_currentmonth_currentyear-15_currentmonth_currentyear';
+        } else if (day >= 16 && day <= 23) {
+            valueToSelect = '16_currentmonth_currentyear-23_currentmonth_currentyear';
+        } else {
+            valueToSelect = '24_currentmonth_currentyear-rest';
+        }
+
+        commentInput.value = valueToSelect;
     }
 
-    commentInput.value = valueToSelect;
-}
+    // run on DOM ready and whenever monthSelect changes manually
+    document.addEventListener('DOMContentLoaded', autoSelectComment);
+    const monthSelectEl = document.getElementById('monthSelect');
+    if (monthSelectEl) monthSelectEl.addEventListener('change', autoSelectComment);
+</script>
 
-// run on DOM ready and whenever monthSelect changes
-document.addEventListener('DOMContentLoaded', autoSelectComment);
-const monthSelectEl = document.getElementById('monthSelect');
-if (monthSelectEl) monthSelectEl.addEventListener('change', autoSelectComment);
-
-        
-    </script>
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
