@@ -507,8 +507,13 @@
  }
 
  .popup-details strong {
-     color: #555;
+     color: #1a1a1a;
 
+ }
+  .popup-details span {
+     color: #071990;
+        font-weight: bolder;
+        font-size: 20px;
  }
 
  .close-btn {
