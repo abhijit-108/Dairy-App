@@ -1319,7 +1319,7 @@
  }
 
 #loginBtn2 {
-  background: #1e1e1e;
+  background: #7d0909;
   color: #fff;
   border: none;
   padding: 12px 24px;
@@ -1327,6 +1327,8 @@
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 10px;
+  margin-left: auto;
+  margin-right: auto;
   cursor: pointer;
   transition: background 0.2s ease;
   display: flex;
