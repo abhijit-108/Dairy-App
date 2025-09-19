@@ -378,16 +378,17 @@ document.getElementById('milkForm')?.addEventListener('submit', async function (
         return;
     }
     // --- End validation ---
+    const rate = calculateRate(fat, snf);
 
     // If no name selected — show popup WITHOUT calculated Rate/Total
     if (!name) {
         const dataNoName = {
-            name: 'NA',
+            name: '',
             kg: kg.toFixed(3),
             fat: fat.toFixed(1),
             snf: snf.toFixed(1),
-            rate: '',        // intentionally blank
-            total: '',       // intentionally blank
+            rate: rate,        // intentionally blank
+            total: '😒',       // intentionally blank
             timestamp: getCurrentDateTime()
         };
 
@@ -396,7 +397,6 @@ document.getElementById('milkForm')?.addEventListener('submit', async function (
     }
 
     // Only calculate rate/total after we know a name was selected
-    const rate = calculateRate(fat, snf);
     const total = Math.round(kg * parseFloat(rate));
 
     const data = {
