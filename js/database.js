@@ -746,17 +746,26 @@ onAuthStateChanged(auth, (user) => {
     const userInfoDiv = document.getElementById('logoutButton');
     const hide_names = document.getElementById('hide_names');
     const hide_names1 = document.getElementById('hide_names1');
+    const hide_names2 = document.getElementById('loginBtn2');
+    const hide_names3 = document.getElementById('audio');
+
+
     const headerLogin = document.getElementById('headerLogin');
 
     if (user) {
         if (userInfoDiv) userInfoDiv.innerText = 'Logout (Abhijit)';
         if (hide_names) hide_names.classList.remove('disabled');
         if (hide_names1) hide_names1.classList.remove('disabled');
+        if (hide_names3) hide_names3.classList.remove('disabled');
+        if (hide_names2) hide_names2.classList.add('disabled');
         if (headerLogin) headerLogin.classList.remove('headerloginguest');
     } else {
         if (userInfoDiv) userInfoDiv.innerText = 'Logout (Guest)';
         if (hide_names) hide_names.classList.add('disabled');
         if (hide_names1) hide_names1.classList.add('disabled');
+        if (hide_names3) hide_names3.classList.add('disabled');
+        if (hide_names2) hide_names2.classList.remove('disabled');
+
         if (headerLogin) headerLogin.classList.add('headerloginguest');
     }
 });
