@@ -1,8 +1,6 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-
 
 const firebaseConfig = {
     apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
@@ -13,9 +11,11 @@ const firebaseConfig = {
     messagingSenderId: "196152880143",
     appId: "1:196152880143:web:bec02170e30932a7d5877a"
 };
+
+// Initialize app once and share database/auth
 const app = initializeApp(firebaseConfig);
-const database = getDatabase();
-const auth = getAuth();
+const database = getDatabase(app);
+const auth = getAuth(app);
 
 // Global variables for rate calculation
 let rateFormula = { fatMultiplier: 3.81, snfMultiplier: 2.689 }; // Default values
@@ -23,7 +23,7 @@ let cachedRateFormula = null;
 
 // Audio feedback function using MP3 files
 function playAudioMessage(audioType) {
-    const audioEnabled = document.getElementById('audioEnabled').checked;
+    const audioEnabled = document.getElementById('audioEnabled')?.checked;
 
     if (!audioEnabled) {
         return;
@@ -59,15 +59,11 @@ function playAudioMessage(audioType) {
 let cachedNames = null;
 
 async function loadRateFormula() {
-    if (cachedRateFormula) {
-        return;
-    }
+    if (cachedRateFormula) return;
 
     try {
         const response = await fetch('rate.md');
-        if (!response.ok) {
-            throw new Error('Could not fetch rate.md file');
-        }
+        if (!response.ok) throw new Error('Could not fetch rate.md file');
         const content = await response.text();
 
         const lines = content.split('\n')
@@ -125,9 +121,7 @@ async function loadNamesFromFile() {
 
     try {
         const response = await fetch('name.md');
-        if (!response.ok) {
-            throw new Error('Could not fetch name.md file');
-        }
+        if (!response.ok) throw new Error('Could not fetch name.md file');
         const content = await response.text();
 
         const names = content.split('\n')
@@ -140,13 +134,16 @@ async function loadNamesFromFile() {
     } catch (error) {
         console.error('Error loading names:', error);
         const nameSelect = document.getElementById('nameSelect');
-        nameSelect.innerHTML = '<option value=\"\">Error loading names - Check if name.md exists</option>';
+        if (nameSelect) {
+            nameSelect.innerHTML = '<option value="">Error loading names - Check if name.md exists</option>';
+        }
     }
 }
 
 function populateNameDropdown(names) {
     const nameSelect = document.getElementById('nameSelect');
-    nameSelect.innerHTML = '<option value=\"\">Choose a name...</option>';
+    if (!nameSelect) return;
+    nameSelect.innerHTML = '<option value="">Choose a name...</option>';
 
     names.forEach(name => {
         const option = document.createElement('option');
@@ -160,19 +157,15 @@ function calculateRate(fat, snf) {
     return (fat * rateFormula.fatMultiplier + snf * rateFormula.snfMultiplier).toFixed(2);
 }
 
-// Example usage:
+// Example usage to set initial display rate (will use default until rate.md loaded)
 let fat = 4.5;
 let snf = 8.5;
-
 let rate = calculateRate(fat, snf);
 
-// update #fix_rate element
-document.getElementById("fix_rate").textContent = "Current Rate : " + rate;
-document.getElementById("fix_rate1").textContent = "Current Rate : " + rate;
-
-
-
-
+const fixRateEl = document.getElementById("fix_rate");
+if (fixRateEl) fixRateEl.textContent = "Current Rate : " + rate;
+const fixRateEl1 = document.getElementById("fix_rate1");
+if (fixRateEl1) fixRateEl1.textContent = "Current Rate : " + rate;
 
 function generateKey(name) {
     return name.trim().replace(/\s+/g, '-');
@@ -211,27 +204,31 @@ function showPopup(type, title, data, statusText, existingData = null) {
     const existingEntryDetails = document.getElementById('existingEntryDetails');
     const updateBtn = document.getElementById('updateBtn');
 
+    if (!overlay || !card || !statusMessage || !popupTitle || !popupDetails) return;
+
     card.className = 'popup-card';
-    existingEntry.style.display = 'none';
-    updateBtn.style.display = 'none';
-    updateBtn.disabled = false;
+    if (existingEntry) existingEntry.style.display = 'none';
+    if (updateBtn) {
+        updateBtn.style.display = 'none';
+        updateBtn.disabled = false;
+    }
 
     if (type === 'duplicate') {
         card.classList.add('duplicate');
         statusMessage.className = 'status-message status-duplicate';
-        existingEntry.style.display = 'block';
-        updateBtn.style.display = 'inline-block';
+        if (existingEntry) existingEntry.style.display = 'block';
+        if (updateBtn) updateBtn.style.display = 'inline-block';
 
-        if (existingData) {
+        if (existingData && existingEntryDetails) {
             existingEntryDetails.innerHTML = `
-                        <div><strong>Name:</strong> <span>${existingData.name}</span></div>
-                        <div><strong>Date & Time:</strong> <span>${existingData.timestamp}</span></div>
-                        <div><strong>KG:</strong> <span>${existingData.kg}</span></div>
-                        <div><strong>FAT:</strong> <span>${existingData.fat}</span></div>
-                        <div><strong>SNF:</strong> <span>${existingData.snf}</span></div>
-                        <div><strong>Rate:</strong> <span>${existingData.rate}</span></div>
-                        <div><strong>Total:</strong> <span>${existingData.total}</span></div>
-                    `;
+                <div><strong>Name:</strong> <span>${existingData.name}</span></div>
+                <div><strong>Date & Time:</strong> <span>${existingData.timestamp}</span></div>
+                <div><strong>KG:</strong> <span>${existingData.kg}</span></div>
+                <div><strong>FAT:</strong> <span>${existingData.fat}</span></div>
+                <div><strong>SNF:</strong> <span>${existingData.snf}</span></div>
+                <div><strong>Rate:</strong> <span>${existingData.rate}</span></div>
+                <div><strong>Total:</strong> <span>${existingData.total}</span></div>
+            `;
         }
     } else {
         card.classList.add(type);
@@ -242,15 +239,19 @@ function showPopup(type, title, data, statusText, existingData = null) {
     popupTitle.textContent = title;
 
     if (data) {
+        // Use empty placeholders when rate/total are intentionally empty
+        const displayRate = (data.rate === '' || data.rate === undefined) ? '' : data.rate;
+        const displayTotal = (data.total === '' || data.total === undefined) ? '' : data.total;
+
         popupDetails.innerHTML = `
-                    <div><strong>Name:</strong> <span>${data.name}</span></div>
-                    <div><strong>Date & Time:</strong> <span>${data.timestamp}</span></div>
-                    <div><strong>KG:</strong> <span>${data.kg}</span></div>
-                    <div><strong>FAT:</strong> <span>${data.fat}</span></div>
-                    <div><strong>SNF:</strong> <span>${data.snf}</span></div>
-                    <div><strong>Rate:</strong> <span>${data.rate}</span></div>
-                    <div><strong>Total:</strong> <span>${data.total}</span></div>
-                `;
+            <div><strong>Name:</strong> <span>${data.name}</span></div>
+            <div><strong>Date & Time:</strong> <span>${data.timestamp}</span></div>
+            <div><strong>KG:</strong> <span>${data.kg}</span></div>
+            <div><strong>FAT:</strong> <span>${data.fat}</span></div>
+            <div><strong>SNF:</strong> <span>${data.snf}</span></div>
+            <div><strong>Rate:</strong> <span>${displayRate}</span></div>
+            <div><strong>Total:</strong> <span>${displayTotal}</span></div>
+        `;
     } else {
         popupDetails.innerHTML = '';
     }
@@ -271,7 +272,7 @@ function showPopup(type, title, data, statusText, existingData = null) {
 
 function hidePopup() {
     const overlay = document.getElementById('popupOverlay');
-    overlay.style.display = 'none';
+    if (overlay) overlay.style.display = 'none';
 }
 
 async function checkNameExists(name, dateKey, session) {
@@ -318,7 +319,7 @@ async function saveToFirebase(data) {
                     reg.showNotification(data.name, {
                         body: `Fat: ${data.fat} |Snf: ${data.snf} |Rate: ₹${data.rate} |TOTAL: ₹${data.total}`,
                         icon: "/Dairy-App/logo.png",
-                        badge: "/Dairy-App/logo.png",      // Tiny badge icon (monochrome)
+                        badge: "/Dairy-App/logo.png",
                         data: { name: data.name, timestamp: data.timestamp }
                     });
                 }
@@ -339,17 +340,28 @@ Promise.all([
     loadRateFormula()
 ]).then(() => {
     console.log('All data loaded successfully');
+    // If rate.md provided a different formula, update displayed rate
+    try {
+        const fixRateEl = document.getElementById("fix_rate");
+        const fixRateEl1 = document.getElementById("fix_rate1");
+        const currentRate = calculateRate(fat, snf);
+        if (fixRateEl) fixRateEl.textContent = "Current Rate : " + currentRate;
+        if (fixRateEl1) fixRateEl1.textContent = "Current Rate : " + currentRate;
+    } catch (e) {
+        // ignore
+    }
 }).catch(error => {
     console.error('Error loading initial data:', error);
 });
 
-document.getElementById('milkForm').addEventListener('submit', async function (e) {
+// MAIN FORM SUBMIT (save flow)
+document.getElementById('milkForm')?.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const name = document.getElementById('nameSelect').value;
-    const kg = parseFloat(document.getElementById('kg').value) || 0;
-    const fat = parseFloat(document.getElementById('fat').value) || 0;
-    const snf = parseFloat(document.getElementById('snf').value) || 0;
+    const name = document.getElementById('nameSelect')?.value;
+    const kg = parseFloat(document.getElementById('kg')?.value) || 0;
+    const fat = parseFloat(document.getElementById('fat')?.value) || 0;
+    const snf = parseFloat(document.getElementById('snf')?.value) || 0;
 
     if (fat < 2.0 || fat > 8.0) {
         showPopup('warning', 'Invalid FAT', { name, kg, fat, snf }, 'FAT must be between 2.0 and 8.0');
@@ -367,6 +379,23 @@ document.getElementById('milkForm').addEventListener('submit', async function (e
     }
     // --- End validation ---
 
+    // If no name selected — show popup WITHOUT calculated Rate/Total
+    if (!name) {
+        const dataNoName = {
+            name: 'NA',
+            kg: kg.toFixed(3),
+            fat: fat.toFixed(1),
+            snf: snf.toFixed(1),
+            rate: '',        // intentionally blank
+            total: '',       // intentionally blank
+            timestamp: getCurrentDateTime()
+        };
+
+        showPopup('warning', 'Warning: No Name', dataNoName, 'Please select a name');
+        return;
+    }
+
+    // Only calculate rate/total after we know a name was selected
     const rate = calculateRate(fat, snf);
     const total = Math.round(kg * parseFloat(rate));
 
@@ -379,11 +408,6 @@ document.getElementById('milkForm').addEventListener('submit', async function (e
         total: total.toString(),
         timestamp: getCurrentDateTime()
     };
-
-    if (!name) {
-        showPopup('warning', 'Warning: No Name', data, 'Please select a name');
-        return;
-    }
 
     const dateKey = getCurrentDateKey();
     const session = getCurrentSession();
@@ -406,14 +430,16 @@ document.getElementById('milkForm').addEventListener('submit', async function (e
     if (saveSuccess) {
         showPopup('success', 'Success', data, 'Data saved successfully!');
 
-        document.getElementById('milkForm').reset();
-        document.getElementById('nameSelect').value = '';
+        document.getElementById('milkForm')?.reset();
+        const nameSelect = document.getElementById('nameSelect');
+        if (nameSelect) nameSelect.value = '';
     } else {
         showPopup('failed', 'Save Failed', data, 'Failed to save data to Firebase. Please try again.');
     }
 });
 
-document.getElementById('updateBtn').addEventListener('click', async function () {
+// Update button (used when duplicate found and user chooses to update)
+document.getElementById('updateBtn')?.addEventListener('click', async function () {
     const updateBtn = document.getElementById('updateBtn');
     if (!pendingSaveData) {
         console.warn('No pending data to update.');
@@ -430,13 +456,14 @@ document.getElementById('updateBtn').addEventListener('click', async function ()
     if (success) {
         showPopup('success', 'Entry Updated Successfully', pendingSaveData, 'Existing entry has been updated with new values.');
         pendingSaveData = null;
-        document.getElementById('milkForm').reset();
-        document.getElementById('nameSelect').value = '';
+        document.getElementById('milkForm')?.reset();
+        const nameSelect = document.getElementById('nameSelect');
+        if (nameSelect) nameSelect.value = '';
         // Refresh after 6 seconds
         setTimeout(() => {
-            fetchMilkDataForDate(dateSelector.value);
+            const dateSelector = document.getElementById('milkDateSelector');
+            if (dateSelector) fetchMilkDataForDate(dateSelector.value);
         }, 6000);
-
     } else {
         showPopup('failed', 'Update Failed', pendingSaveData, 'Failed to update the existing entry. Please try again.');
     }
@@ -445,9 +472,9 @@ document.getElementById('updateBtn').addEventListener('click', async function ()
     updateBtn.textContent = 'Update Entry';
 });
 
-document.getElementById('closeBtn').addEventListener('click', hidePopup);
+document.getElementById('closeBtn')?.addEventListener('click', hidePopup);
 
-document.getElementById('popupOverlay').addEventListener('click', function (e) {
+document.getElementById('popupOverlay')?.addEventListener('click', function (e) {
     if (e.target === this) {
         hidePopup();
     }
@@ -467,10 +494,8 @@ document.addEventListener('click', function enableAudio() {
     document.removeEventListener('click', enableAudio);
 }, { once: true });
 
-
-
-const milkApp = initializeApp(firebaseConfig);
-const milkDatabase = getDatabase();
+// milkDatabase / date helpers & display
+const milkDatabase = database; // reuse same database instance
 
 function formatMilkDate(date) {
     const day = date.getDate();
@@ -486,6 +511,7 @@ function formatMilkDisplayDate(date) {
 
 function populateMilkDateDropdown() {
     const dateSelector = document.getElementById('milkDateSelector');
+    if (!dateSelector) return;
     const today = new Date();
 
     dateSelector.innerHTML = '';
@@ -509,17 +535,16 @@ function extractMilkTime(timestamp) {
     return `${match[1]} ${match[2].toUpperCase()}`;
 }
 
-
-
 async function fetchMilkDataForDate(selectedDate) {
     const dataContainer = document.getElementById('milkDataContainer');
+    if (!dataContainer) return;
 
     dataContainer.innerHTML = `
-                <div class="milk-loading-state">
-                    <div class="milk-loading-spinner"></div>
-                    <div>Loading records for ${selectedDate}...</div>
-                </div>
-            `;
+        <div class="milk-loading-state">
+            <div class="milk-loading-spinner"></div>
+            <div>Loading records for ${selectedDate}...</div>
+        </div>
+    `;
 
     try {
         const dbRef = ref(milkDatabase);
@@ -529,18 +554,18 @@ async function fetchMilkDataForDate(selectedDate) {
             dataContainer.innerHTML = displayMilkData(snapshot.val());
         } else {
             dataContainer.innerHTML = `
-                        <div class="milk-empty-state">
-                            📋 No records found for ${selectedDate}
-                        </div>
-                    `;
+                <div class="milk-empty-state">
+                    📋 No records found for ${selectedDate}
+                </div>
+            `;
         }
     } catch (error) {
         console.error("Error fetching milk data:", error);
         dataContainer.innerHTML = `
-                    <div class="milk-error-state">
-                        ❌ Error loading milk records. Please try again.
-                    </div>
-                `;
+            <div class="milk-error-state">
+                ❌ Error loading milk records. Please try again.
+            </div>
+        `;
     }
 }
 
@@ -594,9 +619,9 @@ function displayMilkData(data) {
             <td class="milk-data-cell milk-name-cell">${record.name}</td>
             <td class="milk-data-cell"><span class="milk-metric-badge">${record.fat}</span></td>
             <td class="milk-data-cell"><span class="milk-metric-badge">${record.snf}</span></td>
-            <td class="milk-data-cell milk-rate-cell"><span class="milk-metric-badge">₹${record.rate}</span></td>
+            <td class="milk-data-cell milk-rate-cell"><span class="milk-metric-badge">${record.rate ? '₹' + record.rate : ''}</span></td>
             <td class="milk-data-cell"><span class="milk-metric-badge2">${Number(record.kg).toFixed(2)} kg</span></td>
-            <td class="milk-data-cell milk-amount-cell"><span class="milk-metric-badge2">₹${record.total}</span></td>
+            <td class="milk-data-cell milk-amount-cell"><span class="milk-metric-badge2">${record.total ? '₹' + record.total : ''}</span></td>
         </tr>`;
 
         // Update global totals
@@ -683,25 +708,27 @@ function displayMilkData(data) {
     </table>`;
 }
 
-
+// DOM Loaded: populate date dropdown and fetch initial data
 document.addEventListener('DOMContentLoaded', function () {
     populateMilkDateDropdown();
 
     const dateSelector = document.getElementById('milkDateSelector');
-    fetchMilkDataForDate(dateSelector.value);
+    if (dateSelector) {
+        // fetch for initial value (first option)
+        fetchMilkDataForDate(dateSelector.value);
 
-    dateSelector.addEventListener('change', function () {
-        fetchMilkDataForDate(this.value);
-    });
+        dateSelector.addEventListener('change', function () {
+            fetchMilkDataForDate(this.value);
+        });
+    }
 });
 
-document.getElementById('milkForm').addEventListener('submit', function (e) {
+// A lightweight refresh after save (keeps original behavior)
+document.getElementById('milkForm')?.addEventListener('submit', function (e) {
     e.preventDefault();
-
     const dateSelector = document.getElementById('milkDateSelector');
-
     setTimeout(() => {
-        fetchMilkDataForDate(dateSelector.value);
+        if (dateSelector) fetchMilkDataForDate(dateSelector.value);
     }, 6000);
 });
 
@@ -713,7 +740,8 @@ function logout() {
     });
 }
 
-document.getElementById('logoutButton').addEventListener('click', logout);
+document.getElementById('logoutButton')?.addEventListener('click', logout);
+
 onAuthStateChanged(auth, (user) => {
     const userInfoDiv = document.getElementById('logoutButton');
     const hide_names = document.getElementById('hide_names');
@@ -721,15 +749,14 @@ onAuthStateChanged(auth, (user) => {
     const headerLogin = document.getElementById('headerLogin');
 
     if (user) {
-        userInfoDiv.innerText = 'Logout (Abhijit)';
-        hide_names.classList.remove('disabled');
-        hide_names1.classList.remove('disabled');
-        headerLogin.classList.remove('headerloginguest');
-
+        if (userInfoDiv) userInfoDiv.innerText = 'Logout (Abhijit)';
+        if (hide_names) hide_names.classList.remove('disabled');
+        if (hide_names1) hide_names1.classList.remove('disabled');
+        if (headerLogin) headerLogin.classList.remove('headerloginguest');
     } else {
-        userInfoDiv.innerText = 'Logout (Guest)';
-        hide_names.classList.add('disabled');
-        hide_names1.classList.add('disabled');
-        headerLogin.classList.add('headerloginguest');
+        if (userInfoDiv) userInfoDiv.innerText = 'Logout (Guest)';
+        if (hide_names) hide_names.classList.add('disabled');
+        if (hide_names1) hide_names1.classList.add('disabled');
+        if (headerLogin) headerLogin.classList.add('headerloginguest');
     }
 });
