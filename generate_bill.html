@@ -1263,28 +1263,65 @@
                 clearError();
             }
 
+            // --- Fixed allocation: 60/40 for two fixed names, fallback otherwise ---
             const fixedAlloc = {};
+
             if (nFixed > 0) {
-                const baseShare = Math.floor(remainingTakaLess / nFixed);
-                let remainder = remainingTakaLess % nFixed;
-                selectedFixed.forEach(name => {
-                    let share = baseShare + (remainder > 0 ? 1 : 0);
-                    if (remainder > 0) remainder--;
-                    fixedAlloc[name] = { takaLess: share, takaMain: share * conversionFactor_ToMake_original };
-                });
+                if (nFixed === 1) {
+                    // single fixed person gets everything
+                    const share = remainingTakaLess;
+                    fixedAlloc[selectedFixed[0]] = {
+                        takaLess: share,
+                        takaMain: share * conversionFactor_ToMake_original,
+                        kg: remainingKg
+                    };
+                } else if (nFixed === 2) {
+                    // 60% / 40% split (first selected fixed gets 60%)
+                    const perc = [0.6, 0.4];
+
+                    // Compute taka shares using rounding but ensure sum == remainingTakaLess
+                    const firstShare = Math.round(remainingTakaLess * perc[0]);
+                    const secondShare = remainingTakaLess - firstShare; // exact remainder ensures total correct
+
+                    fixedAlloc[selectedFixed[0]] = {
+                        takaLess: firstShare,
+                        takaMain: firstShare * conversionFactor_ToMake_original,
+                        kg: remainingKg * perc[0]
+                    };
+
+                    fixedAlloc[selectedFixed[1]] = {
+                        takaLess: secondShare,
+                        takaMain: secondShare * conversionFactor_ToMake_original,
+                        kg: remainingKg * perc[1]
+                    };
+                } else {
+                    // fallback: even split for >2 fixed names (keeps previous logic)
+                    const baseShare = Math.floor(remainingTakaLess / nFixed);
+                    let remainder = remainingTakaLess % nFixed;
+                    selectedFixed.forEach(name => {
+                        let share = baseShare + (remainder > 0 ? 1 : 0);
+                        if (remainder > 0) remainder--;
+                        fixedAlloc[name] = {
+                            takaLess: share,
+                            takaMain: share * conversionFactor_ToMake_original,
+                            kg: remainingKg / nFixed
+                        };
+                    });
+                }
             }
 
+            // --- Render fixed rows using fixedAlloc's kg values (not a single fixedKgEach) ---
             let totalKg = 0, totalTakaLess = 0, totalTakaMain = 0;
-            const fixedKgEach = nFixed > 0 ? (remainingKg / nFixed) : 0;
 
             selectedFixed.forEach(name => {
-                const alloc = fixedAlloc[name] || { takaLess: 0, takaMain: 0 };
-                const row = createTableRow(name, fixedKgEach, alloc.takaMain, true, alloc.takaLess);
+                const alloc = fixedAlloc[name] || { takaLess: 0, takaMain: 0, kg: 0 };
+                const row = createTableRow(name, alloc.kg, alloc.takaMain, true, alloc.takaLess);
                 tableBody.appendChild(row);
-                totalKg += fixedKgEach;
+                totalKg += alloc.kg;
                 totalTakaLess += alloc.takaLess;
                 totalTakaMain += alloc.takaMain;
             });
+
 
             databaseRows.forEach(item => {
                 const row = createTableRow(item.name, item.kg, item.takaMain, false, item.takaLess);
