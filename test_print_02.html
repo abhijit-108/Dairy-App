@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thermal Printer - Sampann Regular 2600</title>
+    <title>Thermal Printer - Android App</title>
     <style>
         * {
             box-sizing: border-box;
@@ -49,6 +49,14 @@
             background: #005a87;
             transform: scale(0.98);
         }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-secondary:active {
+            background: #545b62;
+            transform: scale(0.98);
+        }
         .btn-success {
             background: #28a745;
             color: white;
@@ -69,6 +77,7 @@
             background: #6c757d;
             cursor: not-allowed;
             transform: none;
+            opacity: 0.6;
         }
         .status {
             padding: 12px;
@@ -110,29 +119,46 @@
             font-size: 14px;
             border-radius: 0 8px 8px 0;
         }
-        .debug-info {
+        .device-info {
             background: #f8f9fa;
-            border: 1px solid #dee2e6;
             border-radius: 8px;
             padding: 10px;
             margin: 10px 0;
             font-size: 12px;
-            font-family: monospace;
+            color: #495057;
+        }
+        .log {
             max-height: 150px;
             overflow-y: auto;
+            background: #212529;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧾 Sampann Printer</h1>
+        <h1>🧾 Thermal Printer</h1>
         
         <div id="status" class="status status-disconnected">
             🔴 Disconnected
         </div>
+
+        <div id="deviceInfo" class="device-info" style="display: none;">
+            <strong>Device:</strong> <span id="deviceName">-</span><br>
+            <strong>Service:</strong> <span id="serviceUUID">-</span>
+        </div>
         
         <button id="connectBtn" class="btn btn-primary">
             📱 Connect to Printer
+        </button>
+
+        <button id="scanAllBtn" class="btn btn-secondary">
+            🔍 Scan All Devices
         </button>
         
         <button id="printBtn" class="btn btn-success" disabled>
@@ -143,21 +169,15 @@
             🔌 Disconnect
         </button>
 
-        <button id="discoverBtn" class="btn btn-primary">
-            🔍 Discover Services
-        </button>
-
         <div class="instructions">
-            <strong>For Sampann Regular 2600:</strong><br>
-            1. Ensure printer is ON and Bluetooth is enabled<br>
-            2. Click "Connect to Printer"<br>
-            3. Look for your printer in the list (might be named "SPP" or "BT_Printer")<br>
-            4. If connection fails, try "Discover Services" to debug<br>
-            <em>Use Chrome on Android</em>
-        </div>
-        
-        <div class="debug-info" id="debugInfo">
-            Debug information will appear here...
+            <strong>Instructions:</strong><br>
+            1. Turn ON your Sampann printer<br>
+            2. Pair it in Bluetooth settings<br>
+            3. Click "Connect to Printer"<br>
+            4. Select your printer from list<br>
+            5. Click "Print Receipt"<br>
+            <br>
+            <em>If "Connect" doesn't show your printer, try "Scan All Devices"</em>
         </div>
         
         <div class="receipt-preview" id="receiptContent">
@@ -169,61 +189,120 @@ SNF:     8.5
 Rate:    40.00
 Total:   480.00
         </div>
+
+        <div id="log" class="log" style="display: none;"></div>
     </div>
 
     <script>
         // DOM Elements
         const connectBtn = document.getElementById('connectBtn');
+        const scanAllBtn = document.getElementById('scanAllBtn');
         const printBtn = document.getElementById('printBtn');
         const disconnectBtn = document.getElementById('disconnectBtn');
-        const discoverBtn = document.getElementById('discoverBtn');
         const statusDiv = document.getElementById('status');
-        const debugInfo = document.getElementById('debugInfo');
+        const deviceInfo = document.getElementById('deviceInfo');
+        const deviceNameSpan = document.getElementById('deviceName');
+        const serviceUUIDSpan = document.getElementById('serviceUUID');
+        const logDiv = document.getElementById('log');
 
         let printerDevice = null;
         let txCharacteristic = null;
+        let connectedServiceUUID = null;
+
+        // Logging function
+        function log(message) {
+            console.log(message);
+            logDiv.style.display = 'block';
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
 
         // Check Web Bluetooth support
         if (!navigator.bluetooth) {
             statusDiv.innerHTML = '❌ Web Bluetooth not supported<br><small>Use Chrome on Android</small>';
             connectBtn.disabled = true;
-            discoverBtn.disabled = true;
+            scanAllBtn.disabled = true;
             connectBtn.innerHTML = 'Not Supported';
+            scanAllBtn.innerHTML = 'Not Supported';
+            log('ERROR: Web Bluetooth not supported');
         }
 
-        function logDebug(message) {
-            const timestamp = new Date().toLocaleTimeString();
-            debugInfo.innerHTML += `[${timestamp}] ${message}<br>`;
-            debugInfo.scrollTop = debugInfo.scrollHeight;
-        }
+        // Common thermal printer service UUIDs
+        const printerServiceUUIDs = [
+            '000018f0-0000-1000-8000-00805f9b34fb', // Common thermal printer
+            '0000ff00-0000-1000-8000-00805f9b34fb', // Generic
+            '0000ffe0-0000-1000-8000-00805f9b34fb', // HM-10 style
+            '0000fee0-0000-1000-8000-00805f9b34fb', // Common
+            '49535343-fe7d-4ae5-8fa9-9fafd205e455', // Microchip
+            'e7810a71-73ae-499d-8c15-faa9aef0c3f2', // Nordic UART
+            '6e400001-b5a3-f393-e0a9-e50e24dcca9e'  // Nordic UART Service
+        ];
 
-        // Connect to Printer
+        // Connect to Printer (Filtered)
         connectBtn.addEventListener('click', async () => {
             try {
                 updateStatus('🔍 Searching for printer...', 'searching');
-                logDebug('Starting Bluetooth device discovery...');
+                log('Starting connection with filters...');
                 
-                // Comprehensive list of thermal printer service UUIDs
-                const printerServiceUUIDs = [
-                    '000018f0-0000-1000-8000-00805f9b34fb', // Common thermal printer service
-                    '0000ff00-0000-1000-8000-00805f9b34fb',
-                    '0000fee0-0000-1000-8000-00805f9b34fb',
-                    '49535343-fe7d-4ae5-8fa9-9fafd205e455', // SPP-like service
-                    '00001101-0000-1000-8000-00805f9b34fb', // Serial Port Profile
-                    'e7810a71-73ae-499d-8c15-faa9aef0c3f2'  // Generic attribute
-                ];
-
                 printerDevice = await navigator.bluetooth.requestDevice({
-                    acceptAllDevices: true, // Show all devices
+                    filters: [
+                        { name: 'SRS588' },
+                        { name: 'Sampann' },
+                        { name: 'SAMPANN' },
+                        { name: 'BluPrints' },
+                        { name: 'BLUEPRINTS' },
+                        { namePrefix: 'Samp' },
+                        { namePrefix: 'Blue' },
+                        { namePrefix: 'RPP' },
+                        { namePrefix: 'BT' },
+                        { name: 'Printer' }
+                    ],
                     optionalServices: printerServiceUUIDs
                 });
 
-                logDebug(`Device selected: ${printerDevice.name || 'Unknown'} (ID: ${printerDevice.id})`);
-                updateStatus(`📡 Connecting to ${printerDevice.name || 'device'}...`, 'searching');
+                await connectToDevice(printerDevice);
 
-                const server = await printerDevice.gatt.connect();
+            } catch (error) {
+                console.error('Connection failed:', error);
+                log(`ERROR: ${error.message}`);
+                if (error.name === 'NotFoundError') {
+                    updateStatus('❌ Printer not found. Try "Scan All Devices"', 'disconnected');
+                } else {
+                    updateStatus(`❌ Error: ${error.message}`, 'disconnected');
+                }
+            }
+        });
+
+        // Scan All Devices (No filter)
+        scanAllBtn.addEventListener('click', async () => {
+            try {
+                updateStatus('🔍 Scanning all devices...', 'searching');
+                log('Starting scan for ALL devices...');
+                
+                printerDevice = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: printerServiceUUIDs
+                });
+
+                await connectToDevice(printerDevice);
+
+            } catch (error) {
+                console.error('Scan failed:', error);
+                log(`ERROR: ${error.message}`);
+                updateStatus(`❌ Error: ${error.message}`, 'disconnected');
+            }
+        });
+
+        // Connect to selected device
+        async function connectToDevice(device) {
+            try {
+                log(`Device selected: ${device.name || 'Unknown'} (${device.id})`);
+                updateStatus('📡 Connecting to device...', 'searching');
+
+                const server = await device.gatt.connect();
+                log('GATT server connected');
                 updateStatus('🔍 Discovering services...', 'searching');
-                logDebug('GATT server connected, discovering services...');
 
                 // Try to find the correct service and characteristic
                 let found = false;
@@ -231,104 +310,52 @@ Total:   480.00
                 for (let serviceUUID of printerServiceUUIDs) {
                     try {
                         const service = await server.getPrimaryService(serviceUUID);
-                        logDebug(`✓ Found service: ${serviceUUID}`);
+                        log(`Found service: ${serviceUUID}`);
                         
                         const characteristics = await service.getCharacteristics();
-                        logDebug(`Found ${characteristics.length} characteristics`);
+                        log(`Found ${characteristics.length} characteristics`);
                         
                         for (let characteristic of characteristics) {
-                            const props = [];
-                            if (characteristic.properties.write) props.push('write');
-                            if (characteristic.properties.writeWithoutResponse) props.push('writeWithoutResponse');
-                            if (characteristic.properties.read) props.push('read');
-                            if (characteristic.properties.notify) props.push('notify');
-                            
-                            logDebug(`Characteristic: ${characteristic.uuid} [${props.join(', ')}]`);
+                            log(`Characteristic: ${characteristic.uuid}, props: ${JSON.stringify(characteristic.properties)}`);
                             
                             if (characteristic.properties.write || characteristic.properties.writeWithoutResponse) {
                                 txCharacteristic = characteristic;
+                                connectedServiceUUID = serviceUUID;
                                 found = true;
-                                logDebug(`✓ Using write characteristic: ${characteristic.uuid}`);
+                                log(`✓ Using write characteristic: ${characteristic.uuid}`);
                                 break;
                             }
                         }
                         if (found) break;
                     } catch (e) {
-                        logDebug(`✗ Service not found: ${serviceUUID}`);
+                        // Service not found, continue
                     }
                 }
 
                 if (!found) {
-                    logDebug('❌ No suitable write characteristic found');
-                    throw new Error('Could not find printer service. Try "Discover Services" to debug.');
+                    throw new Error('Could not find writable characteristic. Printer may not be compatible.');
                 }
 
+                // Update UI
+                deviceNameSpan.textContent = device.name || 'Unknown Device';
+                serviceUUIDSpan.textContent = connectedServiceUUID.substring(0, 8) + '...';
+                deviceInfo.style.display = 'block';
+                
                 updateStatus('✅ Connected to printer!', 'connected');
-                logDebug('Printer connection established successfully');
+                log('✓ Connection successful!');
                 
                 printBtn.disabled = false;
                 disconnectBtn.disabled = false;
                 connectBtn.disabled = true;
-                discoverBtn.disabled = true;
+                scanAllBtn.disabled = true;
 
                 // Handle disconnection
-                printerDevice.addEventListener('gattserverdisconnected', onDisconnected);
+                device.addEventListener('gattserverdisconnected', onDisconnected);
 
             } catch (error) {
-                console.error('Connection failed:', error);
-                logDebug(`Connection error: ${error.message}`);
-                if (error.name === 'NotFoundError') {
-                    updateStatus('❌ No device selected', 'disconnected');
-                } else {
-                    updateStatus(`❌ Error: ${error.message}`, 'disconnected');
-                }
+                throw error;
             }
-        });
-
-        // Discover Services (for debugging)
-        discoverBtn.addEventListener('click', async () => {
-            try {
-                logDebug('=== SERVICE DISCOVERY STARTED ===');
-                updateStatus('🔍 Discovering all services...', 'searching');
-                
-                printerDevice = await navigator.bluetooth.requestDevice({
-                    acceptAllDevices: true,
-                    optionalServices: ['generic_access', 'generic_attribute']
-                });
-
-                logDebug(`Selected device: ${printerDevice.name || 'Unknown'}`);
-                const server = await printerDevice.gatt.connect();
-                
-                const services = await server.getPrimaryServices();
-                logDebug(`Found ${services.length} total services:`);
-                
-                for (let service of services) {
-                    logDebug(`Service: ${service.uuid}`);
-                    try {
-                        const characteristics = await service.getCharacteristics();
-                        for (let char of characteristics) {
-                            const props = [];
-                            if (char.properties.write) props.push('write');
-                            if (char.properties.writeWithoutResponse) props.push('writeWithoutResponse');
-                            if (char.properties.read) props.push('read');
-                            if (char.properties.notify) props.push('notify');
-                            logDebug(`  └─ Characteristic: ${char.uuid} [${props.join(', ')}]`);
-                        }
-                    } catch (e) {
-                        logDebug(`  └─ Error reading characteristics: ${e.message}`);
-                    }
-                }
-                
-                logDebug('=== SERVICE DISCOVERY COMPLETE ===');
-                updateStatus('✅ Discovery complete - check debug info', 'connected');
-                
-                server.disconnect();
-                
-            } catch (error) {
-                logDebug(`Discovery error: ${error.message}`);
-                updateStatus('❌ Discovery failed', 'disconnected');
-            }
-        });
+        }
 
         // Print Receipt
         printBtn.addEventListener('click', async () => {
@@ -339,18 +366,19 @@ Total:   480.00
 
             try {
                 updateStatus('🖨️ Printing...', 'searching');
-                logDebug('Sending print commands...');
+                log('Starting print job...');
                 
                 const receiptCommands = generateReceipt();
                 
                 // Send commands to printer
-                for (let command of receiptCommands) {
-                    await txCharacteristic.writeValue(command);
-                    await delay(50); // Small delay between commands
+                for (let i = 0; i < receiptCommands.length; i++) {
+                    await txCharacteristic.writeValue(receiptCommands[i]);
+                    await delay(100); // Delay between commands
+                    log(`Sent command ${i + 1}/${receiptCommands.length}`);
                 }
                 
                 updateStatus('✅ Print completed!', 'connected');
-                logDebug('Print job completed successfully');
+                log('✓ Print job completed successfully');
                 
                 // Revert status after 2 seconds
                 setTimeout(() => {
@@ -361,7 +389,7 @@ Total:   480.00
 
             } catch (error) {
                 console.error('Print failed:', error);
-                logDebug(`Print error: ${error.message}`);
+                log(`ERROR: Print failed - ${error.message}`);
                 updateStatus(`❌ Print failed: ${error.message}`, 'disconnected');
             }
         });
@@ -370,6 +398,7 @@ Total:   480.00
         disconnectBtn.addEventListener('click', () => {
             if (printerDevice && printerDevice.gatt.connected) {
                 printerDevice.gatt.disconnect();
+                log('User initiated disconnect');
             }
             onDisconnected();
         });
@@ -377,12 +406,14 @@ Total:   480.00
         function onDisconnected() {
             printerDevice = null;
             txCharacteristic = null;
+            connectedServiceUUID = null;
             updateStatus('🔴 Disconnected', 'disconnected');
+            deviceInfo.style.display = 'none';
             printBtn.disabled = true;
             disconnectBtn.disabled = true;
             connectBtn.disabled = false;
-            discoverBtn.disabled = false;
-            logDebug('Disconnected from printer');
+            scanAllBtn.disabled = false;
+            log('Disconnected from printer');
         }
 
         function updateStatus(message, type) {
@@ -410,17 +441,18 @@ Total:   480.00
             const encoder = new TextEncoder();
             const commands = [];
             
-            // Initialize printer (standard ESC/POS command)
+            // Initialize printer (ESC @)
             commands.push(new Uint8Array([0x1B, 0x40]));
             
-            // Try different alignment and text formatting commands
-            // Center align
-            commands.push(new Uint8Array([0x1B, 0x61, 0x01])); // Center alignment
+            // Center align and bold for header
+            commands.push(new Uint8Array([0x1B, 0x61, 0x01])); // Center align
+            commands.push(new Uint8Array([0x1B, 0x45, 0x01])); // Bold on
             commands.push(encoder.encode("DAIRY MILK RECEIPT\n"));
+            commands.push(new Uint8Array([0x1B, 0x45, 0x00])); // Bold off
             commands.push(encoder.encode("====================\n\n"));
             
-            // Left align
-            commands.push(new Uint8Array([0x1B, 0x61, 0x00])); // Left alignment
+            // Left align for content
+            commands.push(new Uint8Array([0x1B, 0x61, 0x00])); // Left align
             
             // Receipt content
             const receiptText = `Name:    Test Person 9
@@ -431,24 +463,21 @@ SNF:     8.5
 Rate:    40.00
 Total:   480.00
 
+====================
 Thank you for your business!
 `;
             
             commands.push(encoder.encode(receiptText));
             
-            // Feed paper (multiple approaches)
+            // Feed paper and cut
             commands.push(encoder.encode("\n\n\n")); // Feed lines
-            commands.push(new Uint8Array([0x1B, 0x64, 0x03])); // Feed 3 lines (alternative)
-            
-            // Paper cut (try different cut commands)
-            commands.push(new Uint8Array([0x1D, 0x56, 0x41, 0x10])); // Full cut
-            // Alternative cut command: commands.push(new Uint8Array([0x1B, 0x69])); 
+            commands.push(new Uint8Array([0x1D, 0x56, 0x41, 0x10])); // Cut paper (partial cut)
             
             return commands;
         }
 
-        // Initialize debug log
-        logDebug('App initialized. Ready to connect to printer.');
+        // Initial log
+        log('App initialized. Ready to connect.');
     </script>
 </body>
 </html>
