@@ -21,6 +21,11 @@ const auth = getAuth(app);
 let rateFormula = { fatMultiplier: 3.81, snfMultiplier: 2.689 }; // Default values
 let cachedRateFormula = null;
 
+// Thermal Printer Variables
+let thermalDevice = null;
+let thermalCharacteristic = null;
+let currentPrintData = null;
+
 // Audio feedback function using MP3 files
 function playAudioMessage(audioType) {
     const audioEnabled = document.getElementById('audioEnabled')?.checked;
@@ -194,6 +199,185 @@ function getCurrentSession() {
     return hour < 15 ? "সকাল" : "সন্ধ্যা";
 }
 
+// NEW: Function to get session in English for printing
+function getCurrentSessionEnglish() {
+    const hour = new Date().getHours();
+    return hour < 15 ? "Morning" : "Evening";
+}
+
+// ===== THERMAL PRINTER FUNCTIONS =====
+
+function showPrintStatus(message, type = 'connecting') {
+    const statusDiv = document.getElementById('printStatus');
+    if (!statusDiv) return;
+
+    statusDiv.className = `print-status ${type} show`;
+    
+    let icon = '';
+    if (type === 'connecting') {
+        icon = '<div class="print-spinner"></div>';
+    } else if (type === 'success') {
+        icon = '<i class="bx bx-check-circle"></i>';
+    } else if (type === 'error') {
+        icon = '<i class="bx bx-error-circle"></i>';
+    }
+    
+    statusDiv.innerHTML = `${icon}<span>${message}</span>`;
+    
+    if (type === 'success' || type === 'error') {
+        setTimeout(() => {
+            statusDiv.classList.remove('show');
+        }, 5000);
+    }
+}
+
+function stringToBytes(str) {
+    const encoder = new TextEncoder();
+    return encoder.encode(str);
+}
+
+function formatReceiptLine(label, value, width = 32) {
+    const labelStr = String(label);
+    const valueStr = String(value);
+    const spaces = width - labelStr.length - valueStr.length;
+    return labelStr + ' '.repeat(Math.max(1, spaces)) + valueStr;
+}
+
+async function connectToPrinter() {
+    if (!navigator.bluetooth) {
+        throw new Error('Bluetooth not supported in this browser');
+    }
+
+    try {
+        showPrintStatus('Searching for printer...', 'connecting');
+        
+        thermalDevice = await navigator.bluetooth.requestDevice({
+            filters: [
+                { services: ['000018f0-0000-1000-8000-00805f9b34fb'] },
+                { namePrefix: 'BlueTooth Printer' },
+                { namePrefix: 'BT Printer' }
+            ],
+            optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
+        });
+
+        showPrintStatus('Connecting to printer...', 'connecting');
+        
+        const server = await thermalDevice.gatt.connect();
+        const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+        thermalCharacteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+
+        console.log('✅ Printer connected successfully');
+        return true;
+    } catch (error) {
+        console.error('❌ Printer connection error:', error);
+        throw error;
+    }
+}
+
+async function printReceipt(data) {
+    try {
+        if (!thermalCharacteristic) {
+            await connectToPrinter();
+        }
+
+        showPrintStatus('Preparing receipt...', 'connecting');
+
+        // ESC/POS Commands
+        const ESC = 0x1B;
+        const GS = 0x1D;
+        const INIT = [ESC, 0x40]; // Initialize printer
+        const ALIGN_CENTER = [ESC, 0x61, 0x01];
+        const ALIGN_LEFT = [ESC, 0x61, 0x00];
+        const BOLD_ON = [ESC, 0x45, 0x01];
+        const BOLD_OFF = [ESC, 0x45, 0x00];
+        const SIZE_NORMAL = [GS, 0x21, 0x00];
+        const SIZE_LARGE = [GS, 0x21, 0x11];
+        const FEED_LINE = [0x0A];
+        const CUT_PAPER = [GS, 0x56, 0x00];
+
+        let receipt = new Uint8Array([...INIT]);
+
+        // Helper to append data
+        function append(data) {
+            const newReceipt = new Uint8Array(receipt.length + data.length);
+            newReceipt.set(receipt);
+            newReceipt.set(data, receipt.length);
+            receipt = newReceipt;
+        }
+
+        // Header
+        append(ALIGN_CENTER);
+        append(SIZE_LARGE);
+        append(BOLD_ON);
+        append(stringToBytes('KANGSABOTI DAIRY\n'));
+        append(stringToBytes('LALGARA , BANKURA\n'));
+        append(BOLD_OFF);
+        append(SIZE_NORMAL);
+        append(stringToBytes('================================\n'));
+        
+        // Customer Info
+        append(ALIGN_LEFT);
+        append(BOLD_ON);
+        append(stringToBytes(`Customer: ${data.name}\n`));
+        append(BOLD_OFF);
+        append(stringToBytes(`Date: ${data.timestamp}\n`));
+        // UPDATED: Use English session for printing
+        append(stringToBytes(`Session: ${getCurrentSessionEnglish()}\n`));
+        append(stringToBytes('--------------------------------\n'));
+        
+        // Details
+        append(stringToBytes(formatReceiptLine('Weight (KG):', data.kg) + '\n'));
+        append(stringToBytes(formatReceiptLine('FAT:', data.fat) + '\n'));
+        append(stringToBytes(formatReceiptLine('SNF:', data.snf) + '\n'));
+        append(stringToBytes(formatReceiptLine('Rate:', '₹' + data.rate) + '\n'));
+        append(stringToBytes('================================\n'));
+        
+        // Total
+        append(SIZE_LARGE);
+        append(BOLD_ON);
+        append(stringToBytes(formatReceiptLine('TOTAL:', '₹' + data.total, 16) + '\n'));
+        append(BOLD_OFF);
+        append(SIZE_NORMAL);
+        append(stringToBytes('================================\n'));
+        
+        // Footer
+        append(ALIGN_CENTER);
+        append(stringToBytes('\nThank You!\n'));
+        append(FEED_LINE);
+
+        showPrintStatus('Printing...', 'connecting');
+
+        // Send to printer in chunks
+        const chunkSize = 20;
+        for (let i = 0; i < receipt.length; i += chunkSize) {
+            const chunk = receipt.slice(i, i + chunkSize);
+            await thermalCharacteristic.writeValue(chunk);
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+
+        console.log('✅ Receipt printed successfully');
+        showPrintStatus('✅ Receipt printed successfully!', 'success');
+        return true;
+
+    } catch (error) {
+        console.error('❌ Print error:', error);
+        
+        let errorMessage = 'Failed to print receipt';
+        if (error.message.includes('Bluetooth')) {
+            errorMessage = 'Bluetooth not available';
+        } else if (error.message.includes('GATT')) {
+            errorMessage = 'Printer disconnected. Please reconnect.';
+            thermalDevice = null;
+            thermalCharacteristic = null;
+        }
+        
+        showPrintStatus(`❌ ${errorMessage}`, 'error');
+        throw error;
+    }
+}
+
+// ===== END THERMAL PRINTER FUNCTIONS =====
+
 function showPopup(type, title, data, statusText, existingData = null) {
     const overlay = document.getElementById('popupOverlay');
     const card = document.getElementById('popupCard');
@@ -203,6 +387,7 @@ function showPopup(type, title, data, statusText, existingData = null) {
     const existingEntry = document.getElementById('existingEntry');
     const existingEntryDetails = document.getElementById('existingEntryDetails');
     const updateBtn = document.getElementById('updateBtn');
+    const printBtn = document.getElementById('printBtn');
 
     if (!overlay || !card || !statusMessage || !popupTitle || !popupDetails) return;
 
@@ -212,6 +397,13 @@ function showPopup(type, title, data, statusText, existingData = null) {
         updateBtn.style.display = 'none';
         updateBtn.disabled = false;
     }
+    if (printBtn) {
+        printBtn.style.display = 'none';
+    }
+
+    // Hide print status when opening new popup
+    const printStatus = document.getElementById('printStatus');
+    if (printStatus) printStatus.classList.remove('show');
 
     if (type === 'duplicate') {
         card.classList.add('duplicate');
@@ -230,6 +422,10 @@ function showPopup(type, title, data, statusText, existingData = null) {
                 <div><strong>Total:</strong> <span>${existingData.total}</span></div>
             `;
         }
+    } else if (type === 'reprint') {
+        // NEW: Fresh styling for reprint popup
+        card.classList.add('reprint');
+        statusMessage.className = 'status-message status-reprint';
     } else {
         card.classList.add(type);
         statusMessage.className = `status-message status-${type === 'success' ? 'success' : type === 'failed' ? 'failed' : 'warning'}`;
@@ -239,7 +435,6 @@ function showPopup(type, title, data, statusText, existingData = null) {
     popupTitle.textContent = title;
 
     if (data) {
-        // Use empty placeholders when rate/total are intentionally empty
         const displayRate = (data.rate === '' || data.rate === undefined) ? '' : data.rate;
         const displayTotal = (data.total === '' || data.total === undefined) ? '' : data.total;
 
@@ -252,16 +447,28 @@ function showPopup(type, title, data, statusText, existingData = null) {
             <div><strong>Rate:</strong> <span>${displayRate}</span></div>
             <div><strong>Total:</strong> <span>${displayTotal}</span></div>
         `;
+
+        // Store current data for printing and show print button for success/duplicate/reprint with valid data
+        if ((type === 'success' || type === 'duplicate' || type === 'reprint') && data.name && data.rate && data.total !== '😒') {
+            currentPrintData = data;
+            if (printBtn) printBtn.style.display = 'inline-block';
+        } else {
+            currentPrintData = null;
+        }
     } else {
         popupDetails.innerHTML = '';
+        currentPrintData = null;
     }
 
     overlay.style.display = 'flex';
 
-    setTimeout(() => {
-        const audioType = type === 'duplicate' ? 'exists' : type;
-        playAudioMessage(audioType);
-    }, 300);
+    // Don't play audio for reprint entries from table
+    if (type !== 'reprint') {
+        setTimeout(() => {
+            const audioType = type === 'duplicate' ? 'exists' : type;
+            playAudioMessage(audioType);
+        }, 300);
+    }
 
     if (type === 'success' || type === 'failed') {
         setTimeout(() => {
@@ -273,6 +480,23 @@ function showPopup(type, title, data, statusText, existingData = null) {
 function hidePopup() {
     const overlay = document.getElementById('popupOverlay');
     if (overlay) overlay.style.display = 'none';
+    currentPrintData = null;
+}
+
+// NEW FUNCTION: Show reprint entry from table row click with fresh styling
+function showReprintEntryPopup(record) {
+    const data = {
+        name: record.name,
+        kg: record.kg,
+        fat: record.fat,
+        snf: record.snf,
+        rate: record.rate,
+        total: record.total,
+        timestamp: record.timestamp
+    };
+
+    // Fresh behavior for reprint - different styling and messaging
+    showPopup('reprint', 'Reprint Receipt', data, 'Ready to print duplicate receipt for this entry', null);
 }
 
 async function checkNameExists(name, dateKey, session) {
@@ -312,7 +536,7 @@ async function saveToFirebase(data) {
             timestamp: data.timestamp
         });
 
-        // 🔹 Local notification after successful save
+        // Local notification after successful save
         if (Notification.permission === "granted") {
             navigator.serviceWorker.getRegistration().then(reg => {
                 if (reg) {
@@ -340,7 +564,6 @@ Promise.all([
     loadRateFormula()
 ]).then(() => {
     console.log('All data loaded successfully');
-    // If rate.md provided a different formula, update displayed rate
     try {
         const fixRateEl = document.getElementById("fix_rate");
         const fixRateEl1 = document.getElementById("fix_rate1");
@@ -377,18 +600,17 @@ document.getElementById('milkForm')?.addEventListener('submit', async function (
         showPopup('warning', 'Invalid KG', { name, kg, fat, snf }, 'KG must be between 0.1 and 100');
         return;
     }
-    // --- End validation ---
+
     const rate = calculateRate(fat, snf);
 
-    // If no name selected — show popup WITHOUT calculated Rate/Total
     if (!name) {
         const dataNoName = {
             name: '',
             kg: kg.toFixed(3),
             fat: fat.toFixed(1),
             snf: snf.toFixed(1),
-            rate: rate,        // intentionally blank
-            total: '😒',       // intentionally blank
+            rate: rate,
+            total: '😒',
             timestamp: getCurrentDateTime()
         };
 
@@ -396,7 +618,6 @@ document.getElementById('milkForm')?.addEventListener('submit', async function (
         return;
     }
 
-    // Only calculate rate/total after we know a name was selected
     const total = Math.round(kg * parseFloat(rate));
 
     const data = {
@@ -459,7 +680,6 @@ document.getElementById('updateBtn')?.addEventListener('click', async function (
         document.getElementById('milkForm')?.reset();
         const nameSelect = document.getElementById('nameSelect');
         if (nameSelect) nameSelect.value = '';
-        // Refresh after 6 seconds
         setTimeout(() => {
             const dateSelector = document.getElementById('milkDateSelector');
             if (dateSelector) fetchMilkDataForDate(dateSelector.value);
@@ -470,6 +690,28 @@ document.getElementById('updateBtn')?.addEventListener('click', async function (
 
     updateBtn.disabled = false;
     updateBtn.textContent = 'Update Entry';
+});
+
+// Print button event listener
+document.getElementById('printBtn')?.addEventListener('click', async function () {
+    const printBtn = document.getElementById('printBtn');
+    
+    if (!currentPrintData) {
+        showPrintStatus('❌ No data available to print', 'error');
+        return;
+    }
+
+    printBtn.disabled = true;
+    printBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Printing...';
+
+    try {
+        await printReceipt(currentPrintData);
+    } catch (error) {
+        console.error('Print failed:', error);
+    } finally {
+        printBtn.disabled = false;
+        printBtn.innerHTML = '<i class="bx bx-printer"></i> Print Receipt';
+    }
 });
 
 document.getElementById('closeBtn')?.addEventListener('click', hidePopup);
@@ -495,7 +737,7 @@ document.addEventListener('click', function enableAudio() {
 }, { once: true });
 
 // milkDatabase / date helpers & display
-const milkDatabase = database; // reuse same database instance
+const milkDatabase = database;
 
 function formatMilkDate(date) {
     const day = date.getDate();
@@ -552,6 +794,9 @@ async function fetchMilkDataForDate(selectedDate) {
 
         if (snapshot.exists()) {
             dataContainer.innerHTML = displayMilkData(snapshot.val());
+            
+            // Add click event listeners to table rows after data is loaded
+            addTableRowClickListeners();
         } else {
             dataContainer.innerHTML = `
                 <div class="milk-empty-state">
@@ -569,6 +814,43 @@ async function fetchMilkDataForDate(selectedDate) {
     }
 }
 
+// NEW FUNCTION: Add click event listeners to table rows
+function addTableRowClickListeners() {
+    const tableRows = document.querySelectorAll('.milk-data-row');
+    
+    tableRows.forEach(row => {
+        row.addEventListener('click', function() {
+            // Extract data from the row
+            const cells = this.querySelectorAll('.milk-data-cell');
+            if (cells.length >= 7) {
+                const timeCell = cells[0].textContent.trim();
+                const nameCell = cells[1].textContent.trim();
+                const fatCell = cells[2].querySelector('.milk-metric-badge').textContent.trim();
+                const snfCell = cells[3].querySelector('.milk-metric-badge').textContent.trim();
+                const rateCell = cells[4].querySelector('.milk-metric-badge').textContent.replace('₹', '').trim();
+                const kgCell = cells[5].querySelector('.milk-metric-badge2').textContent.replace('kg', '').trim();
+                const totalCell = cells[6].querySelector('.milk-metric-badge2').textContent.replace('₹', '').trim();
+                
+                // Determine session based on time
+                const session = timeCell.includes('AM') ? 'সকাল' : 'সন্ধ্যা';
+                
+                const record = {
+                    name: nameCell,
+                    fat: fatCell,
+                    snf: snfCell,
+                    rate: rateCell,
+                    kg: kgCell,
+                    total: totalCell,
+                    timestamp: `${selectedDate} ${timeCell}`,
+                    session: session
+                };
+                
+                showReprintEntryPopup(record);
+            }
+        });
+    });
+}
+
 function timeToMinutes(timeStr) {
     if (!timeStr) return 0;
     const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
@@ -584,10 +866,11 @@ function timeToMinutes(timeStr) {
     return hours * 60 + minutes;
 }
 
+let selectedDate = ''; // Global variable to track current selected date
+
 function displayMilkData(data) {
     let totalKg = 0, totalAmount = 0, totalFat = 0, totalSnf = 0, totalRate = 0;
 
-    // AM + PM accumulators
     let amKg = 0, amAmount = 0, amFat = 0, amSnf = 0, amRate = 0;
     let pmKg = 0, pmAmount = 0, pmFat = 0, pmSnf = 0, pmRate = 0;
 
@@ -599,7 +882,6 @@ function displayMilkData(data) {
         }
     }
 
-    // Sort by time (latest first)
     recordsArray.sort((a, b) => {
         return timeToMinutes(extractMilkTime(b.timestamp)) -
             timeToMinutes(extractMilkTime(a.timestamp));
@@ -624,14 +906,12 @@ function displayMilkData(data) {
             <td class="milk-data-cell milk-amount-cell"><span class="milk-metric-badge2">${record.total ? '₹' + record.total : ''}</span></td>
         </tr>`;
 
-        // Update global totals
         totalKg += kg;
         totalAmount += total;
         totalFat += fat * kg;
         totalSnf += snf * kg;
         totalRate += rate * kg;
 
-        // AM/PM split
         const timeStr = extractMilkTime(record.timestamp);
         if (timeStr && timeStr.toUpperCase().includes("AM")) {
             amKg += kg;
@@ -648,7 +928,6 @@ function displayMilkData(data) {
         }
     }
 
-    // Averages
     const avgFat = totalKg ? (totalFat / totalKg).toFixed(1) : '0';
     const avgSnf = totalKg ? (totalSnf / totalKg).toFixed(1) : '0';
     const avgRate = totalKg ? (totalRate / totalKg).toFixed(2) : '0';
@@ -677,7 +956,6 @@ function displayMilkData(data) {
         <tbody>
             ${rows}
            
-            <!-- AM Summary -->
             <tr class="milk-summary-row">
                 <td class="milk-data-cell" colspan="2"><strong>🌅 সকাল (AM)</strong></td>
                 <td class="milk-data-cell"><strong>${avgFatAm}</strong></td>
@@ -686,7 +964,6 @@ function displayMilkData(data) {
                 <td class="milk-data-cell"><strong>${amKg.toFixed(2)} kg</strong></td>
                 <td class="milk-data-cell"><strong>₹${amAmount.toFixed(0)}</strong></td>
             </tr>
-            <!-- PM Summary -->
             <tr class="milk-summary-row">
                 <td class="milk-data-cell" colspan="2"><strong>🌇 সন্ধ্যা (PM)</strong></td>
                 <td class="milk-data-cell"><strong>${avgFatPm}</strong></td>
@@ -695,7 +972,6 @@ function displayMilkData(data) {
                 <td class="milk-data-cell"><strong>${pmKg.toFixed(2)} kg</strong></td>
                 <td class="milk-data-cell"><strong>₹${pmAmount.toFixed(0)}</strong></td>
             </tr>
-             <!-- Overall Summary -->
             <tr class="milk-summary-row">
                 <td class="milk-data-cell" colspan="2"><strong>📊 Total(All)</strong></td>
                 <td class="milk-data-cell"><strong>${avgFat}</strong></td>
@@ -708,27 +984,29 @@ function displayMilkData(data) {
     </table>`;
 }
 
-// DOM Loaded: populate date dropdown and fetch initial data
 document.addEventListener('DOMContentLoaded', function () {
     populateMilkDateDropdown();
 
     const dateSelector = document.getElementById('milkDateSelector');
     if (dateSelector) {
-        // fetch for initial value (first option)
+        selectedDate = dateSelector.value; // Set initial selected date
         fetchMilkDataForDate(dateSelector.value);
 
         dateSelector.addEventListener('change', function () {
+            selectedDate = this.value; // Update selected date when changed
             fetchMilkDataForDate(this.value);
         });
     }
 });
 
-// A lightweight refresh after save (keeps original behavior)
 document.getElementById('milkForm')?.addEventListener('submit', function (e) {
     e.preventDefault();
     const dateSelector = document.getElementById('milkDateSelector');
     setTimeout(() => {
-        if (dateSelector) fetchMilkDataForDate(dateSelector.value);
+        if (dateSelector) {
+            selectedDate = dateSelector.value;
+            fetchMilkDataForDate(dateSelector.value);
+        }
     }, 6000);
 });
 
@@ -755,14 +1033,14 @@ onAuthStateChanged(auth, (user) => {
         if (hide_names) hide_names.classList.remove('disabled');
         if (hide_names1) hide_names1.classList.remove('disabled');
         if (hide_names3) hide_names3.style.display = 'block';
-        if (hide_names2) hide_names2.style.display = 'none'; // hide login button
+        if (hide_names2) hide_names2.style.display = 'none';
         if (headerLogin) headerLogin.classList.remove('headerloginguest');
     } else {
         if (userInfoDiv) userInfoDiv.innerText = 'Logout (Guest)';
         if (hide_names) hide_names.classList.add('disabled');
         if (hide_names1) hide_names1.classList.add('disabled');
         if (hide_names3) hide_names3.style.display = 'none';
-        if (hide_names2) hide_names2.style.display = 'block'; // show login button
+        if (hide_names2) hide_names2.style.display = 'block';
 
         if (headerLogin) headerLogin.classList.add('headerloginguest');
     }
