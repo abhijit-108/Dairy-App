@@ -19,6 +19,13 @@ function updateDateTime() {
     document.getElementById('datetime').innerHTML = `${timeStr}<br>${weekday}, ${month} ${day}`;
 }
 
+// Initialize datetime on page load and update every minute
+document.addEventListener('DOMContentLoaded', function() {
+    updateDateTime();
+    // Update every minute
+    setInterval(updateDateTime, 60000);
+});
+
 
 // Sidebar open/close logic
 const sidebar = document.getElementById('sidebar');
