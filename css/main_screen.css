@@ -37,7 +37,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 15px 24px 15px 24px; /* Reduced top and bottom padding */
+    padding: 15px 24px 15px 24px;
+    /* Reduced top and bottom padding */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
@@ -163,13 +164,41 @@ body {
 }
 
 /* Individual icon colors */
-.sidebar-list a:nth-child(1) i { color: #60a5fa; } /* All Members - Blue */
-.sidebar-list a:nth-child(2) i { color: #34d399; } /* Auto Bill generate - Green */
-.sidebar-list a:nth-child(3) i { color: #fb7185; } /* Old Bills Photos - Pink */
-.sidebar-list a:nth-child(4) i { color: #fbbf24; } /* Fix Data - Yellow */
-.sidebar-list a:nth-child(5) i { color: #a78bfa; } /* Wifi Usage - Purple */
-.sidebar-list a:nth-child(6) i { color: #4ade80; } /* All Guide Website - Light Green */
-.sidebar-list a:nth-child(7) i { color: #f87171; } /* Logout - Red */
+.sidebar-list a:nth-child(1) i {
+    color: #60a5fa;
+}
+
+/* All Members - Blue */
+.sidebar-list a:nth-child(2) i {
+    color: #34d399;
+}
+
+/* Auto Bill generate - Green */
+.sidebar-list a:nth-child(3) i {
+    color: #fb7185;
+}
+
+/* Old Bills Photos - Pink */
+.sidebar-list a:nth-child(4) i {
+    color: #fbbf24;
+}
+
+/* Fix Data - Yellow */
+.sidebar-list a:nth-child(5) i {
+    color: #a78bfa;
+}
+
+/* Wifi Usage - Purple */
+.sidebar-list a:nth-child(6) i {
+    color: #4ade80;
+}
+
+/* All Guide Website - Light Green */
+.sidebar-list a:nth-child(7) i {
+    color: #f87171;
+}
+
+/* Logout - Red */
 
 .sidebar-list a:hover i {
     transform: scale(1.1);
@@ -863,7 +892,7 @@ input:focus {
 }
 
 .milk-amount-cell {
-    font-weight: 600;
+    font-weight: 800;
     color: #059669;
 }
 
@@ -1138,13 +1167,13 @@ input:focus {
     /* Rate */
     .milk-header-cell:nth-child(6),
     .milk-data-cell:nth-child(6) {
-        width: 18%;
+        width: 16%;
     }
 
     /* Weight */
     .milk-header-cell:nth-child(7),
     .milk-data-cell:nth-child(7) {
-        width: 11%;
+        width: 15%;
     }
 
     /* Total */
@@ -1161,7 +1190,7 @@ input:focus {
     }
 
     .milk-amount-cell {
-        font-weight: 600;
+        font-weight: 800;
         color: #043b02;
     }
 
