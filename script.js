@@ -103,4 +103,36 @@ function moveToNextField(currentInput) {
 // Apply rules with range validation
 enforceDecimals(document.getElementById("fat"), 1, 1.0, 10.0);  // FAT: 1.0-10.0 range
 enforceDecimals(document.getElementById("snf"), 1, 1.0, 12.0);  // SNF: 1.0-12.0 range
-enforceDecimals(document.getElementById("kg"), 2, 0.1, 100.0);  // KG: 0.1-100.0 range 
+enforceDecimals(document.getElementById("kg"), 2, 0.1, 100.0);  // KG: 0.1-100.0 range
+
+
+// Dark Mode Toggle Functionality
+const darkModeToggle = document.getElementById('darkModeToggle');
+const body = document.body;
+
+// Check for saved dark mode preference or default to light mode
+const isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+// Apply the saved theme on page load
+if (isDarkMode) {
+    body.classList.add('dark-mode');
+    darkModeToggle.classList.add('active');
+}
+
+// Toggle dark mode
+function toggleDarkMode() {
+    const isDark = body.classList.toggle('dark-mode');
+
+    // Save preference to localStorage
+    localStorage.setItem('darkMode', isDark.toString());
+
+    // Update toggle button state
+    if (isDark) {
+        darkModeToggle.classList.add('active');
+    } else {
+        darkModeToggle.classList.remove('active');
+    }
+}
+
+// Add click event listener to toggle button
+darkModeToggle.addEventListener('click', toggleDarkMode); 
