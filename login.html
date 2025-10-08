@@ -1,309 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dairy App</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="logo.png" type="image/png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/loginpage.css?v=1.0.3">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dairy App — Login</title>
+  <link rel="icon" href="logo.png" type="image/png" />
   <style>
-    /* Reset */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    /* Basic reset */
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html,body { height: 100%; }
 
-    :root {
-      --bg1: #74ebd5;
-      --bg2: #acb6e5;
-      --primary: #4f46e5;
-      --primary-2: #06b6d4;
-      --success: #22c55e;
-      --danger: #ef4444;
-      --glass: rgba(255, 255, 255, 0.18);
-      --border: rgba(255, 255, 255, 0.35);
-      --text: #0f172a;
-      --muted: #64748b;
-    }
-
-    html, body {
-      height: 100%;
-    }
-
+    /* Dark glass background */
     body {
-      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--text);
-      background: linear-gradient(-45deg, var(--bg1), var(--bg2), #c3e4ff, #e0c3fc);
-      background-size: 400% 400%;
-      animation: gradientShift 18s ease infinite;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-    }
-
-    /* Floating shapes for subtle motion */
-    .floaters div {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(40px);
-      opacity: 0.35;
-      animation: float 16s ease-in-out infinite;
-      z-index: 0;
-    }
-
-    .floaters .f1 { width: 260px; height: 260px; background: #8ec5fc; top: -60px; left: -80px; }
-    .floaters .f2 { width: 220px; height: 220px; background: #d8b4fe; bottom: -70px; right: -40px; animation-delay: 2s; }
-    .floaters .f3 { width: 180px; height: 180px; background: #99f6e4; top: 40%; left: -70px; animation-delay: 4s; }
-
-    .wrapper {
-      width: 100%;
-      max-width: 420px;
-      padding: 28px;
-      z-index: 1;
-    }
-
-    .login-card {
-      position: relative;
-      width: 100%;
-      padding: 28px 26px 22px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.75), rgba(255,255,255,0.45));
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid var(--border);
-      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
-      transform: translateY(20px);
-      opacity: 0;
-      animation: cardIn 700ms ease forwards 200ms;
-    }
-
-    .brand {
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#071024 0%, #0b1220 50%, #071025 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      margin-bottom: 10px;
+      padding: 24px;
+      color: #e6eef8;
     }
-    .brand img.logo {
-      width: 48px;
-      height: 48px;
+
+    /* soft ambient glows */
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,0.10), transparent 12%),
+        radial-gradient(500px 400px at 90% 85%, rgba(16,185,129,0.06), transparent 12%);
+      z-index: 0;
+    }
+
+    /* Card */
+    .card {
+      position: relative;
+      width: 380px;
+      max-width: calc(100% - 48px);
+      border-radius: 18px;
+      padding: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 10px 40px rgba(2,6,23,0.75), inset 0 1px 0 rgba(255,255,255,0.02);
+      backdrop-filter: blur(10px) saturate(120%);
+      z-index: 1;
+      text-align: center;
+    }
+
+    .logo {
+      width: 56px;
+      height: 56px;
       border-radius: 12px;
       object-fit: cover;
-      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.25);
+      margin: 0 auto 10px;
+      box-shadow: 0 6px 18px rgba(59,130,246,0.12);
     }
-    .brand .title {
-      font-weight: 700;
-      letter-spacing: 0.4px;
-      font-size: 20px;
-    }
-    .subtitle {
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 18px;
-    }
+
+    h1 { font-size: 20px; margin-bottom: 6px; letter-spacing: 0.6px; }
+    .subtitle { font-size: 13px; color: #9fb3d6; margin-bottom: 16px; }
 
     .guest-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      color: #fff;
-      border: 0;
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-      cursor: pointer;
-      box-shadow: 0 10px 20px rgba(6, 182, 212, 0.25);
-      transition: transform 160ms ease, box-shadow 200ms ease, filter 200ms ease;
-      margin: 0 auto 12px;
-    }
-    .guest-btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
-    .guest-btn:active { transform: translateY(0); }
-
-    .form-group { margin-bottom: 16px; }
-    .user-label {
-      font-size: 14px;
-      font-weight: 600;
-      background: rgba(15, 23, 42, 0.04);
-      padding: 10px 12px;
-      border-radius: 10px;
-      text-align: center;
-      color: var(--text);
-      border: 1px dashed rgba(15,23,42,0.15);
-      user-select: none;
-    }
-
-    label {
-      font-size: 12px;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    .input {
       width: 100%;
-      padding: 14px 14px;
-      border: 2px solid rgba(15, 23, 42, 0.08);
+      border: 0;
+      padding: 10px 12px;
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.7);
-      font-size: 16px;
-      letter-spacing: 2px;
-      text-align: center;
-      transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
+      background: linear-gradient(135deg,#235be6,#08a6c2);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(8,166,194,0.14);
+      margin-bottom: 14px;
+      transition: transform .12s ease, box-shadow .12s ease;
     }
-    .input[readonly] { cursor: default; }
-    .input:focus {
-      outline: none;
-      border-color: rgba(6, 182, 212, 0.6);
-      box-shadow: 0 0 0 6px rgba(6, 182, 212, 0.18);
-      background: rgba(255,255,255,0.9);
+    .guest-btn:active { transform: translateY(1px) scale(.996); }
+
+    .user-row {
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      margin-bottom: 14px;
+    }
+    .user-label {
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.03);
+      color:#cfe7ff;
+      font-weight:600;
+      font-size: 14px;
     }
 
-    .keyboard { margin-top: 10px; }
-    .key-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
-    .key-row:last-child { margin-bottom: 0; }
+    /* PIN display: bigger masked field */
+    .pin-wrap {
+      display:flex;
+      justify-content:center;
+      margin-bottom: 16px;
+    }
+    .pin {
+      width: 230px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.04);
+      color: #e6eef8;
+      font-weight:700;
+      letter-spacing: 6px;
+      text-align: center;
+      font-size: 20px;
+      backdrop-filter: blur(6px);
+      user-select: none;
+      min-height: 48px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .pin.placeholder { color: #71879d; font-weight:600; letter-spacing: 2px; }
+
+    /* numeric keypad */
+    .keyboard {
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 6px;
+    }
 
     .key {
       position: relative;
-      overflow: hidden;
-      border: 0;
-      padding: 16px 0;
-      border-radius: 14px;
-      background: linear-gradient(180deg, #ffffff, #f4f6fb);
-      color: #111827;
-      font-size: 18px;
+      padding: 14px 0;
+      border-radius: 12px;
       font-weight: 700;
+      font-size: 18px;
+      border: 0;
       cursor: pointer;
-      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
-      transition: transform 120ms ease, box-shadow 200ms ease, background 200ms ease;
-      isolation: isolate;
+      color: #eaf6ff;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow: 0 8px 22px rgba(2,6,23,0.6);
+      transition: transform .09s ease, box-shadow .12s ease, background .12s ease;
+      overflow: hidden;
     }
-    .key:hover { transform: translateY(-1px); box-shadow: 0 14px 26px rgba(15,23,42,0.12); }
-    .key:active { transform: translateY(0); }
-    .key::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(300px 300px at var(--x) var(--y), rgba(79,70,229,0.15), transparent 40%);
-      opacity: 0;
-      transition: opacity 240ms ease;
-      z-index: -1;
-    }
-    .key:hover::after { opacity: 1; }
 
-    .key.clear { background: linear-gradient(180deg, #fff1f2, #ffe4e6); color: #b91c1c; font-weight: 800; }
-    .key.login { background: linear-gradient(135deg, #16a34a, #22c55e); color: #f0fdf4; font-weight: 800; }
+    /* ripple container */
+    .key .ripple {
+      position:absolute;
+      left:0; top:0; right:0; bottom:0;
+      pointer-events:none;
+    }
+
+    .key:active {
+      transform: translateY(2px) scale(.985);
+      box-shadow: 0 4px 12px rgba(2,6,23,0.65);
+    }
+
+    .key.primary {
+      background: linear-gradient(135deg,#0f766e,#10b981);
+      color: #061213;
+      box-shadow: 0 8px 28px rgba(16,185,129,0.18);
+    }
+
+    .key.clear {
+      background: linear-gradient(135deg, rgba(239,68,68,0.14), rgba(239,68,68,0.06));
+      color:#ffd6d6;
+    }
 
     .error {
-      color: var(--danger);
-      margin-top: 10px;
-      font-weight: 600;
-      min-height: 22px;
-      text-align: center;
-    }
-
-    .footer-note {
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
+      color: #ffb4b4;
+      font-weight:700;
       margin-top: 12px;
+      min-height: 20px;
+      font-size: 13px;
     }
 
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    .footer { font-size: 12px; color: #8fa9c8; margin-top: 12px; }
+
+    @media (max-width:420px) {
+      .card { padding: 20px; width: 94%; }
+      .pin { width: 100%; font-size: 18px; }
     }
 
-    @keyframes cardIn {
-      from { transform: translateY(22px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0) translateX(0); }
-      50% { transform: translateY(-16px) translateX(10px); }
-    }
-
-    @media (max-width: 480px) {
-      .wrapper { padding: 18px; }
-      .login-card { padding: 22px 18px 18px; }
-    }
   </style>
 </head>
-
 <body>
-  <!-- Subtle animated background floaters -->
-  <div class="floaters">
-    <div class="f1"></div>
-    <div class="f2"></div>
-    <div class="f3"></div>
-  </div>
+  <div class="bg-glow" aria-hidden="true"></div>
 
-  <div class="wrapper">
-    <div class="login-card">
-      <div class="brand">
-        <img src="logo.png" alt="Dairy App Logo" class="logo" />
-        <div class="title">Dairy App</div>
-      </div>
-      <p class="subtitle">Welcome back! Please enter your PIN to continue.</p>
+  <div class="card" role="main" aria-labelledby="appTitle">
+    <img src="logo.png" alt="" class="logo" />
+    <h1 id="appTitle">Dairy App</h1>
+    <div class="subtitle">Enter PIN to continue — secure & private</div>
 
-      <button class="guest-btn" onclick="guestLogin()">
-        <i class="fa-solid fa-user"></i>
-        Login as Guest
-      </button>
+    <button class="guest-btn" id="guestBtn" type="button">Login as Guest</button>
 
-      <div class="form-group">
-        <div class="user-label" aria-label="Logged in user is Abhijit">User: Abhijit</div>
-        <input type="hidden" id="email" value="abhijit722141@gmail.com">
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input class="input" type="number" id="password" placeholder="Enter your password" readonly>
-      </div>
-
-      <div class="keyboard">
-        <div class="key-row">
-          <button class="key" onclick="appendToPassword('1')">1</button>
-          <button class="key" onclick="appendToPassword('2')">2</button>
-          <button class="key" onclick="appendToPassword('3')">3</button>
-        </div>
-        <div class="key-row">
-          <button class="key" onclick="appendToPassword('4')">4</button>
-          <button class="key" onclick="appendToPassword('5')">5</button>
-          <button class="key" onclick="appendToPassword('6')">6</button>
-        </div>
-        <div class="key-row">
-          <button class="key" onclick="appendToPassword('7')">7</button>
-          <button class="key" onclick="appendToPassword('8')">8</button>
-          <button class="key" onclick="appendToPassword('9')">9</button>
-        </div>
-        <div class="key-row">
-          <button class="key clear" onclick="clearPassword()">Clear</button>
-          <button class="key" onclick="appendToPassword('0')">0</button>
-          <button class="key login" onclick="login()">Login</button>
-        </div>
-      </div>
-
-      <div id="error" class="error" role="alert"></div>
-
-      <div class="footer-note">Tip: You can also continue as a guest.</div>
+    <div class="user-row" aria-hidden="false">
+      <div class="user-label" id="userLabel">User: Abhijit</div>
     </div>
+
+    <!-- hidden email for firebase -->
+    <input type="hidden" id="email" value="abhijit722141@gmail.com">
+
+    <!-- visible masked PIN field (readonly to force keypad use) -->
+    <div class="pin-wrap">
+      <div id="pinDisplay" class="pin placeholder">••••</div>
+    </div>
+
+    <!-- keypad -->
+    <div class="keyboard" role="application" aria-label="PIN keypad">
+      <button class="key" data-key="1" aria-label="1"><span>1</span><span class="ripple"></span></button>
+      <button class="key" data-key="2" aria-label="2"><span>2</span><span class="ripple"></span></button>
+      <button class="key" data-key="3" aria-label="3"><span>3</span><span class="ripple"></span></button>
+
+      <button class="key" data-key="4" aria-label="4"><span>4</span><span class="ripple"></span></button>
+      <button class="key" data-key="5" aria-label="5"><span>5</span><span class="ripple"></span></button>
+      <button class="key" data-key="6" aria-label="6"><span>6</span><span class="ripple"></span></button>
+
+      <button class="key" data-key="7" aria-label="7"><span>7</span><span class="ripple"></span></button>
+      <button class="key" data-key="8" aria-label="8"><span>8</span><span class="ripple"></span></button>
+      <button class="key" data-key="9" aria-label="9"><span>9</span><span class="ripple"></span></button>
+
+      <button class="key clear" data-key="clear" aria-label="clear"><span>Clear</span><span class="ripple"></span></button>
+      <button class="key" data-key="0" aria-label="0"><span>0</span><span class="ripple"></span></button>
+      <button class="key primary" data-key="enter" aria-label="enter"><span>Login</span><span class="ripple"></span></button>
+    </div>
+
+    <div id="error" class="error" role="alert" aria-live="polite"></div>
+    <div class="footer">Tip: You can continue as Guest or use your secure PIN.</div>
   </div>
 
+  <!-- Script (Firebase kept, WebAudio for clicks) -->
   <script type="module">
+    // Firebase libs (unchanged)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
-    var firebaseConfig = {
+    const firebaseConfig = {
       apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
       authDomain: "dairy-app-abhijit.firebaseapp.com",
       databaseURL: "https://dairy-app-abhijit-default-rtdb.firebaseio.com",
@@ -312,58 +240,243 @@
       messagingSenderId: "196152880143",
       appId: "1:196152880143:web:bec02170e30932a7d5877a"
     };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
 
-    window.guestLogin = function guestLogin() {
-      window.location.href = 'index.html';
-    };
+    // UI refs
+    const pinDisplay = document.getElementById('pinDisplay');
+    const keys = Array.from(document.querySelectorAll('.key'));
+    const errorEl = document.getElementById('error');
+    const guestBtn = document.getElementById('guestBtn');
 
-    window.login = function login() {
+    // PIN state (keeps digits only; masked display)
+    let pin = '';
+
+    // Audio (WebAudio) - local tones so no external files required
+    let audioCtx = null;
+    function initAudioIfNeeded() {
+      if (audioCtx) return;
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {
+        audioCtx = null;
+      }
+    }
+
+    // short click beep
+    function playClickTone() {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(950, now); // bright click frequency
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.12, now + 0.001);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.13);
+    }
+
+    // success tone
+    function playSuccessTone() {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const o1 = audioCtx.createOscillator(), g1 = audioCtx.createGain();
+      const o2 = audioCtx.createOscillator(), g2 = audioCtx.createGain();
+      o1.type = 'sine'; o2.type = 'sine';
+      o1.frequency.setValueAtTime(880, now);
+      o2.frequency.setValueAtTime(1320, now);
+      g1.gain.setValueAtTime(0.0001, now);
+      g1.gain.linearRampToValueAtTime(0.15, now + 0.01);
+      g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+      g2.gain.setValueAtTime(0.0001, now);
+      g2.gain.linearRampToValueAtTime(0.09, now + 0.01);
+      g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+      o1.connect(g1); o2.connect(g2);
+      g1.connect(audioCtx.destination); g2.connect(audioCtx.destination);
+      o1.start(now); o2.start(now);
+      o1.stop(now + 0.46); o2.stop(now + 0.46);
+    }
+
+    // error tone
+    function playErrorTone() {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(220, now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.18, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.34);
+    }
+
+    // Utility: update masked display: show dots for length, or placeholder when empty
+    function refreshPinDisplay() {
+      if (!pin) {
+        pinDisplay.classList.add('placeholder');
+        pinDisplay.textContent = '••••';
+      } else {
+        pinDisplay.classList.remove('placeholder');
+        // show fixed number of dots equal to digits entered (max 6 for safety)
+        pinDisplay.textContent = '•'.repeat(pin.length).padEnd(4, ' ');
+      }
+    }
+
+    // ripple effect helper
+    function createRipple(btn, x, y) {
+      const r = document.createElement('span');
+      const size = Math.max(btn.clientWidth, btn.clientHeight) * 1.4;
+      r.style.position = 'absolute';
+      r.style.left = (x - btn.getBoundingClientRect().left - size/2) + 'px';
+      r.style.top = (y - btn.getBoundingClientRect().top - size/2) + 'px';
+      r.style.width = r.style.height = size + 'px';
+      r.style.borderRadius = '50%';
+      r.style.background = 'rgba(255,255,255,0.06)';
+      r.style.transform = 'scale(0)';
+      r.style.transition = 'transform 420ms cubic-bezier(.2,.9,.2,1), opacity 420ms';
+      r.style.pointerEvents = 'none';
+      btn.querySelector('.ripple').appendChild(r);
+      requestAnimationFrame(()=> r.style.transform = 'scale(1)');
+      setTimeout(()=> { r.style.opacity = '0'; }, 260);
+      setTimeout(()=> { r.remove(); }, 700);
+    }
+
+    // Enable audio on first user gesture (works with browser autoplay policies)
+    function ensureAudioEnabled() {
+      if (audioCtx && audioCtx.state === 'running') return;
+      initAudioIfNeeded();
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(()=>{/*ignore*/});
+      }
+    }
+
+    // key handling
+    function onKeyPress(key, eventTarget) {
+      ensureAudioEnabled();
+      playClickTone();
+      errorEl.textContent = '';
+
+      if (key === 'clear') {
+        pin = '';
+        refreshPinDisplay();
+        return;
+      }
+      if (key === 'enter') {
+        attemptLogin();
+        return;
+      }
+      // numeric
+      if (pin.length >= 8) return; // guard: max length
+      if (/^\d$/.test(key)) {
+        pin += key;
+        refreshPinDisplay();
+      }
+    }
+
+    // login attempt logic (keeps original prefix behaviour)
+    async function attemptLogin() {
       const email = document.getElementById('email').value;
-      const passwordPart2 = document.getElementById('password').value;
-      const passwordPart1 = "9775815681"; // fixed prefix
-      const password = passwordPart1 + passwordPart2;
+      const passwordPart2 = pin;
+      if (!passwordPart2 || passwordPart2.length === 0) {
+        errorEl.textContent = 'Please enter PIN';
+        playErrorTone();
+        return;
+      }
+      // show small loading or disable keys while attempt? quick approach: disable
+      setKeysDisabled(true);
+      try {
+        const password = "9775815681" + passwordPart2;
+        await signInWithEmailAndPassword(auth, email, password);
+        playSuccessTone();
+        // give a small delay to let tone play and then redirect
+        setTimeout(()=> { window.location.href = 'index.html'; }, 420);
+      } catch (err) {
+        // friendly error messages like before
+        const msg = (err && err.message) ? err.message.toLowerCase() : '';
+        if (msg.includes('invalid') || msg.includes('wrong')) {
+          errorEl.textContent = 'Wrong password!';
+        } else if (msg.includes('missing')) {
+          errorEl.textContent = 'Please enter password';
+        } else if (msg.includes('attempts')) {
+          errorEl.textContent = 'Too many attempts. Try later';
+        } else {
+          errorEl.textContent = err.message || 'Login failed';
+        }
+        playErrorTone();
+        pin = '';
+        refreshPinDisplay();
+      } finally {
+        setKeysDisabled(false);
+      }
+    }
 
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          window.location.href = 'index.html';
-        })
-        .catch((error) => {
-          const errorDisplay = document.getElementById('error');
-          if (error.message.includes('invalid')) {
-            errorDisplay.innerText = 'Oops, wrong password?';
-          } else if (error.message.includes('missing')) {
-            errorDisplay.innerText = 'Please enter password';
-          } else if (error.message.includes('attempts')) {
-            errorDisplay.innerText = 'Please try again later';
-          } else {
-            errorDisplay.innerText = error.message;
-          }
-        });
-    };
+    // disable/enable keys
+    function setKeysDisabled(disabled) {
+      keys.forEach(k => k.disabled = !!disabled);
+      guestBtn.disabled = !!disabled;
+    }
 
-    window.appendToPassword = function appendToPassword(char) {
-      document.getElementById('password').value += char;
-    };
+    // initial display
+    refreshPinDisplay();
 
-    window.clearPassword = function clearPassword() {
-      document.getElementById('password').value = "";
-    };
-
-    // Enhance keys with pointer-position aware hover glow
-    const keys = document.querySelectorAll('.key');
-    keys.forEach((key) => {
-      key.addEventListener('mousemove', (e) => {
-        const rect = (e.currentTarget).getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        (e.currentTarget).style.setProperty('--x', `${x}px`);
-        (e.currentTarget).style.setProperty('--y', `${y}px`);
+    // attach events (keyboard + ripple + pointer)
+    keys.forEach(btn => {
+      btn.addEventListener('pointerdown', (ev) => {
+        const key = btn.getAttribute('data-key');
+        createRipple(btn, ev.clientX, ev.clientY);
+        onKeyPress(key, btn);
+      });
+      // support keyboard Enter/Space on focused button
+      btn.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          const key = btn.getAttribute('data-key');
+          onKeyPress(key, btn);
+        }
       });
     });
+
+    // guest button
+    guestBtn.addEventListener('click', (ev) => {
+      ensureAudioEnabled();
+      playClickTone();
+      // small UX: redirect immediately
+      setTimeout(()=> window.location.href = 'index.html', 120);
+    });
+
+    // allow physical keyboard digits & backspace/enter
+    window.addEventListener('keydown', (ev) => {
+      // allow only when card focused (prevent while typing other things)
+      // Accept digits
+      if (/^\d$/.test(ev.key)) {
+        onKeyPress(ev.key);
+      } else if (ev.key === 'Backspace') {
+        if (pin.length > 0) {
+          pin = pin.slice(0, -1);
+          refreshPinDisplay();
+          ensureAudioEnabled(); playClickTone();
+        }
+      } else if (ev.key === 'Enter') {
+        onKeyPress('enter');
+      }
+    });
+
+    // Accessibility: focusable region so keyboard presses feel natural
+    document.querySelector('.card').setAttribute('tabindex', '0');
+
+    // small nicety: when user clicks anywhere on card, enable audio immediately
+    document.querySelector('.card').addEventListener('pointerdown', () => {
+      ensureAudioEnabled();
+    }, { once: true });
+
   </script>
 </body>
-
 </html>
