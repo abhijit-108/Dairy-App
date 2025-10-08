@@ -9,189 +9,162 @@
     <link rel="icon" href="logo.png" type="image/png">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main_screen.css?v=6.1.5">
-    
-    <style>
-
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js" rel="stylesheet">
+    <link rel="stylesheet" href="css/main_screen.css?v=7.0.0">
 </head>
 
 <body>
-    <header class="topbar" role="banner">
-        <button class="menu-btn" id="menuToggle" aria-label="Open menu">
-            <span class="menu-icon" aria-hidden="true">
-                <span></span><span></span><span></span>
-            </span>
-        </button>
-
-        <div class="title-block">
-            <div class="title-main" >Dairy App</div>
-            <div class="title-sub" id="fix_rate"></div>
-        </div>
-
-        <div class="spacer" aria-hidden="true"></div>
-
-        <div class="time-block" aria-live="polite">
-            <div class="time" id="timeNow">--:-- AM</div>
-            <div class="date" id="dateNow">Loading date...</div>
-        </div>
-    </header>
-
-    <div class="layout">
-        <nav class="sidebar" id="sidebar" aria-label="Main sidebar">
-            <div class="head">
-                <div class="brand-bubble" aria-hidden="true">
-                    <img src="logo.png" alt="Brand Logo" class="brand-logo">
-                </div>
-
-                <div>
-                    <h2>Dairy App</h2>
-                    <p id="fix_rate1"></p>
-                </div>
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="title-block">
+                <div class="title-main">Dairy App</div>
+                <div class="title-sub" id="fix_rate1"></div>
             </div>
 
-            <div class="nav-list" role="list">
-
-                <div class="nav-item" role="listitem" tabindex="0">
+            <button id="sidebarClose" class="sidebar-close">&times;</button>
+        </div>
+        <ul class="sidebar-list">
+            <li>
+                <a href="all_member.html">
                     <i class='bx bx-group'></i>
-                    <span>All Members</span>
-                </div>
-
-                <div class="nav-item" role="listitem" tabindex="0">
-                    <i class='bx bx-receipt'></i>
-                    <span>Auto Bill generate</span>
-                </div>
-
-                <div class="nav-item" role="listitem" tabindex="0">
-                    <i class='bx bx-photo-album'></i>
-                    <span>Old Bills Photos</span>
-                </div>
-
-                <div id="hide_names1">
-                    <div class="nav-item" role="listitem" tabindex="0">
-                        <i class='bx bx-cog'></i>
-                        <span>Fix Data</span>
-                    </div>
-                </div>
-
-                <div class="nav-item" role="listitem" tabindex="0">
+                    <span class="sidebar-text">All Members</span>
+                </a>
+            </li>
+            <li>
+                <a href="generate_bill.html">
+                    <i class='bx bx-file'></i>
+                    <span class="sidebar-text">Auto Bill generate</span>
+                </a>
+            </li>
+            <li>
+                <a href="storage_page.html">
+                    <i class='bx bx-images'></i>
+                    <span class="sidebar-text">Old Bills Photos</span>
+                </a>
+            </li>
+            <li>
+                <a href="fix_data.html">
+                    <i class='bx bx-wrench'></i>
+                    <span class="sidebar-text">Fix Data</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://abhijit-delsgade.vercel.app/internet_usage_page.html">
                     <i class='bx bx-wifi'></i>
-                    <span>Wifi Usage</span>
-                </div>
-
-                <div class="nav-item" role="listitem" tabindex="0">
+                    <span class="sidebar-text">Wifi Usage</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://delsgade-bgmi-team.vercel.app/" target="_blank">
                     <i class='bx bx-globe'></i>
-                    <span>All Guide Website</span>
-                </div>
-                <div class="nav-item" role="listitem" tabindex="0" onclick="window.location.href='test_print.html'" onkeypress="if(event.key==='Enter' || event.key===' '){ window.location.href='printer.html'; }">
-                    <i class='bx bx-printer'></i>
-                    <span>Bluetooth printing Sample 1</span>
-                </div>
-                <div class="nav-item" role="listitem" tabindex="0" onclick="window.location.href='test_print_02.html'" onkeypress="if(event.key==='Enter' || event.key===' '){ window.location.href='printer.html'; }">
-                    <i class='bx bx-printer'></i>
-                    <span>Bluetooth printing Sample 2</span>
-                </div>
-
-                <div class="nav-item" role="listitem" tabindex="0">
+                    <span class="sidebar-text">All Guide Website</span>
+                </a>
+            </li>
+            <li>
+                <a href="login.html" onclick="logout()">
                     <i class='bx bx-log-out'></i>
-                    <button id="logoutButton">Logout</button>
+                    <span class="sidebar-text" id="logoutButton">Logout</span>
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="sidebar-footer-text">&copy; 2025 Delsgade. All rights reserved.</div>
+        </div>
+    </aside>
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <nav class="navbar">
+        <button class="menu-btn">☰</button>
+        <div class="navbar-title">Dairy App</div>
+        <div class="datetime" id="datetime"></div>
+    </nav>
+
+
+    <main class="main" id="mainContent">
+        <div class="container">
+
+            <button id="loginBtn2" onclick="window.location.href='login.html'">
+                <i class="bx bx-lock"></i> Login
+            </button>
+
+            <div id="audio">
+                <div class="audio-elements">
+                    <audio id="successAudio" preload="auto">
+                        <source src="success.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio id="existsAudio" preload="auto">
+                        <source src="already_exist.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio id="failedAudio" preload="auto">
+                        <source src="failed.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio id="warningAudio" preload="auto">
+                        <source src="warning.mp3" type="audio/mpeg">
+                    </audio>
                 </div>
 
+
+                <div class="audio-toggle">
+                    <label>
+                        <input type="checkbox" id="audioEnabled" checked>
+                        🔊 Audio Feedback
+                    </label>
+                </div>
             </div>
 
-            <div class="footer">© <span id="currentYear">2025</span> Delsgade</div>
-        </nav>
+            <form id="milkForm">
 
-        <div class="overlay" id="overlay"></div>
-
-        <main class="main" id="mainContent">
-            <div class="container">
-
-                <button id="loginBtn2" onclick="window.location.href='login.html'">
-                    <i class="bx bx-lock"></i> Login
-                </button>
-
-                <div id="audio">
-                    <div class="audio-elements">
-                        <audio id="successAudio" preload="auto">
-                            <source src="success.mp3" type="audio/mpeg">
-                        </audio>
-                        <audio id="existsAudio" preload="auto">
-                            <source src="already_exist.mp3" type="audio/mpeg">
-                        </audio>
-                        <audio id="failedAudio" preload="auto">
-                            <source src="failed.mp3" type="audio/mpeg">
-                        </audio>
-                        <audio id="warningAudio" preload="auto">
-                            <source src="warning.mp3" type="audio/mpeg">
-                        </audio>
+                <div id="hide_names">
+                    <div class="form-group">
+                        <label for="nameSelect">Select Name:</label>
+                        <select id="nameSelect">
+                            <option value="" class="loading">Loading names...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="form-group">
+                        <label for="kg">KG:</label>
+                        <input type="number" id="kg" step="0.001" placeholder="">
                     </div>
 
+                    <div class="form-group">
+                        <label for="fat">FAT:</label>
+                        <input type="number" id="fat" step="0.1" placeholder="">
+                    </div>
 
-                    <div class="audio-toggle">
-                        <label>
-                            <input type="checkbox" id="audioEnabled" checked>
-                            🔊 Audio Feedback
-                        </label>
+                    <div class="form-group">
+                        <label for="snf">SNF:</label>
+                        <input type="number" id="snf" step="0.1" placeholder="">
                     </div>
                 </div>
 
+                <button type="submit" class="submit-btn">Calculate</button>
+            </form>
+        </div>
 
-
-
-                <form id="milkForm">
-
-                    <div id="hide_names">
-                        <div class="form-group">
-                            <label for="nameSelect">Select Name:</label>
-                            <select id="nameSelect">
-                                <option value="" class="loading">Loading names...</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <div class="form-group">
-                            <label for="kg">KG:</label>
-                            <input type="number" id="kg" step="0.001" placeholder="">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="fat">FAT:</label>
-                            <input type="number" id="fat" step="0.1" placeholder="">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="snf">SNF:</label>
-                            <input type="number" id="snf" step="0.1" placeholder="">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="submit-btn">Calculate</button>
-                </form>
-            </div>
-
-            <div id="popupOverlay" class="popup-overlay">
-                <div id="popupCard" class="popup-card">
-                    <button id="closeBtn" class="close-btn">×</button>
-                    <div id="statusMessage" class="status-message"></div>
-                    <h2 id="popupTitle" class="popup-title"></h2>
-                    <div id="popupDetails" class="popup-details"></div>
-                    <div id="existingEntry" class="existing-entry" style="display: none;">
-                        <h3>Old Entry:</h3>
-                        <div id="existingEntryDetails"></div>
-                    </div>
-                    <div id="actionButtons" class="action-buttons">
-                        <button id="updateBtn" class="update-btn" style="display: none;">Update Entry</button>
-                        <button id="printBtn" class="print-btn" style="display: none;">
-                            <i class='bx bx-printer'></i>
-                            Print Receipt
-                        </button>
-                    </div>
-                    <div id="printStatus" class="print-status"></div>
+        <div id="popupOverlay" class="popup-overlay">
+            <div id="popupCard" class="popup-card">
+                <button id="closeBtn" class="close-btn">×</button>
+                <div id="statusMessage" class="status-message"></div>
+                <h2 id="popupTitle" class="popup-title"></h2>
+                <div id="popupDetails" class="popup-details"></div>
+                <div id="existingEntry" class="existing-entry" style="display: none;">
+                    <h3>Old Entry:</h3>
+                    <div id="existingEntryDetails"></div>
                 </div>
+                <div id="actionButtons" class="action-buttons">
+                    <button id="updateBtn" class="update-btn" style="display: none;">Update Entry</button>
+                    <button id="printBtn" class="print-btn" style="display: none;">
+                        <i class='bx bx-printer'></i>
+                        Print Receipt
+                    </button>
+                </div>
+                <div id="printStatus" class="print-status"></div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
+
     <div class="milk-dashboard-container">
         <div class="milk-header-section">
             <div class="milk-date-controls">
@@ -210,33 +183,11 @@
         </div>
     </div>
 
-    <script>
-        function enforceDecimals(input, maxDecimals) {
-            input.addEventListener("input", function () {
-                let val = this.value;
-                if (val.includes(".")) {
-                    let [intPart, decPart] = val.split(".");
-                    if (decPart.length > maxDecimals) {
-                        this.value = intPart + "." + decPart.slice(0, maxDecimals);
-                    }
-                }
-            });
-        }
 
-        // Apply rules
-        enforceDecimals(document.getElementById("fat"), 1);
-        enforceDecimals(document.getElementById("snf"), 1);
-        enforceDecimals(document.getElementById("kg"), 2); 
-    </script>
-    <script src="js/main_screen.js?v=6.0.4"></script>
-    <script type="module" src="js/database.js?v=6.1.9"></script>
-
-    <!-- Add Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
 
     <script type="module">
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
             authDomain: "dairy-app-abhijit.firebaseapp.com",
@@ -247,30 +198,23 @@
             appId: "1:196152880143:web:bec02170e30932a7d5877a"
         };
 
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const messaging = firebase.messaging();
 
-        // Request notification permission and get FCM token
         async function requestNotificationPermission() {
             try {
-                // First, get the service worker registration
                 const registration = await navigator.serviceWorker.ready;
 
-                // Then request permission
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
                     console.log('Notification permission granted.');
 
-                    // Get FCM token with the service worker registration
                     const token = await messaging.getToken({
                         vapidKey: 'BEnkubqEyRwtU2PPOwhcOGWYZY3xkSHANRDMEIhJ7kxB9Zo4uwk7S8TK8VZAZNUvnTfl8rMH7YZmrxlaPQjWqKY',
                         serviceWorkerRegistration: registration
                     });
 
                     console.log('FCM Token:', token);
-                    // Here you would typically send this token to your server
-                    // saveTokenToServer(token);
                 } else {
                     console.log('Unable to get permission to notify.');
                 }
@@ -279,18 +223,14 @@
             }
         }
 
-        // Register service worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
                 try {
-                    // First, register the service worker
                     const registration = await navigator.serviceWorker.register('/Dairy-App/firebase-messaging-sw.js');
                     console.log('Service Worker registered with scope:', registration.scope);
 
-                    // Wait for the service worker to be ready
                     if (registration.active) {
                         console.log('Service worker is active');
-                        // Request notification permission after service worker is ready
                         requestNotificationPermission();
                     } else if (registration.installing) {
                         console.log('Service worker is installing');
@@ -308,6 +248,9 @@
         }
 
     </script>
+    <script src="script.js?v=7.0.0"></script>
+    <script type="module" src="js/database.js?v=7.0.0"></script>
+
 </body>
 
 </html>
