@@ -10,6 +10,10 @@
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/main_screen.css?v=6.1.5">
+    
+    <style>
+
+    </style>
 </head>
 
 <body>
@@ -178,7 +182,12 @@
                     </div>
                     <div id="actionButtons" class="action-buttons">
                         <button id="updateBtn" class="update-btn" style="display: none;">Update Entry</button>
+                        <button id="printBtn" class="print-btn" style="display: none;">
+                            <i class='bx bx-printer'></i>
+                            Print Receipt
+                        </button>
                     </div>
+                    <div id="printStatus" class="print-status"></div>
                 </div>
             </div>
         </main>
@@ -220,7 +229,7 @@
         enforceDecimals(document.getElementById("kg"), 2); 
     </script>
     <script src="js/main_screen.js?v=6.0.3"></script>
-    <script type="module" src="js/database.js?v=6.1.6"></script>
+    <script type="module" src="js/database.js?v=6.1.8"></script>
 
     <!-- Add Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>

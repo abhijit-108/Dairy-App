@@ -434,7 +434,62 @@
          transform: translateY(0) scale(1);
      }
  }
+/* Fresh Reprint Popup Styling */
+.popup-card.reprint {
+    border-left: 5px solid #3498db;
+    background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%);
+}
 
+.popup-card.reprint .popup-title {
+    color: #2980b9;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.status-message.status-reprint {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    color: #1565c0;
+    border: 1px solid #90caf9;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.popup-card.reprint .popup-details {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 12px 0;
+    border: 1px solid #e1f5fe;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
+}
+
+.popup-card.reprint .popup-details div {
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f8ff;
+}
+
+.popup-card.reprint .popup-details div:last-child {
+    border-bottom: none;
+}
+
+.popup-card.reprint .popup-details strong {
+    color: #1976d2;
+}
+
+/* Print button specific styling for reprint */
+.popup-card.reprint .print-btn {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+}
+
+.popup-card.reprint .print-btn:hover {
+    background: linear-gradient(135deg, #2980b9 0%, #1f618d 100%);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.6);
+}
  .popup-card.success {
      border: 4px solid #4CAF50;
      animation: flickerGreen 0.5s ease-in-out infinite alternate;
@@ -1343,3 +1398,127 @@
 #loginBtn2 i {
   font-size: 18px;
 }
+
+
+        /* Print Button Styling */
+        .print-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .print-btn:active {
+            transform: translateY(0);
+        }
+
+        .print-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .print-btn i {
+            font-size: 20px;
+        }
+
+        /* Print Status Message */
+        .print-status {
+            margin-top: 15px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .print-status.show {
+            display: flex;
+        }
+
+        .print-status.connecting {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .print-status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .print-status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .print-status i {
+            font-size: 18px;
+        }
+
+        .print-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #856404;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Action buttons container adjustment */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        /* Table row clickable style */
+        .milk-data-row {
+            cursor:pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .milk-data-row:hover {
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+
+        .milk-data-row:active {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
