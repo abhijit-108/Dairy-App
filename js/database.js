@@ -832,6 +832,16 @@ document.getElementById('milkForm')?.addEventListener('submit', async function (
     const saveSuccess = await saveToFirebase(data);
 
     if (saveSuccess) {
+        // Auto-print if printer is already connected
+        if (thermalCharacteristic && thermalDevice && thermalDevice.gatt.connected) {
+            try {
+                await printReceipt(data);
+            } catch (error) {
+                console.error('Auto-print failed:', error);
+                // Don't show error to user, just continue with success popup
+            }
+        }
+
         showPopup('success', 'Success', data, 'Data saved successfully!');
 
         document.getElementById('milkForm')?.reset();
@@ -858,6 +868,16 @@ document.getElementById('updateBtn')?.addEventListener('click', async function (
     const success = await saveToFirebase(pendingSaveData);
 
     if (success) {
+        // Auto-print if printer is already connected
+        if (thermalCharacteristic && thermalDevice && thermalDevice.gatt.connected) {
+            try {
+                await printReceipt(pendingSaveData);
+            } catch (error) {
+                console.error('Auto-print failed:', error);
+                // Don't show error to user, just continue with success popup
+            }
+        }
+
         showPopup('success', 'Entry Updated Successfully', pendingSaveData, 'Existing entry has been updated with new values.');
         pendingSaveData = null;
         document.getElementById('milkForm')?.reset();
