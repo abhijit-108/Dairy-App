@@ -428,8 +428,8 @@ async function printReceipt(data) {
         const INIT = [ESC, 0x40];
         const ALIGN_CENTER = [ESC, 0x61, 0x01];
         const ALIGN_LEFT = [ESC, 0x61, 0x00];
-        const SIZE_BIGGER = 0x09; // 2x width/height
-        const SIZE_BIGGER_ESC = [ESC, 0x21, SIZE_BIGGER];
+        const SIZE_BIGGER = 0x11; // 2x width/height
+        const SIZE_BIGGER_ESC = [ESC, 0x11, SIZE_BIGGER];
         const SIZE_BIGGER_GS = [GS, 0x11, SIZE_BIGGER];
         const SIZE_RESET_ESC = [ESC, 0x21, 0x00];
         const SIZE_RESET_GS = [GS, 0x21, 0x00];
@@ -498,7 +498,7 @@ async function printReceipt(data) {
         append(SIZE_RESET_ESC);
         append(SIZE_RESET_GS);
         append(stringToBytes('='.repeat(width) + '\n'));
-        append(stringToBytes('\nThank You!\n\n'));
+        append(stringToBytes('\nThank You\n\n'));
         append(FEED_LINE);
         append(CUT_PAPER);
 
