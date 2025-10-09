@@ -243,6 +243,20 @@ function formatReceiptLine(label, value, width = 32) {
     return labelStr + ' '.repeat(Math.max(1, spaces)) + valueStr;
 }
 
+// center text helper for given width
+function centerText(text, width = 32) {
+    const t = String(text);
+    if (t.length >= width) return t;
+    const pad = Math.floor((width - t.length) / 2);
+    return ' '.repeat(pad) + t;
+}
+
+/**
+ * Robust connectToPrinter:
+ * - Requests a device (tries filters and acceptAllDevices fallback)
+ * - Connects and enumerates all GATT services
+ * - Scans characteristics and picks first writable characteristic
+ */
 async function connectToPrinter() {
     if (!navigator.bluetooth) {
         throw new Error('Bluetooth not supported in this browser');
@@ -250,109 +264,278 @@ async function connectToPrinter() {
 
     try {
         showPrintStatus('Searching for printer...', 'connecting');
-        
-        thermalDevice = await navigator.bluetooth.requestDevice({
-            filters: [
-                { services: ['000018f0-0000-1000-8000-00805f9b34fb'] },
-                { namePrefix: 'BlueTooth Printer' },
-                { namePrefix: 'BT Printer' }
-            ],
-            optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
-        });
+
+        // Try filtered request first (keeps chooser simpler), fallback to acceptAllDevices if user cancels or filter fails.
+        let device = null;
+        try {
+            device = await navigator.bluetooth.requestDevice({
+                filters: [
+                    { namePrefix: 'Samp' },
+                    { namePrefix: 'Blue' },
+                    { namePrefix: 'BT' },
+                    { name: 'Sampann' },
+                    { name: 'BluPrints' }
+                ],
+                // request common optional services so chooser can see characteristics on some printers
+                optionalServices: [
+                    '000018f0-0000-1000-8000-00805f9b34fb',
+                    '0000ffe0-0000-1000-8000-00805f9b34fb',
+                    '0000ffe1-0000-1000-8000-00805f9b34fb',
+                    '0000ffe3-0000-1000-8000-00805f9b34fb',
+                    '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
+                    '49535343-fe7d-4ae5-8fa9-9fafd205e455'
+                ]
+            });
+        } catch (err) {
+            // User may cancel filters; try acceptAllDevices (still shows chooser)
+            showPrintStatus('No filtered device selected — scanning all devices...', 'connecting');
+            device = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true,
+                optionalServices: [
+                    '000018f0-0000-1000-8000-00805f9b34fb',
+                    '0000ffe0-0000-1000-8000-00805f9b34fb',
+                    '0000ffe1-0000-1000-8000-00805f9b34fb',
+                    '0000ffe3-0000-1000-8000-00805f9b34fb',
+                    '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
+                    '49535343-fe7d-4ae5-8fa9-9fafd205e455'
+                ]
+            });
+        }
+
+        if (!device) throw new Error('No device selected');
 
         showPrintStatus('Connecting to printer...', 'connecting');
-        
-        const server = await thermalDevice.gatt.connect();
-        const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
-        thermalCharacteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
 
-        console.log('✅ Printer connected successfully');
+        // connect
+        const server = await device.gatt.connect();
+
+        // store device
+        thermalDevice = device;
+
+        // enumerate all primary services
+        const services = await server.getPrimaryServices();
+        if (!services || services.length === 0) {
+            // No GATT services -> likely classic SPP printer (not BLE)
+            throw new Error('No GATT services found. Printer may be Classic Bluetooth (SPP) and not BLE.');
+        }
+
+        // Scan services/characteristics to find writable characteristic
+        let found = false;
+        for (const svc of services) {
+            try {
+                const chars = await svc.getCharacteristics();
+                for (const c of chars) {
+                    // if characteristic supports write or writeWithoutResponse, use it
+                    if (c.properties && (c.properties.write || c.properties.writeWithoutResponse)) {
+                        thermalCharacteristic = c;
+                        found = true;
+                        // remember which service/char connected
+                        console.log('Printer service:', svc.uuid, 'characteristic:', c.uuid, 'props:', c.properties);
+                        break;
+                    }
+                }
+                if (found) break;
+            } catch (e) {
+                // ignore and continue to next service
+                console.warn('Error reading characteristics for service', svc.uuid, e);
+            }
+        }
+
+        if (!found) {
+            // Could not find writable characteristic
+            // Disconnect cleanly
+            try { device.gatt.disconnect(); } catch (e) {}
+            thermalDevice = null;
+            throw new Error('Could not find writable characteristic. Printer may not support BLE GATT writes.');
+        }
+
+        // attach disconnect handler
+        device.addEventListener('gattserverdisconnected', () => {
+            console.log('Printer disconnected (gattserverdisconnected)');
+            showPrintStatus('Printer disconnected', 'error');
+            thermalDevice = null;
+            thermalCharacteristic = null;
+        });
+
+        showPrintStatus('✅ Printer connected', 'success');
         return true;
     } catch (error) {
         console.error('❌ Printer connection error:', error);
+        // rethrow so callers can handle
         throw error;
     }
 }
 
+/**
+ * printReceipt(data)
+ * - builds ESC/POS bytes and writes them using the discovered characteristic
+ * - chooses write method depending on characteristic properties; falls back if necessary
+ * - formatted specifically for a 2" (58mm) thermal printer ~32 chars width
+ */
 async function printReceipt(data) {
     try {
-        if (!thermalCharacteristic) {
+        // Bengali → English name map
+        const nameMap = {
+            "চন্দনা ঘোষ": "Chandana Ghosh",
+            "রাজেন্দ্র প্রসাদ ঘোষ": "Rajendra Prasad Ghosh",
+            "সুজাতা ঘোষ": "Sujata Ghosh",
+            "রজিনা শেখ": "Rojina Sekh",
+            "মামনি চক্রবর্তী": "Mamoni Chakraborty",
+            "রাহেলা শেখ": "Rahela Sekh",
+            "ঝর্না চচ্চড়ি": "Jharna Charchari",
+            "সুলোচনা ঘোষ": "Sulochana Ghosh",
+            "বিকাশ কুমার ঘোষ": "Bikash Kumar Ghosh",
+            "মধুমিতা মন্ডল": "Madhumita Mondal",
+            "সুদর্শন ঘোষ": "Sudarshan Ghosh",
+            "মমতা ঘোষ": "Mamta Ghosh",
+            "সবুর আলী খাঁ": "Sabur Ali Khan",
+            "কল্যাণী চক্রবর্তী": "Kalyani Chakraborty",
+            "বিজলা দুলে": "Bijala Dule",
+            "কাশেম খা": "Kashem Khan",
+            "বুল্টি দুলে": "Bulti Dule",
+            "শফিক খা": "Shafik Khan",
+            "নেড়া": "Nera",
+            "সবরিয়াদ খান": "Sabariad Khan",
+            "ফিরোজ খা": "Firoz Khan",
+            "বাবলু খা": "Bablu Khan",
+            "অমিত চক্রবর্তী": "Amit Chakraborty",
+            "কচে": "Kochey",
+            "Test Person 1": "Test Person 1",
+            "Test Person 5": "Test Person 5",
+            "Test Person 7": "Test Person 7",
+            "Test Person 9": "Test Person 9",
+            "Abhijit": "Abhijit"
+        };
+
+        // Convert Bengali name to English (only for printing)
+        if (nameMap[data.name]) {
+            data.name = nameMap[data.name];
+        }
+
+        // Ensure we have a characteristic; if not, try connecting
+        if (!thermalCharacteristic || (thermalDevice && !thermalDevice.gatt.connected)) {
             await connectToPrinter();
+        }
+
+        if (!thermalCharacteristic) {
+            throw new Error('No writable characteristic available');
         }
 
         showPrintStatus('Preparing receipt...', 'connecting');
 
-        // ESC/POS Commands
         const ESC = 0x1B;
         const GS = 0x1D;
-        const INIT = [ESC, 0x40]; // Initialize printer
+        const INIT = [ESC, 0x40];
         const ALIGN_CENTER = [ESC, 0x61, 0x01];
         const ALIGN_LEFT = [ESC, 0x61, 0x00];
-        const BOLD_ON = [ESC, 0x45, 0x01];
-        const BOLD_OFF = [ESC, 0x45, 0x00];
-        const SIZE_NORMAL = [GS, 0x21, 0x00];
-        const SIZE_LARGE = [GS, 0x21, 0x11];
+        const SIZE_BIGGER = 0x09; // 2x width/height
+        const SIZE_BIGGER_ESC = [ESC, 0x21, SIZE_BIGGER];
+        const SIZE_BIGGER_GS = [GS, 0x11, SIZE_BIGGER];
+        const SIZE_RESET_ESC = [ESC, 0x21, 0x00];
+        const SIZE_RESET_GS = [GS, 0x21, 0x00];
         const FEED_LINE = [0x0A];
         const CUT_PAPER = [GS, 0x56, 0x00];
 
         let receipt = new Uint8Array([...INIT]);
 
-        // Helper to append data
-        function append(data) {
-            const newReceipt = new Uint8Array(receipt.length + data.length);
+        function append(dataArr) {
+            const newReceipt = new Uint8Array(receipt.length + dataArr.length);
             newReceipt.set(receipt);
-            newReceipt.set(data, receipt.length);
+            newReceipt.set(dataArr, receipt.length);
             receipt = newReceipt;
         }
 
-        // Header
+        const width = 32;
+
         append(ALIGN_CENTER);
-        append(SIZE_LARGE);
-        append(BOLD_ON);
         append(stringToBytes('KANGSABOTI DAIRY\n'));
         append(stringToBytes('LALGARA , BANKURA\n'));
-        append(BOLD_OFF);
-        append(SIZE_NORMAL);
-        append(stringToBytes('================================\n'));
-        
-        // Customer Info
+        append(stringToBytes('='.repeat(width) + '\n'));
+
         append(ALIGN_LEFT);
-        append(BOLD_ON);
         append(stringToBytes(`Customer: ${data.name}\n`));
-        append(BOLD_OFF);
         append(stringToBytes(`Date: ${data.timestamp}\n`));
-        // UPDATED: Use English session for printing
         append(stringToBytes(`Session: ${getCurrentSessionEnglish()}\n`));
-        append(stringToBytes('--------------------------------\n'));
-        
-        // Details
-        append(stringToBytes(formatReceiptLine('Weight (KG):', data.kg) + '\n'));
-        append(stringToBytes(formatReceiptLine('FAT:', data.fat) + '\n'));
-        append(stringToBytes(formatReceiptLine('SNF:', data.snf) + '\n'));
-        append(stringToBytes(formatReceiptLine('Rate:', '₹' + data.rate) + '\n'));
-        append(stringToBytes('================================\n'));
-        
-        // Total
-        append(SIZE_LARGE);
-        append(BOLD_ON);
-        append(stringToBytes(formatReceiptLine('TOTAL:', '₹' + data.total, 16) + '\n'));
-        append(BOLD_OFF);
-        append(SIZE_NORMAL);
-        append(stringToBytes('================================\n'));
-        
-        // Footer
+        append(stringToBytes('-'.repeat(width) + '\n'));
+
+        append(stringToBytes('Weight (KG):      '));
+        append(SIZE_BIGGER_ESC);
+        append(SIZE_BIGGER_GS);
+        append(stringToBytes(Number(data.kg).toFixed(3) + '\n'));
+        append(SIZE_RESET_ESC);
+        append(SIZE_RESET_GS);
+
+        append(stringToBytes('FAT:              '));
+        append(SIZE_BIGGER_ESC);
+        append(SIZE_BIGGER_GS);
+        append(stringToBytes(data.fat + '\n'));
+        append(SIZE_RESET_ESC);
+        append(SIZE_RESET_GS);
+
+        append(stringToBytes('SNF:              '));
+        append(SIZE_BIGGER_ESC);
+        append(SIZE_BIGGER_GS);
+        append(stringToBytes(data.snf + '\n'));
+        append(SIZE_RESET_ESC);
+        append(SIZE_RESET_GS);
+
+        const rateStr = 'Rs. ' + Number(data.rate).toFixed(2);
+        append(stringToBytes('Rate:         '));
+        append(SIZE_BIGGER_ESC);
+        append(SIZE_BIGGER_GS);
+        append(stringToBytes(rateStr + '\n'));
+        append(SIZE_RESET_ESC);
+        append(SIZE_RESET_GS);
+
+        append(stringToBytes('='.repeat(width) + '\n'));
+
+        const totalRounded = Math.round(Number(data.total));
+        const totalStr = 'Rs. ' + totalRounded;
         append(ALIGN_CENTER);
-        append(stringToBytes('\nThank You!\n'));
+        append(SIZE_BIGGER_ESC);
+        append(SIZE_BIGGER_GS);
+        append(stringToBytes(`TOTAL: ${totalStr}\n`));
+        append(SIZE_RESET_ESC);
+        append(SIZE_RESET_GS);
+        append(stringToBytes('='.repeat(width) + '\n'));
+        append(stringToBytes('\nThank You!\n\n'));
         append(FEED_LINE);
+        append(CUT_PAPER);
 
         showPrintStatus('Printing...', 'connecting');
 
-        // Send to printer in chunks
-        const chunkSize = 20;
+        const supportsWrite = !!thermalCharacteristic.properties.write;
+        const supportsWriteNoResp = !!thermalCharacteristic.properties.writeWithoutResponse;
+        const chunkSize = 40;
+
+        async function writeChunk(chunk) {
+            try {
+                if (supportsWrite && typeof thermalCharacteristic.writeValue === 'function') {
+                    await thermalCharacteristic.writeValue(chunk);
+                    return;
+                }
+                if (supportsWriteNoResp && typeof thermalCharacteristic.writeValueWithoutResponse === 'function') {
+                    await thermalCharacteristic.writeValueWithoutResponse(chunk);
+                    return;
+                }
+                if (typeof thermalCharacteristic.writeValue === 'function') {
+                    await thermalCharacteristic.writeValue(chunk);
+                    return;
+                }
+                throw new Error('No write method available');
+            } catch (err) {
+                if (supportsWriteNoResp && typeof thermalCharacteristic.writeValueWithoutResponse === 'function') {
+                    await thermalCharacteristic.writeValueWithoutResponse(chunk);
+                    return;
+                }
+                throw err;
+            }
+        }
+
         for (let i = 0; i < receipt.length; i += chunkSize) {
             const chunk = receipt.slice(i, i + chunkSize);
-            await thermalCharacteristic.writeValue(chunk);
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await writeChunk(chunk);
+            await new Promise(res => setTimeout(res, 40));
         }
 
         console.log('✅ Receipt printed successfully');
@@ -361,20 +544,21 @@ async function printReceipt(data) {
 
     } catch (error) {
         console.error('❌ Print error:', error);
-        
         let errorMessage = 'Failed to print receipt';
-        if (error.message.includes('Bluetooth')) {
+        if (error.message?.toLowerCase().includes('bluetooth')) {
             errorMessage = 'Bluetooth not available';
-        } else if (error.message.includes('GATT')) {
+        } else if (error.message?.toLowerCase().includes('gatt')) {
             errorMessage = 'Printer disconnected. Please reconnect.';
             thermalDevice = null;
             thermalCharacteristic = null;
+        } else if (error.message?.toLowerCase().includes('spp')) {
+            errorMessage = 'Printer appears to be Classic Bluetooth (SPP). Use native app/Cordova for SPP.';
         }
-        
         showPrintStatus(`❌ ${errorMessage}`, 'error');
         throw error;
     }
 }
+
 
 // ===== END THERMAL PRINTER FUNCTIONS =====
 
@@ -423,7 +607,6 @@ function showPopup(type, title, data, statusText, existingData = null) {
             `;
         }
     } else if (type === 'reprint') {
-        // NEW: Fresh styling for reprint popup
         card.classList.add('reprint');
         statusMessage.className = 'status-message status-reprint';
     } else {
@@ -777,30 +960,32 @@ function extractMilkTime(timestamp) {
     return `${match[1]} ${match[2].toUpperCase()}`;
 }
 
-async function fetchMilkDataForDate(selectedDate) {
+async function fetchMilkDataForDate(selectedDateParam) {
+    // note: we renamed the param to selectedDateParam to avoid confusion with global
     const dataContainer = document.getElementById('milkDataContainer');
     if (!dataContainer) return;
 
     dataContainer.innerHTML = `
         <div class="milk-loading-state">
             <div class="milk-loading-spinner"></div>
-            <div>Loading records for ${selectedDate}...</div>
+            <div>Loading records for ${selectedDateParam}...</div>
         </div>
     `;
 
     try {
         const dbRef = ref(milkDatabase);
-        const snapshot = await get(child(dbRef, `records/${selectedDate}`));
+        const snapshot = await get(child(dbRef, `records/${selectedDateParam}`));
 
         if (snapshot.exists()) {
             dataContainer.innerHTML = displayMilkData(snapshot.val());
             
             // Add click event listeners to table rows after data is loaded
-            addTableRowClickListeners();
+            // pass the selected date so reprint popup uses correct date
+            addTableRowClickListeners(selectedDateParam);
         } else {
             dataContainer.innerHTML = `
                 <div class="milk-empty-state">
-                    📋 No records found for ${selectedDate}
+                    📋 No records found for ${selectedDateParam}
                 </div>
             `;
         }
@@ -814,26 +999,36 @@ async function fetchMilkDataForDate(selectedDate) {
     }
 }
 
-// NEW FUNCTION: Add click event listeners to table rows
-function addTableRowClickListeners() {
+// NEW FUNCTION: Add click event listeners to table rows (now accepts date param)
+function addTableRowClickListeners(dateForRows) {
     const tableRows = document.querySelectorAll('.milk-data-row');
     
     tableRows.forEach(row => {
+        // remove previous listeners first to avoid duplicates
+        row.replaceWith(row.cloneNode(true));
+    });
+
+    // re-fetch rows after replacement
+    const freshRows = document.querySelectorAll('.milk-data-row');
+
+    freshRows.forEach(row => {
         row.addEventListener('click', function() {
             // Extract data from the row
             const cells = this.querySelectorAll('.milk-data-cell');
             if (cells.length >= 7) {
                 const timeCell = cells[0].textContent.trim();
                 const nameCell = cells[1].textContent.trim();
-                const fatCell = cells[2].querySelector('.milk-metric-badge').textContent.trim();
-                const snfCell = cells[3].querySelector('.milk-metric-badge').textContent.trim();
-                const rateCell = cells[4].querySelector('.milk-metric-badge').textContent.replace('₹', '').trim();
-                const kgCell = cells[5].querySelector('.milk-metric-badge2').textContent.replace('kg', '').trim();
-                const totalCell = cells[6].querySelector('.milk-metric-badge2').textContent.replace('₹', '').trim();
+                const fatCell = cells[2].querySelector('.milk-metric-badge')?.textContent.trim() || '';
+                const snfCell = cells[3].querySelector('.milk-metric-badge')?.textContent.trim() || '';
+                const rateCell = cells[4].querySelector('.milk-metric-badge')?.textContent.replace('₹', '').trim() || '';
+                const kgCell = cells[5].querySelector('.milk-metric-badge2')?.textContent.replace('kg', '').trim() || '';
+                const totalCell = cells[6].querySelector('.milk-metric-badge2')?.textContent.replace('₹', '').trim() || '';
                 
-                // Determine session based on time
-                const session = timeCell.includes('AM') ? 'সকাল' : 'সন্ধ্যা';
+                // Determine session based on time (AM/PM)
+                const session = timeCell.toUpperCase().includes('AM') ? 'সকাল' : 'সন্ধ্যা';
                 
+                const selectedDateString = dateForRows || selectedDate || getCurrentDateKey();
+
                 const record = {
                     name: nameCell,
                     fat: fatCell,
@@ -841,7 +1036,7 @@ function addTableRowClickListeners() {
                     rate: rateCell,
                     kg: kgCell,
                     total: totalCell,
-                    timestamp: `${selectedDate} ${timeCell}`,
+                    timestamp: `${selectedDateString} ${timeCell}`,
                     session: session
                 };
                 

@@ -4,18 +4,18 @@ This is how a thermal printer receipt would look when printed by the dairy appli
 
 ```
      KANGSABOTI DAIRY
-      LALGARA , BANKURA
+    LALGARA , BANKURA
 ================================
 Customer: Abhijit Ghosh
 Date: 15/03/2024 10:30 AM
 Session: Morning
 --------------------------------
-Weight (KG):      5.250
-FAT:              4.5
-SNF:              8.5
-Rate:             ₹45.25
+Weight (KG):      5.250(biggher)
+FAT:              4.5(bigger)
+SNF:              8.5 (Bigger)
+Rate:         Rs. 45.25(Bigger)
 ================================
-            TOTAL: ₹238
+            TOTAL: Rs. 238(bigger)
 ================================
 
         Thank You!
