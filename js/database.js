@@ -1241,6 +1241,7 @@ onAuthStateChanged(auth, (user) => {
     const hide_names1 = document.getElementById('hide_names1');
     const hide_names2 = document.getElementById('loginBtn2');
     const hide_names3 = document.getElementById('audio');
+    const hide_fix_data = document.getElementById('hide_fix_data');
 
     if (user) {
         if (userInfoDiv) userInfoDiv.innerText = 'Logout (Abhijit)';
@@ -1248,11 +1249,13 @@ onAuthStateChanged(auth, (user) => {
         if (hide_names1) hide_names1.classList.remove('disabled');
         if (hide_names3) hide_names3.style.display = 'block';
         if (hide_names2) hide_names2.style.display = 'none';
+        if (hide_fix_data) hide_fix_data.classList.remove('disabled');
     } else {
         if (userInfoDiv) userInfoDiv.innerText = 'Logout (Guest)';
         if (hide_names) hide_names.classList.add('disabled');
         if (hide_names1) hide_names1.classList.add('disabled');
         if (hide_names3) hide_names3.style.display = 'none';
         if (hide_names2) hide_names2.style.display = 'block';
+        if (hide_fix_data) hide_fix_data.classList.add('disabled');
     }
 });
