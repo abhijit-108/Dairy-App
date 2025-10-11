@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #010207 0%, #464646 100%);
+            background: linear-gradient(135deg, #010206 0%, #43186f 100%);
     min-height: 100vh;
     color: #333;
 }
@@ -1336,7 +1336,7 @@ input:focus {
 /* Dark Mode Styles */
 body.dark-mode {
     /* Body and Background */
-    background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 100%);
+    background: linear-gradient(135deg, #060111 0%, #43186f 100%);
     color: #e2e8f0;
 
     /* Navbar */
