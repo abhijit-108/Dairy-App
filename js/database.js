@@ -769,20 +769,7 @@ document.getElementById('milkForm')?.addEventListener('submit', async function (
     const fat = parseFloat(document.getElementById('fat')?.value) || 0;
     const snf = parseFloat(document.getElementById('snf')?.value) || 0;
 
-    if (fat < 2.0 || fat > 8.0) {
-        showPopup('warning', 'Invalid FAT', { name, kg, fat, snf }, 'FAT must be between 2.0 and 8.0');
-        return;
-    }
-
-    if (snf < 2.0 || snf > 12.0) {
-        showPopup('warning', 'Invalid SNF', { name, kg, fat, snf }, 'SNF must be between 2.0 and 12.0');
-        return;
-    }
-
-    if (kg < 0.1 || kg > 100.0) {
-        showPopup('warning', 'Invalid KG', { name, kg, fat, snf }, 'KG must be between 0.1 and 100');
-        return;
-    }
+    // Validation checks removed as per user request
 
     const rate = calculateRate(fat, snf);
 
