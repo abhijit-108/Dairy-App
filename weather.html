@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Baliarpur Weather Widget</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: radial-gradient(circle at 30% -10%, #1a2042, #0f1220 60%, #0a0d18);
+      color: #e8ecff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .widget {
+      background: rgba(23, 26, 43, 0.9);
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 20px;
+      width: min(420px, 95%);
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(6px);
+    }
+
+    @media (max-width: 600px) {
+      .widget {
+        width: 98vw;
+        padding: 2px;
+        border-radius: 8px;
+      }
+      body { 
+        padding: 2px;
+        min-height: auto; 
+      }
+      .search { 
+        margin-bottom: 2px; 
+        gap: 2px; 
+      }
+      .search input, .search button { 
+        padding: 2px 3px; 
+        font-size: 11px; 
+        border-radius: 4px;
+      }
+      .city { 
+        font-size: 12px; 
+        margin-bottom: 1px; 
+      }
+      .date { 
+        font-size: 9px; 
+      }
+      .time { 
+        font-size: 20px; 
+        margin: 1px 0 2px; 
+      }
+      .cards { 
+        gap: 1px; 
+        margin: 2px 0; 
+      }
+      .card { 
+        padding: 1px; 
+        border-radius: 6px; 
+      }
+      .card img { 
+        width: 24px; 
+      }
+      .card .label { 
+        font-size: 7px; 
+      }
+      .card .temp { 
+        font-size: 10px; 
+      }
+      .card .desc { 
+        font-size: 7px; 
+      }
+      .stats { 
+        gap: 1px; 
+        margin-top: 2px; 
+      }
+      .stat { 
+        padding: 1px; 
+        font-size: 8px; 
+        border-radius: 4px; 
+      }
+      .stat span { 
+        margin-top: 0; 
+      }
+      .future { 
+        gap: 1px; 
+        margin-top: 3px; 
+      }
+      .fcard { 
+        padding: 1px; 
+        border-radius: 6px; 
+      }
+      .fcard img { 
+        width: 20px; 
+      }
+      .fcard .day { 
+        font-size: 7px; 
+      }
+      .fcard .temp { 
+        font-size: 9px; 
+      }
+      .fcard .rain { 
+        font-size: 6px; 
+      }
+      .status, .updated-time { 
+        font-size: 7px; 
+        margin-top: 1px;
+      }
+      .widget {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    .search {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .search input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #0f1220;
+      color: #fff;
+    }
+
+    .search button {
+      background: #202548;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .city {
+      color: #7aa7ff;
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .date {
+      color: #9ba7d1;
+      font-size: 14px;
+    }
+
+    .time {
+      font-size: 36px;
+      font-weight: 800;
+      margin: 6px 0 12px;
+    }
+
+    .cards {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .card {
+      flex: 1;
+      background: #11152a;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 10px;
+    }
+
+    .card img {
+      width: 48px;
+    }
+
+    .card .label {
+      color: #9ba7d1;
+      font-size: 13px;
+    }
+
+    .card .temp {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .card .desc {
+      color: #cbd3ff;
+      font-size: 13px;
+      text-transform: capitalize;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .stat {
+      background: #0f1330;
+      border-radius: 12px;
+      padding: 8px;
+      font-size: 13px;
+    }
+
+    .stat:first-child {
+      background: linear-gradient(180deg, #1a1530, #0f1330);
+      border: 1px solid rgba(255, 99, 71, .15);
+      box-shadow: 0 0 15px rgba(255, 99, 71, .15);
+    }
+
+    .stat span {
+      display: block;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 3px;
+    }
+
+    .future {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .future .fcard {
+      flex: 1;
+      background: #11152a;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px;
+    }
+
+    .fcard img {
+      width: 45px;
+    }
+
+    .fcard .day {
+      font-weight: 700;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .fcard .temp {
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .fcard .rain {
+      font-size: 13px;
+      color: #9ba7d1;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #9ba7d1;
+    }
+
+    .updated-time {
+      color: #6f789e;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="widget">
+    <div class="search">
+      <input id="cityInput" placeholder="Search city...">
+      <button id="searchBtn">🔍</button>
+      <button id="geoBtn">📍</button>
+    </div>
+    <div class="city" id="cityName">Baliarpur</div>
+    <div class="date" id="date">--</div>
+    <div class="time" id="time">--:--:--</div>
+
+    <div class="cards" id="hourCards"></div>
+
+    <div class="stats">
+      <div class="stat">Feels<span id="feel">--°C</span></div>
+      <div class="stat">Humidity<span id="hum">--%</span></div>
+      <div class="stat">Wind<span id="wind">-- km/h</span></div>
+      <div class="stat">Rain<span id="pop">--%</span></div>
+    </div>
+
+    <div class="future" id="futureCards"></div>
+
+    <div class="status" id="status">Fetching weather...</div>
+    <div class="updated-time" id="updatedTime"></div>
+  </div>
+
+  <script>
+    const API_KEY = "593f4ef9191064d8ed02a7374a33132d";
+    const GEO = q => `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(q)}&limit=1&appid=${API_KEY}`;
+    const CURR = (lat, lon) => `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+    const FORE = (lat, lon) => `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+    const ICON = c => `https://openweathermap.org/img/wn/${c}@2x.png`;
+    const el = id => document.getElementById(id);
+
+    let tzOffsetSec = 19800; // India (UTC+5:30)
+
+    function pad(n) { return String(n).padStart(2, "0"); }
+
+    // Correct Clock (API timezone based)
+    function startClock() {
+      setInterval(() => {
+        const now = new Date();
+        const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+        const local = new Date(utcMs + tzOffsetSec * 1000);
+        const hh24 = local.getHours();
+        const hh12 = hh24 % 12 || 12;
+        const ampm = hh24 >= 12 ? "PM" : "AM";
+        el("time").textContent = `${pad(hh12)}:${pad(local.getMinutes())}:${pad(local.getSeconds())} ${ampm}`;
+        el("date").textContent = local.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+      }, 1000);
+    }
+
+    function ddesc(w) {
+      const s = (w.main || w.description || "").toLowerCase();
+      if (s.includes("clear")) return "Sunny";
+      if (s.includes("cloud")) return "Cloudy";
+      if (s.includes("rain")) return "Rainy";
+      if (s.includes("drizzle")) return "Drizzle";
+      if (s.includes("thunder")) return "Thunder";
+      if (s.includes("snow")) return "Snow";
+      if (s.includes("mist") || s.includes("fog") || s.includes("haze")) return "Foggy";
+      return w.description || "--";
+    }
+
+    async function geo(city) {
+      const r = await fetch(GEO(city)); const j = await r.json();
+      if (!j.length) throw "City not found";
+      return { lat: j[0].lat, lon: j[0].lon, label: `${j[0].name}, ${j[0].country}` };
+    }
+
+    function closestForecastByUTC(list, targetUtc) {
+      let best = null, bestDiff = Infinity;
+      for (const x of list) {
+        const diff = Math.abs(x.dt - targetUtc);
+        if (diff < bestDiff) { bestDiff = diff; best = x; }
+      }
+      return best;
+    }
+
+    async function load(lat, lon, label) {
+      el("status").textContent = "Loading...";
+      const [cw, fw] = await Promise.all([fetch(CURR(lat, lon)), fetch(FORE(lat, lon))]);
+      const c = await cw.json();
+      const f = await fw.json();
+
+      tzOffsetSec = f.city?.timezone ?? 19800;
+      el("cityName").textContent = label;
+
+      // Accurate Now stats
+      el("feel").textContent = Math.round(c.main.feels_like) + "°C";
+      el("hum").textContent = c.main.humidity + "%";
+      el("wind").textContent = Math.round(c.wind.speed * 3.6) + " km/h";
+      el("pop").textContent = (f.list?.length ? Math.round((f.list[0].pop || 0) * 100) : 0) + "%";
+
+      // Hourly Cards
+      const hourCards = el("hourCards");
+      hourCards.innerHTML = "";
+
+      // "Now" card (live temp)
+      const nowW = c.weather[0];
+      const nowCard = document.createElement("div");
+      nowCard.className = "card";
+      nowCard.innerHTML = `
+    <div class="label">Now</div>
+    <img src="${ICON(nowW.icon)}">
+    <div class="temp">${Math.round(c.main.temp)}°C</div>
+    <div class="desc">${ddesc(nowW)}</div>`;
+      hourCards.appendChild(nowCard);
+
+      // +3h and +6h forecast (closest UTC)
+      const nowUtcSec = Math.floor(Date.now() / 1000);
+      const targets = [nowUtcSec + 3 * 3600, nowUtcSec + 6 * 3600];
+
+      targets.forEach((tUtc) => {
+        const best = closestForecastByUTC(f.list || [], tUtc);
+        if (!best) return;
+        const localT = new Date((best.dt + tzOffsetSec) * 1000);
+        const hh24 = localT.getHours();
+        const hh12 = hh24 % 12 || 12;
+        const ampm = hh24 >= 12 ? "PM" : "AM";
+        const ww = best.weather?.[0] || {};
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+      <div class="label">${hh12} ${ampm}</div>
+      <img src="${ICON(ww.icon || '01d')}">
+      <div class="temp">${Math.round(best.main.temp)}°C</div>
+      <div class="desc">${ddesc(ww)}</div>`;
+        hourCards.appendChild(div);
+      });
+
+      // Tomorrow + Next Day
+      const future = el("futureCards");
+      future.innerHTML = "";
+      if ((f.list || []).length) {
+        const firstLocal = new Date((f.list[0].dt + tzOffsetSec) * 1000);
+        for (let d = 1; d <= 2; d++) {
+          const dayStartLocal = new Date(firstLocal.getFullYear(), firstLocal.getMonth(), firstLocal.getDate() + d, 0, 0, 0);
+          const dayEndLocal = new Date(firstLocal.getFullYear(), firstLocal.getMonth(), firstLocal.getDate() + d, 23, 59, 59);
+          const dayStartUtc = Math.floor((dayStartLocal.getTime() - tzOffsetSec * 1000) / 1000);
+          const dayEndUtc = Math.floor((dayEndLocal.getTime() - tzOffsetSec * 1000) / 1000);
+          const items = (f.list || []).filter(x => x.dt >= dayStartUtc && x.dt <= dayEndUtc);
+          if (!items.length) continue;
+          const mid = items[Math.floor(items.length / 2)];
+          const ww2 = mid.weather?.[0] || {};
+          const labelDay = d === 1 ? "Tomorrow" : "Next Day";
+          const fc = document.createElement("div");
+          fc.className = "fcard";
+          fc.innerHTML = `
+        <img src="${ICON(ww2.icon || '01d')}">
+        <div class="day">${labelDay}</div>
+        <div class="temp">${Math.round(mid.main.temp)}°C</div>
+        <div class="rain">Rain: ${Math.round((mid.pop || 0) * 100)}%</div>`;
+          future.appendChild(fc);
+        }
+      }
+
+      const now = new Date();
+      const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+      const localNow = new Date(utcMs + tzOffsetSec * 1000);
+      el("status").textContent = "Updated ✔️";
+      el("updatedTime").textContent = `Last updated at ${localNow.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+    }
+
+    el("searchBtn").onclick = async () => {
+      const q = el("cityInput").value.trim();
+      if (!q) return;
+      try {
+        const g = await geo(q);
+        load(g.lat, g.lon, g.label);
+      } catch {
+        el("status").textContent = "City not found";
+      }
+    };
+
+    el("geoBtn").onclick = () => {
+      if (!navigator.geolocation) { el("status").textContent = "No GPS support"; return; }
+      navigator.geolocation.getCurrentPosition(async p => {
+        load(p.coords.latitude, p.coords.longitude, "My Location");
+      }, () => el("status").textContent = "Denied");
+    };
+
+    // Default load Baliarpur
+    (async () => {
+      try {
+        const g = await geo("Baliarpur, IN");
+        await load(g.lat, g.lon, g.label);
+      } catch {
+        await load(23.8189, 87.5391, "Baliarpur, IN");
+      }
+      startClock();
+    })();
+  </script>
+</body>
+
+</html>
