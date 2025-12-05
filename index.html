@@ -133,21 +133,21 @@
                 <div class="input-group">
                     <div class="form-group">
                         <label for="kg">KG:</label>
-                        <input type="number" id="kg" step="0.001" placeholder="">
+                        <input type="number" id="kg" step="0.001" placeholder="" oninput="updateCalculationResults()">
                     </div>
 
                     <div class="form-group">
                         <label for="fat">FAT:</label>
-                        <input type="number" id="fat" step="0.1" placeholder="">
+                        <input type="number" id="fat" step="0.1" placeholder="" oninput="updateCalculationResults()">
                     </div>
 
                     <div class="form-group">
                         <label for="snf">SNF:</label>
-                        <input type="number" id="snf" step="0.1" placeholder="">
+                        <input type="number" id="snf" step="0.1" placeholder="" oninput="updateCalculationResults()">
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn">Calculate</button>
+                <button type="submit" class="submit-btn">Save Entry <div  id="calculationResults"></div> <span style="color: rgb(21, 219, 206);" id="ratePerKg"></span></div></button>
             </form>
         </div>
 
@@ -195,6 +195,88 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
 
+    <script>
+        let currentRateFormula = null;
+
+        // Fetch and parse the latest rate formula from rate.md
+        async function loadLatestRateFormula() {
+            try {
+                const response = await fetch('rate.md');
+                if (!response.ok) throw new Error('Could not fetch rate.md file');
+                const content = await response.text();
+
+                const lines = content.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+
+                let latestFormula = null;
+
+                // First try to find a line with {Latest} tag
+                for (const line of lines) {
+                    if (line.includes('{Latest}')) {
+                        latestFormula = line;
+                        break;
+                    }
+                }
+
+                // If no {Latest} tag, use the last valid formula
+                if (!latestFormula) {
+                    const formulaLines = lines.filter(line => 
+                        line.includes('var Rate = ') || 
+                        (line.includes('fat') && line.includes('snf'))
+                    );
+                    if (formulaLines.length > 0) {
+                        latestFormula = formulaLines[formulaLines.length - 1];
+                    }
+                }
+
+                if (latestFormula) {
+                    // Clean up the formula string
+                    let formulaStr = latestFormula
+                        .replace('var Rate = ', '')
+                        .replace(';', '')
+                        .replace('{Latest}', '')
+                        .trim();
+                    
+                    // Create a function from the formula string
+                    currentRateFormula = new Function('fat', 'snf', `return ${formulaStr};`);
+                    console.log('Loaded rate formula:', formulaStr);
+                    
+                    // Update calculations if we have values in the form
+                    updateCalculationResults();
+                } else {
+                    throw new Error('No valid rate formula found in rate.md');
+                }
+            } catch (error) {
+                console.error('Error loading rate formula:', error);
+                alert('Error: Could not load rate formula. Please check the rate.md file.');
+            }
+        }
+
+        // Load the latest formula when the page loads
+        document.addEventListener('DOMContentLoaded', loadLatestRateFormula);
+
+        function updateCalculationResults() {
+            if (!currentRateFormula) return; // Don't calculate if formula isn't loaded yet
+            
+            const fat = parseFloat(document.getElementById('fat').value) || 0;
+            const snf = parseFloat(document.getElementById('snf').value) || 0;
+            const kg = parseFloat(document.getElementById('kg').value) || 0;
+            
+            // Use the current rate formula (either default or loaded from rate.md)
+            const rate = currentRateFormula(fat, snf);
+            const total = rate * kg;
+            
+            const resultsDiv = document.getElementById('calculationResults');
+            if (fat > 0 || snf > 0) {
+                document.getElementById('ratePerKg').textContent = '₹'+ rate.toFixed(2);
+                resultsDiv.style.display = 'block';
+            } else {
+                resultsDiv.style.display = 'none';
+            }
+        }
+    </script>
+    
     <script type="module">
         const firebaseConfig = {
             apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
