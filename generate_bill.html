@@ -654,6 +654,101 @@
         .panel {
             max-width: 100%;
         }
+
+        /* Edit Mode Styles */
+        .edit-mode-btn {
+            background: #6f42c1;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+
+        .edit-mode-btn:hover {
+            background: #5a32a3;
+        }
+
+        .edit-mode-btn.active {
+            background: #dc3545;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+        }
+
+        .edit-input {
+            width: 60px;
+            padding: 4px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .editing-row {
+            background-color: #fff3cd !important;
+        }
+
+        .editing-row td {
+            color: #333 !important;
+            border-color: #ffeeba !important;
+        }
+
+        .edit-input:focus {
+            outline: none;
+            border-color: #856404;
+            box-shadow: 0 0 0 0.2rem rgba(133, 100, 4, 0.25);
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+            font-weight: bold;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+
+        .add-member-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .name-input {
+            width: 130px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-family: inherit;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .editing-row .name-input {
+            border-color: #856404;
+        }
+
+        .name-input:focus {
+            outline: none;
+            border-color: #856404;
+            background: #fff;
+            box-shadow: 0 0 0 0.2rem rgba(133, 100, 4, 0.25);
+        }
     </style>
 </head>
 
@@ -692,7 +787,7 @@
     <div class="responsive-pair">
         <div class="panel panel-left">
             <div class="container">
-                <h1>Bill Auto Genarated</h1>
+                <h1>Generate Bill (Auto & Manual)</h1>
 
                 <div class="date-range-selector">
                     <div class="date-range-buttons">
@@ -708,7 +803,11 @@
                     <div class="checkbox-grid" id="nameCheckboxes">
                         <!-- Checkboxes will be populated here -->
                     </div>
-                    <button class="refresh-btn" onclick="loadData()">Refresh Data</button>
+                    <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
+                        <button class="refresh-btn" onclick="window.refreshDataOnly()">🔄 Refresh Data</button>
+                        <button class="edit-mode-btn" id="editModeBtn" onclick="toggleEditMode()">Edit Mode:
+                            OFF</button>
+                    </div>
                 </div>
 
             </div>
@@ -906,6 +1005,10 @@
         let allNames = new Set();
         let databaseData = {};
 
+        let isEditMode = false;
+        let manualOverrides = {}; // { idOrName: { name?: string, kg?: number, takaMain?: number, deleted?: boolean } }
+        let addedMembers = []; // [{ id: string, name: string, kg: number, takaMain: number }]
+
         // Conversion factors
         const conversionFactor_ToMake_original = 41.10 / 29;
         const conversionFactor_ToMake_original_Less = 29 / 41.10;
@@ -916,14 +1019,14 @@
         // Pre-selected names
         const preselectedNames = [
             'মধুমিতা মন্ডল',
-            'রজিনা শেখ',
             'বিজলা দুলে',
             'সুদর্শন ঘোষ',
             'মমতা ঘোষ',
             'ঝর্না চচ্চড়ি',
             'সুলোচনা ঘোষ',
             'বুল্টি দুলে',
-            'ফাইজুল মল্লিক'
+            'ফাইজুল মল্লিক',
+            'নাসিমা মল্লিক'
         ];
 
         // --- Helpers ---
@@ -1045,9 +1148,7 @@
                 });
             });
 
-            // allow pressing refresh button to reload without overlay
-            const refreshBtn = document.querySelector('.refresh-btn');
-            if (refreshBtn) refreshBtn.addEventListener('click', () => loadData(false));
+            // Event listeners for individual ranges/refresh are already handled by onclick or logic below
         }
 
         // --- Data loader (reads from RTDB keys like "1-9-2025") ---
@@ -1144,6 +1245,13 @@
         function createNameCheckboxes() {
             const checkboxContainer = document.getElementById('nameCheckboxes');
             if (!checkboxContainer) return;
+
+            // 1. Capture current checked states before clearing
+            const currentStates = {};
+            checkboxContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                currentStates[cb.value] = cb.checked;
+            });
+
             checkboxContainer.innerHTML = '';
 
             const sortedNames = Array.from(allNames).sort();
@@ -1162,7 +1270,8 @@
                 checkbox.type = 'checkbox';
                 checkbox.id = `checkbox_${counter}_${name}`;
                 checkbox.value = name;
-                checkbox.checked = true;
+                // Use preserved state if exists, otherwise default to true for fixed
+                checkbox.checked = currentStates.hasOwnProperty(name) ? currentStates[name] : true;
                 checkbox.addEventListener('change', renderTable);
 
                 const label = document.createElement('label');
@@ -1184,7 +1293,8 @@
                     checkbox.type = 'checkbox';
                     checkbox.id = `checkbox_${counter}_${name}`;
                     checkbox.value = name;
-                    checkbox.checked = true;
+                    // Use preserved state if exists, otherwise default to true for preselected
+                    checkbox.checked = currentStates.hasOwnProperty(name) ? currentStates[name] : true;
                     checkbox.addEventListener('change', renderTable);
 
                     const label = document.createElement('label');
@@ -1206,7 +1316,8 @@
                 checkbox.type = 'checkbox';
                 checkbox.id = `checkbox_${counter}_${name}`;
                 checkbox.value = name;
-                checkbox.checked = false;
+                // Use preserved state if exists
+                checkbox.checked = currentStates.hasOwnProperty(name) ? currentStates[name] : false;
                 checkbox.addEventListener('change', renderTable);
 
                 const label = document.createElement('label');
@@ -1229,6 +1340,13 @@
         function renderTable() {
             const tableBody = document.getElementById('tableBody');
             if (!tableBody) return;
+
+            // Capture focused element ID and cursor position to restore focus after re-render
+            const activeEl = document.activeElement;
+            const activeId = activeEl ? activeEl.id : null;
+            const selStart = activeEl ? activeEl.selectionStart : null;
+            const selEnd = activeEl ? activeEl.selectionEnd : null;
+
             const selectedNames = getSelectedNames();
             tableBody.innerHTML = '';
 
@@ -1240,15 +1358,55 @@
             let databasePeopleTotalTakaLess = 0;
             let databasePeopleTotalTakaMain = 0;
 
+            // 1. Process Database Members
             selectedNames.forEach(name => {
                 if (!fixedNames.includes(name)) {
+                    // Check if deleted
+                    if (manualOverrides[name] && manualOverrides[name].deleted) return;
+
                     const data = databaseData[name] || { kg: 0, takaMain: 0 };
-                    const takaLessInt = Math.ceil((data.takaMain || 0) * conversionFactor_ToMake_original_Less);
-                    databaseRows.push({ name, kg: data.kg || 0, takaMain: data.takaMain || 0, takaLess: takaLessInt });
-                    databasePeopleTotalKg += data.kg || 0;
+
+                    const kg = (manualOverrides[name] && manualOverrides[name].kg !== undefined)
+                        ? manualOverrides[name].kg
+                        : (data.kg || 0);
+                    const takaMain = (manualOverrides[name] && manualOverrides[name].takaMain !== undefined)
+                        ? manualOverrides[name].takaMain
+                        : (data.takaMain || 0);
+                    const displayName = (manualOverrides[name] && manualOverrides[name].name !== undefined)
+                        ? manualOverrides[name].name
+                        : name;
+
+                    const takaLessInt = Math.ceil(takaMain * conversionFactor_ToMake_original_Less);
+
+                    databaseRows.push({ id: name, name: displayName, kg, takaMain, takaLess: takaLessInt });
+
+                    databasePeopleTotalKg += kg;
                     databasePeopleTotalTakaLess += takaLessInt;
-                    databasePeopleTotalTakaMain += data.takaMain || 0;
+                    databasePeopleTotalTakaMain += takaMain;
                 }
+            });
+
+            // 2. Process Manually Added Members
+            addedMembers.forEach(member => {
+                if (manualOverrides[member.id] && manualOverrides[member.id].deleted) return;
+
+                const kg = (manualOverrides[member.id] && manualOverrides[member.id].kg !== undefined)
+                    ? manualOverrides[member.id].kg
+                    : member.kg;
+                const takaMain = (manualOverrides[member.id] && manualOverrides[member.id].takaMain !== undefined)
+                    ? manualOverrides[member.id].takaMain
+                    : member.takaMain;
+                const name = (manualOverrides[member.id] && manualOverrides[member.id].name !== undefined)
+                    ? manualOverrides[member.id].name
+                    : member.name;
+
+                const takaLessInt = Math.ceil(takaMain * conversionFactor_ToMake_original_Less);
+
+                databaseRows.push({ id: member.id, name, kg, takaMain, takaLess: takaLessInt });
+
+                databasePeopleTotalKg += kg;
+                databasePeopleTotalTakaLess += takaLessInt;
+                databasePeopleTotalTakaMain += takaMain;
             });
 
             const remainingKg = billKg - databasePeopleTotalKg;
@@ -1264,12 +1422,10 @@
                 clearError();
             }
 
-            // --- Fixed allocation: 60/40 for two fixed names, fallback otherwise ---
+            // --- Fixed allocation logic ---
             const fixedAlloc = {};
-
             if (nFixed > 0) {
                 if (nFixed === 1) {
-                    // single fixed person gets everything
                     const share = remainingTakaLess;
                     fixedAlloc[selectedFixed[0]] = {
                         takaLess: share,
@@ -1277,26 +1433,20 @@
                         kg: remainingKg
                     };
                 } else if (nFixed === 2) {
-                    // 60% / 40% split (first selected fixed gets 60%)
                     const perc = [0.6, 0.4];
-
-                    // Compute taka shares using rounding but ensure sum == remainingTakaLess
                     const firstShare = Math.round(remainingTakaLess * perc[0]);
-                    const secondShare = remainingTakaLess - firstShare; // exact remainder ensures total correct
-
+                    const secondShare = remainingTakaLess - firstShare;
                     fixedAlloc[selectedFixed[0]] = {
                         takaLess: firstShare,
                         takaMain: firstShare * conversionFactor_ToMake_original,
                         kg: remainingKg * perc[0]
                     };
-
                     fixedAlloc[selectedFixed[1]] = {
                         takaLess: secondShare,
                         takaMain: secondShare * conversionFactor_ToMake_original,
                         kg: remainingKg * perc[1]
                     };
                 } else {
-                    // fallback: even split for >2 fixed names (keeps previous logic)
                     const baseShare = Math.floor(remainingTakaLess / nFixed);
                     let remainder = remainingTakaLess % nFixed;
                     selectedFixed.forEach(name => {
@@ -1311,26 +1461,30 @@
                 }
             }
 
-            // --- Render fixed rows using fixedAlloc's kg values (not a single fixedKgEach) ---
             let totalKg = 0, totalTakaLess = 0, totalTakaMain = 0;
 
             selectedFixed.forEach(name => {
                 const alloc = fixedAlloc[name] || { takaLess: 0, takaMain: 0, kg: 0 };
-                const row = createTableRow(name, alloc.kg, alloc.takaMain, true, alloc.takaLess);
+                const row = createTableRow(name, name, alloc.kg, alloc.takaMain, true, alloc.takaLess);
                 tableBody.appendChild(row);
                 totalKg += alloc.kg;
                 totalTakaLess += alloc.takaLess;
                 totalTakaMain += alloc.takaMain;
             });
 
-
             databaseRows.forEach(item => {
-                const row = createTableRow(item.name, item.kg, item.takaMain, false, item.takaLess);
+                const row = createTableRow(item.id, item.name, item.kg, item.takaMain, false, item.takaLess);
                 tableBody.appendChild(row);
                 totalKg += item.kg;
                 totalTakaLess += item.takaLess;
                 totalTakaMain += item.takaMain;
             });
+
+            if (isEditMode) {
+                const addRow = document.createElement('tr');
+                addRow.innerHTML = `<td colspan="4" style="padding:0;"><button class="add-member-btn" onclick="handleAddMember()">+ Add Member</button></td>`;
+                tableBody.appendChild(addRow);
+            }
 
             const elTotalKg = document.getElementById('totalKg');
             const elTotalTakaLess = document.getElementById('totalTakaLess');
@@ -1339,23 +1493,108 @@
             if (elTotalKg) elTotalKg.textContent = totalKg.toFixed(1);
             if (elTotalTakaLess) elTotalTakaLess.textContent = Number(totalTakaLess).toFixed(0);
             if (elTotalTakaMain) elTotalTakaMain.textContent = totalTakaMain.toFixed(0);
+
+            if (activeId && isEditMode) {
+                const el = document.getElementById(activeId);
+                if (el) {
+                    el.focus();
+                    if (selStart !== null && selEnd !== null) {
+                        try { el.setSelectionRange(selStart, selEnd); } catch (e) { }
+                    }
+                }
+            }
         }
 
-        function createTableRow(name, kg, takaMain, isFixed, providedTakaLess = null) {
+        function createTableRow(id, name, kg, takaMain, isFixed, providedTakaLess = null) {
             const row = document.createElement('tr');
             row.className = isFixed ? 'fixed-row' : 'database-row';
+
+            if (!isFixed && isEditMode) {
+                row.classList.add('editing-row');
+            }
+
             const takaLess = (providedTakaLess !== null)
                 ? providedTakaLess
                 : Math.ceil((takaMain || 0) * conversionFactor_ToMake_original_Less);
 
-            row.innerHTML = `
-        <td>${name}</td>
-        <td class="numeric">${(kg || 0).toFixed(1)}</td>
-        <td class="numeric">${Number(takaLess).toFixed(0)}</td>
-        <td class="numeric">${(takaMain || 0).toFixed(0)}</td>
-    `;
+            if (!isFixed && isEditMode) {
+                const sanitizedId = id.replace(/\s+/g, '_');
+                row.innerHTML = `
+                    <td style="display:flex; align-items:center;">
+                        <button class="delete-btn" onclick="handleDeleteMember('${id}')" title="Delete row">×</button>
+                        <input type="text" class="name-input" id="input-${sanitizedId}-name" 
+                            value="${name}" oninput="handleManualEdit('${id}', 'name', this.value)">
+                    </td>
+                    <td class="numeric">
+                        <input type="text" inputmode="decimal" class="edit-input" 
+                            id="input-${sanitizedId}-kg"
+                            value="${kg.toFixed(1)}" 
+                            oninput="handleManualEdit('${id}', 'kg', this.value)">
+                    </td>
+                    <td class="numeric">${Number(takaLess).toFixed(0)}</td>
+                    <td class="numeric">
+                        <input type="text" inputmode="decimal" class="edit-input" 
+                            id="input-${sanitizedId}-takaMain"
+                            value="${takaMain.toFixed(0)}" 
+                            oninput="handleManualEdit('${id}', 'takaMain', this.value)">
+                    </td>
+                `;
+            } else {
+                row.innerHTML = `
+                    <td>${name}</td>
+                    <td class="numeric">${(kg || 0).toFixed(1)}</td>
+                    <td class="numeric">${Number(takaLess).toFixed(0)}</td>
+                    <td class="numeric">${(takaMain || 0).toFixed(0)}</td>
+                `;
+            }
             return row;
         }
+
+        // --- Edit Mode Handlers ---
+        window.toggleEditMode = function () {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('editModeBtn');
+            if (btn) {
+                btn.textContent = `Edit Mode: ${isEditMode ? 'ON' : 'OFF'}`;
+                btn.classList.toggle('active', isEditMode);
+            }
+            renderTable();
+        };
+
+        window.handleManualEdit = function (id, field, value) {
+            if (!manualOverrides[id]) {
+                manualOverrides[id] = {};
+            }
+
+            if (field === 'name') {
+                manualOverrides[id].name = value;
+            } else {
+                const num = parseFloat(value);
+                manualOverrides[id][field] = isNaN(num) ? 0 : num;
+            }
+            renderTable();
+        };
+
+        window.handleAddMember = function () {
+            const newId = 'added-' + Date.now();
+            addedMembers.push({ id: newId, name: 'New Member', kg: 0, takaMain: 0 });
+            renderTable();
+
+            // Focus the new name input
+            setTimeout(() => {
+                const input = document.getElementById(`input-${newId}-name`);
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 10);
+        };
+
+        window.handleDeleteMember = function (id) {
+            if (!manualOverrides[id]) manualOverrides[id] = {};
+            manualOverrides[id].deleted = true;
+            renderTable();
+        };
 
         // --- Screenshot (updated filename format) ---
         window.downloadTableScreenshot = async function () {
@@ -1431,8 +1670,19 @@
 
 
         // Expose helpers to window
-        // default showOverlay = false so calling loadData() from markup won't trigger overlay
-        window.loadData = (showOverlay = false) => loadData(showOverlay);
+        window.refreshDataOnly = () => {
+            // Refresh data from DB but DON'T clear added members/overrides necessarily?
+            // Actually, the user said "refresh data" breaks things. Selections are now preserved.
+            // Usually refresh means "get latest from DB".
+            loadData(false);
+        };
+
+        window.loadData = (showOverlay = false) => {
+            // Full reset
+            manualOverrides = {};
+            addedMembers = [];
+            loadData(showOverlay);
+        };
         window.updateTable = function () { renderTable(); };
 
         // Initialize on load (functions are already defined above)

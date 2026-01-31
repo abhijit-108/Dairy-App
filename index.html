@@ -31,7 +31,7 @@
             <li>
                 <a href="generate_bill.html">
                     <i class='bx bx-file'></i>
-                    <span class="sidebar-text">Auto Bill generate</span>
+                    <span class="sidebar-text">Generate bills</span>
                 </a>
             </li>
             <li>
@@ -58,7 +58,7 @@
                     <span class="sidebar-text">All Guide Website</span>
                 </a>
             </li>
-             <li>
+            <li>
                 <a href="weather.html" target="_blank">
                     <i class='bx bx-cloud'></i>
                     <span class="sidebar-text">Weather</span>
@@ -70,7 +70,7 @@
                     <span class="sidebar-text" id="logoutButton">Logout</span>
                 </a>
             </li>
-             
+
         </ul>
         <div class="sidebar-footer">
             <div class="sidebar-footer-text">&copy; 2025 Delsgade. All rights reserved.</div>
@@ -147,8 +147,10 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn">Save Entry <div  id="calculationResults"></div> <span style="color: rgb(21, 219, 206);" id="ratePerKg"></span></div></button>
-            </form>
+                <button type="submit" class="submit-btn">Save Entry <div id="calculationResults"></div> <span
+                        style="color: rgb(21, 219, 206);" id="ratePerKg"></span>
+        </div></button>
+        </form>
         </div>
 
         <div id="popupOverlay" class="popup-overlay">
@@ -221,8 +223,8 @@
 
                 // If no {Latest} tag, use the last valid formula
                 if (!latestFormula) {
-                    const formulaLines = lines.filter(line => 
-                        line.includes('var Rate = ') || 
+                    const formulaLines = lines.filter(line =>
+                        line.includes('var Rate = ') ||
                         (line.includes('fat') && line.includes('snf'))
                     );
                     if (formulaLines.length > 0) {
@@ -237,11 +239,11 @@
                         .replace(';', '')
                         .replace('{Latest}', '')
                         .trim();
-                    
+
                     // Create a function from the formula string
                     currentRateFormula = new Function('fat', 'snf', `return ${formulaStr};`);
                     console.log('Loaded rate formula:', formulaStr);
-                    
+
                     // Update calculations if we have values in the form
                     updateCalculationResults();
                 } else {
@@ -258,25 +260,25 @@
 
         function updateCalculationResults() {
             if (!currentRateFormula) return; // Don't calculate if formula isn't loaded yet
-            
+
             const fat = parseFloat(document.getElementById('fat').value) || 0;
             const snf = parseFloat(document.getElementById('snf').value) || 0;
             const kg = parseFloat(document.getElementById('kg').value) || 0;
-            
+
             // Use the current rate formula (either default or loaded from rate.md)
             const rate = currentRateFormula(fat, snf);
             const total = rate * kg;
-            
+
             const resultsDiv = document.getElementById('calculationResults');
             if (fat > 0 || snf > 0) {
-                document.getElementById('ratePerKg').textContent = '₹'+ rate.toFixed(2);
+                document.getElementById('ratePerKg').textContent = '₹' + rate.toFixed(2);
                 resultsDiv.style.display = 'block';
             } else {
                 resultsDiv.style.display = 'none';
             }
         }
     </script>
-    
+
     <script type="module">
         const firebaseConfig = {
             apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
