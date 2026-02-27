@@ -212,7 +212,7 @@ function showPrintStatus(message, type = 'connecting') {
     if (!statusDiv) return;
 
     statusDiv.className = `print-status ${type} show`;
-    
+
     let icon = '';
     if (type === 'connecting') {
         icon = '<div class="print-spinner"></div>';
@@ -221,9 +221,9 @@ function showPrintStatus(message, type = 'connecting') {
     } else if (type === 'error') {
         icon = '<i class="bx bx-error-circle"></i>';
     }
-    
+
     statusDiv.innerHTML = `${icon}<span>${message}</span>`;
-    
+
     if (type === 'success' || type === 'error') {
         setTimeout(() => {
             statusDiv.classList.remove('show');
@@ -344,7 +344,7 @@ async function connectToPrinter() {
         if (!found) {
             // Could not find writable characteristic
             // Disconnect cleanly
-            try { device.gatt.disconnect(); } catch (e) {}
+            try { device.gatt.disconnect(); } catch (e) { }
             thermalDevice = null;
             throw new Error('Could not find writable characteristic. Printer may not support BLE GATT writes.');
         }
@@ -379,6 +379,8 @@ async function printReceipt(data) {
             "চন্দনা ঘোষ": "Chandana Ghosh",
             "রাজেন্দ্র প্রসাদ ঘোষ": "Rajendra Prasad Ghosh",
             "সুজাতা ঘোষ": "Sujata Ghosh",
+            "নাসিমা মল্লিক": "Nasima Mallik",
+            "দীপক ঘোষ": "Dipak Ghosh",
             "রজিনা শেখ": "Rojina Sekh",
             "মামনি চক্রবর্তী": "Mamoni Chakraborty",
             "রাহেলা শেখ": "Rahela Sekh",
@@ -400,11 +402,11 @@ async function printReceipt(data) {
             "বাবলু খা": "Bablu Khan",
             "অমিত চক্রবর্তী": "Amit Chakraborty",
             "কচে": "Kochey",
-            "Test Person 1": "Test Person 1",
-            "Test Person 5": "Test Person 5",
-            "Test Person 7": "Test Person 7",
-            "Test Person 9": "Test Person 9",
-            "Abhijit": "Abhijit"
+            "ফাইজুল মল্লিক": "Faijul Mallik",
+            "Abhijit": "Abhijit",
+            "New Person 3": "New Person 3",
+            "New Person 5": "New Person 5",
+            "New Person 7": "New Person 7"
         };
 
         // Convert Bengali name to English (only for printing)
@@ -425,18 +427,15 @@ async function printReceipt(data) {
 
         const ESC = 0x1B;
         const GS = 0x1D;
-        const INIT = [ESC, 0x40];
+        // No INIT (ESC 0x40) — avoids blank paper feed at top of receipt
         const ALIGN_CENTER = [ESC, 0x61, 0x01];
         const ALIGN_LEFT = [ESC, 0x61, 0x00];
-        const SIZE_BIGGER = 0x11; // 2x width/height
-        const SIZE_BIGGER_ESC = [ESC, 0x11, SIZE_BIGGER];
-        const SIZE_BIGGER_GS = [GS, 0x11, SIZE_BIGGER];
-        const SIZE_RESET_ESC = [ESC, 0x21, 0x00];
-        const SIZE_RESET_GS = [GS, 0x21, 0x00];
+
         const FEED_LINE = [0x0A];
         const CUT_PAPER = [GS, 0x56, 0x00];
 
-        let receipt = new Uint8Array([...INIT]);
+        // Start receipt with empty buffer (no INIT = no top blank space)
+        let receipt = new Uint8Array([]);
 
         function append(dataArr) {
             const newReceipt = new Uint8Array(receipt.length + dataArr.length);
@@ -447,59 +446,29 @@ async function printReceipt(data) {
 
         const width = 32;
 
+        // --- Header ---
         append(ALIGN_CENTER);
         append(stringToBytes('KANGSABOTI DAIRY\n'));
         append(stringToBytes('LALGARA , BANKURA\n'));
         append(stringToBytes('='.repeat(width) + '\n'));
 
+        // --- Customer Info ---
         append(ALIGN_LEFT);
         append(stringToBytes(`Customer: ${data.name}\n`));
         append(stringToBytes(`Date: ${data.timestamp}\n`));
         append(stringToBytes(`Session: ${getCurrentSessionEnglish()}\n`));
+        // --- Transaction Details ---
+        append(stringToBytes('Weight (KG):  ' + Number(data.kg).toFixed(3) + '\n'));
+        append(stringToBytes('FAT: ' + data.fat + '   SNF: ' + data.snf + '\n'));
+
+        append(stringToBytes('Rate:         Rs.' + Number(data.rate).toFixed(2) + '\n'));
+
+        // --- Total ---
         append(stringToBytes('-'.repeat(width) + '\n'));
-
-        append(stringToBytes('Weight (KG):      '));
-        append(SIZE_BIGGER_ESC);
-        append(SIZE_BIGGER_GS);
-        append(stringToBytes(Number(data.kg).toFixed(3) + '\n'));
-        append(SIZE_RESET_ESC);
-        append(SIZE_RESET_GS);
-
-        append(stringToBytes('FAT:              '));
-        append(SIZE_BIGGER_ESC);
-        append(SIZE_BIGGER_GS);
-        append(stringToBytes(data.fat + '\n'));
-        append(SIZE_RESET_ESC);
-        append(SIZE_RESET_GS);
-
-        append(stringToBytes('SNF:              '));
-        append(SIZE_BIGGER_ESC);
-        append(SIZE_BIGGER_GS);
-        append(stringToBytes(data.snf + '\n'));
-        append(SIZE_RESET_ESC);
-        append(SIZE_RESET_GS);
-
-        const rateStr = 'Rs. ' + Number(data.rate).toFixed(2);
-        append(stringToBytes('Rate:         '));
-        append(SIZE_BIGGER_ESC);
-        append(SIZE_BIGGER_GS);
-        append(stringToBytes(rateStr + '\n'));
-        append(SIZE_RESET_ESC);
-        append(SIZE_RESET_GS);
-
-        append(stringToBytes('='.repeat(width) + '\n'));
-
         const totalRounded = Math.round(Number(data.total));
-        const totalStr = 'Rs. ' + totalRounded;
         append(ALIGN_CENTER);
-        append(SIZE_BIGGER_ESC);
-        append(SIZE_BIGGER_GS);
-        append(stringToBytes(`TOTAL: ${totalStr}\n`));
-        append(SIZE_RESET_ESC);
-        append(SIZE_RESET_GS);
+        append(stringToBytes('TOTAL: Rs.' + totalRounded + '\n'));
         append(stringToBytes('='.repeat(width) + '\n'));
-        append(stringToBytes('\nThank You\n\n'));
-        append(FEED_LINE);
         append(CUT_PAPER);
 
         showPrintStatus('Printing...', 'connecting');
@@ -885,7 +854,7 @@ document.getElementById('updateBtn')?.addEventListener('click', async function (
 // Print button event listener
 document.getElementById('printBtn')?.addEventListener('click', async function () {
     const printBtn = document.getElementById('printBtn');
-    
+
     if (!currentPrintData) {
         showPrintStatus('❌ No data available to print', 'error');
         return;
@@ -985,7 +954,7 @@ async function fetchMilkDataForDate(selectedDateParam) {
 
         if (snapshot.exists()) {
             dataContainer.innerHTML = displayMilkData(snapshot.val());
-            
+
             // Add click event listeners to table rows after data is loaded
             // pass the selected date so reprint popup uses correct date
             addTableRowClickListeners(selectedDateParam);
@@ -1009,7 +978,7 @@ async function fetchMilkDataForDate(selectedDateParam) {
 // NEW FUNCTION: Add click event listeners to table rows (now accepts date param)
 function addTableRowClickListeners(dateForRows) {
     const tableRows = document.querySelectorAll('.milk-data-row');
-    
+
     tableRows.forEach(row => {
         // remove previous listeners first to avoid duplicates
         row.replaceWith(row.cloneNode(true));
@@ -1019,7 +988,7 @@ function addTableRowClickListeners(dateForRows) {
     const freshRows = document.querySelectorAll('.milk-data-row');
 
     freshRows.forEach(row => {
-        row.addEventListener('click', function() {
+        row.addEventListener('click', function () {
             // Extract data from the row
             const cells = this.querySelectorAll('.milk-data-cell');
             if (cells.length >= 7) {
@@ -1030,10 +999,10 @@ function addTableRowClickListeners(dateForRows) {
                 const rateCell = cells[4].querySelector('.milk-metric-badge')?.textContent.replace('₹', '').trim() || '';
                 const kgCell = cells[5].querySelector('.milk-metric-badge2')?.textContent.replace('kg', '').trim() || '';
                 const totalCell = cells[6].querySelector('.milk-metric-badge2')?.textContent.replace('₹', '').trim() || '';
-                
+
                 // Determine session based on time (AM/PM)
                 const session = timeCell.toUpperCase().includes('AM') ? 'সকাল' : 'সন্ধ্যা';
-                
+
                 const selectedDateString = dateForRows || selectedDate || getCurrentDateKey();
 
                 const record = {
@@ -1046,7 +1015,7 @@ function addTableRowClickListeners(dateForRows) {
                     timestamp: `${selectedDateString} ${timeCell}`,
                     session: session
                 };
-                
+
                 showReprintEntryPopup(record);
             }
         });
