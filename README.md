@@ -38,4 +38,6 @@ The Dairy App streamlines the process of collecting milk from farmers (members) 
 *   **Icons:** Boxicons
 
 ---
-*Developed by Delsgade*
+<div align="center">
+  <h3>✨ Developed by <b>Abhijit</b> with the help of <b>Antigravity</b> ✨</h3>
+</div>
