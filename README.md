@@ -39,5 +39,5 @@ The Dairy App streamlines the process of collecting milk from farmers (members) 
 
 ---
 <div align="center">
-  <h3>✨ Developed by <b>Abhijit</b> with the help of <b>Antigravity</b> ✨</h3>
+  <h3>✨ Developed by <h2>Abhijit</h2> with the help of <h2>Antigravity</h2> ✨</h3>
 </div>
