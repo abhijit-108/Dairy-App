@@ -463,14 +463,76 @@
             audio.play().catch(e => console.log("Audio play failed:", e));
         }
 
-        function rateandtotal() {
-            // Implement your rate calculation logic here
+        let currentRateFormula = null;
+
+        async function loadLatestRateFormula() {
+            try {
+                const response = await fetch('rate.md');
+                if (!response.ok) throw new Error('Could not fetch rate.md file');
+                const content = await response.text();
+
+                const lines = content.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+
+                let latestFormula = null;
+
+                for (const line of lines) {
+                    if (line.includes('{Latest}')) {
+                        latestFormula = line;
+                        break;
+                    }
+                }
+
+                if (!latestFormula) {
+                    const formulaLines = lines.filter(line =>
+                        line.includes('var Rate = ') ||
+                        (line.includes('fat') && line.includes('snf'))
+                    );
+                    if (formulaLines.length > 0) {
+                        latestFormula = formulaLines[formulaLines.length - 1];
+                    }
+                }
+
+                if (latestFormula) {
+                    let formulaStr = latestFormula
+                        .replace('var Rate = ', '')
+                        .replace(';', '')
+                        .replace('{Latest}', '')
+                        .trim();
+
+                    currentRateFormula = new Function('fat', 'snf', `return ${formulaStr};`);
+                    console.log('Loaded rate formula:', formulaStr);
+
+                    rateandtotal();
+                } else {
+                    throw new Error('No valid rate formula found in rate.md');
+                }
+            } catch (error) {
+                console.error('Error loading rate formula:', error);
+            }
         }
 
-        function multiplyNumbers() {
-            // Implement your multiplication logic here
+        document.addEventListener('DOMContentLoaded', loadLatestRateFormula);
+
+        function rateandtotal() {
+            if (!currentRateFormula) return;
+
+            const fat = parseFloat(document.getElementById('fat').value) || 0;
+            const snf = parseFloat(document.getElementById('snf').value) || 0;
+            const kg = parseFloat(document.getElementById('kg').value) || 0;
+
+            if (fat > 0 && snf > 0) {
+                const rate = currentRateFormula(fat, snf);
+                const total = rate * kg;
+
+                document.getElementById('rate').value = rate.toFixed(2);
+                document.getElementById('total').value = Math.round(total);
+            } else {
+                document.getElementById('rate').value = '';
+                document.getElementById('total').value = '';
+            }
         }
     </script>
-    <script src="js/rate.js?v=1.0.2"></script>
 </body>
 </html>
