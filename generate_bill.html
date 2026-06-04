@@ -1008,6 +1008,7 @@
         let isEditMode = false;
         let manualOverrides = {}; // { idOrName: { name?: string, kg?: number, takaMain?: number, deleted?: boolean } }
         let addedMembers = []; // [{ id: string, name: string, kg: number, takaMain: number }]
+        let namesFromFile = []; // names loaded from name.md
 
         // Conversion factors
         const conversionFactor_ToMake_original = 40.50 / 29;
@@ -1019,13 +1020,13 @@
         // Pre-selected names
         const preselectedNames = [
             'মধুমিতা মন্ডল',
-            'বিজলা দুলে',
-            'সুদর্শন ঘোষ',
             'ঝর্না চচ্চড়ি',
-            'সুলোচনা ঘোষ',
             'বুল্টি দুলে',
             'ফাইজুল মল্লিক',
-            'নাসিমা মল্লিক'
+            'নাসিমা মল্লিক',
+            'রাহেলা শেখ',
+            'ভৈরব চচ্চড়ি',
+            'শ্যামসুরা খা'
         ];
 
         // --- Helpers ---
@@ -1253,7 +1254,18 @@
 
             checkboxContainer.innerHTML = '';
 
-            const sortedNames = Array.from(allNames).sort();
+            const displayNamesSet = new Set(allNames);
+            if (isEditMode) {
+                namesFromFile.forEach(name => displayNamesSet.add(name));
+            }
+            // Keep currently selected names visible, even if they aren't in allNames or if edit mode is toggled off
+            Object.keys(currentStates).forEach(name => {
+                if (currentStates[name]) {
+                    displayNamesSet.add(name);
+                }
+            });
+
+            const sortedNames = Array.from(displayNamesSet).sort();
             const fixedNamesList = sortedNames.filter(name => fixedNames.includes(name));
             const otherNamesList = sortedNames.filter(name =>
                 !fixedNames.includes(name) && !preselectedNames.includes(name)
@@ -1284,7 +1296,7 @@
             });
 
             preselectedNames.forEach(name => {
-                if (allNames.has(name)) {
+                if (displayNamesSet.has(name)) {
                     const checkboxDiv = document.createElement('div');
                     checkboxDiv.className = 'checkbox-item';
 
@@ -1432,7 +1444,7 @@
                         kg: remainingKg
                     };
                 } else if (nFixed === 2) {
-                    const perc = [0.6, 0.4];
+                    const perc = [0.5, 0.5];
                     const firstShare = Math.round(remainingTakaLess * perc[0]);
                     const secondShare = remainingTakaLess - firstShare;
                     fixedAlloc[selectedFixed[0]] = {
@@ -1557,6 +1569,7 @@
                 btn.textContent = `Edit Mode: ${isEditMode ? 'ON' : 'OFF'}`;
                 btn.classList.toggle('active', isEditMode);
             }
+            createNameCheckboxes();
             renderTable();
         };
 
@@ -1684,10 +1697,25 @@
         };
         window.updateTable = function () { renderTable(); };
 
+        async function loadNamesFromFile() {
+            try {
+                const response = await fetch('name.md');
+                if (!response.ok) throw new Error('Could not fetch name.md file');
+                const content = await response.text();
+                namesFromFile = content.split('\n')
+                    .map(name => name.trim())
+                    .filter(name => name.length > 0)
+                    .map(name => name.replace(/\r/g, ''));
+            } catch (error) {
+                console.error('Error loading names from file:', error);
+            }
+        }
+
         // Initialize on load (functions are already defined above)
-        window.onload = function () {
+        window.onload = async function () {
             setDefaultDateRange();   // default uses today - 5 as reference month/year
             setupEventListeners();   // clicking buttons uses adjustedBaseDate while day <= 5
+            await loadNamesFromFile();
             // Show overlay only on initial page load:
             loadData(true);
         };
