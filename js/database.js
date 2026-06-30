@@ -196,13 +196,17 @@ function getCurrentDateKey() {
 
 function getCurrentSession() {
     const hour = new Date().getHours();
-    return hour < 15 ? "সকাল" : "সন্ধ্যা";
+    if (hour < 10) return "সকাল";
+    if (hour < 15) return "দুপুর";
+    return "সন্ধ্যা";
 }
 
 // NEW: Function to get session in English for printing
 function getCurrentSessionEnglish() {
     const hour = new Date().getHours();
-    return hour < 15 ? "Morning" : "Evening";
+    if (hour < 10) return "Morning";
+    if (hour < 15) return "Afternoon";
+    return "Evening";
 }
 
 // ===== THERMAL PRINTER FUNCTIONS =====
@@ -779,7 +783,7 @@ document.getElementById('milkForm')?.addEventListener('submit', async function (
             'duplicate',
             'Entry Already Exists',
             data,
-            `${name} ${session === 'সকাল' ? 'সকাল' : 'সন্ধ্যা'} Already Exists`,
+            `${name} ${session} Already Exists`,
             existingData
         );
         return;
@@ -1000,8 +1004,15 @@ function addTableRowClickListeners(dateForRows) {
                 const kgCell = cells[5].querySelector('.milk-metric-badge2')?.textContent.replace('kg', '').trim() || '';
                 const totalCell = cells[6].querySelector('.milk-metric-badge2')?.textContent.replace('₹', '').trim() || '';
 
-                // Determine session based on time (AM/PM)
-                const session = timeCell.toUpperCase().includes('AM') ? 'সকাল' : 'সন্ধ্যা';
+                // Determine session based on time
+                const minutes = timeToMinutes(timeCell);
+                const hour = minutes / 60;
+                let session = 'সন্ধ্যা';
+                if (hour < 10) {
+                    session = 'সকাল';
+                } else if (hour < 15) {
+                    session = 'দুপুর';
+                }
 
                 const selectedDateString = dateForRows || selectedDate || getCurrentDateKey();
 
@@ -1043,13 +1054,17 @@ function displayMilkData(data) {
     let totalKg = 0, totalAmount = 0, totalFat = 0, totalSnf = 0, totalRate = 0;
 
     let amKg = 0, amAmount = 0, amFat = 0, amSnf = 0, amRate = 0;
+    let noonKg = 0, noonAmount = 0, noonFat = 0, noonSnf = 0, noonRate = 0;
     let pmKg = 0, pmAmount = 0, pmFat = 0, pmSnf = 0, pmRate = 0;
 
     let recordsArray = [];
     for (const personKey in data) {
         for (const timeSlot in data[personKey]) {
             const record = data[personKey][timeSlot];
-            recordsArray.push(record);
+            if (record) {
+                record.sessionKey = timeSlot; // Save session info dynamically
+                recordsArray.push(record);
+            }
         }
     }
 
@@ -1083,14 +1098,19 @@ function displayMilkData(data) {
         totalSnf += snf * kg;
         totalRate += rate * kg;
 
-        const timeStr = extractMilkTime(record.timestamp);
-        if (timeStr && timeStr.toUpperCase().includes("AM")) {
+        if (record.sessionKey === "সকাল") {
             amKg += kg;
             amAmount += total;
             amFat += fat * kg;
             amSnf += snf * kg;
             amRate += rate * kg;
-        } else if (timeStr && timeStr.toUpperCase().includes("PM")) {
+        } else if (record.sessionKey === "দুপুর") {
+            noonKg += kg;
+            noonAmount += total;
+            noonFat += fat * kg;
+            noonSnf += snf * kg;
+            noonRate += rate * kg;
+        } else if (record.sessionKey === "সন্ধ্যা") {
             pmKg += kg;
             pmAmount += total;
             pmFat += fat * kg;
@@ -1106,6 +1126,10 @@ function displayMilkData(data) {
     const avgFatAm = amKg ? (amFat / amKg).toFixed(1) : '0';
     const avgSnfAm = amKg ? (amSnf / amKg).toFixed(1) : '0';
     const avgRateAm = amKg ? (amRate / amKg).toFixed(2) : '0';
+
+    const avgFatNoon = noonKg ? (noonFat / noonKg).toFixed(1) : '0';
+    const avgSnfNoon = noonKg ? (noonSnf / noonKg).toFixed(1) : '0';
+    const avgRateNoon = noonKg ? (noonRate / noonKg).toFixed(2) : '0';
 
     const avgFatPm = pmKg ? (pmFat / pmKg).toFixed(1) : '0';
     const avgSnfPm = pmKg ? (pmSnf / pmKg).toFixed(1) : '0';
@@ -1128,7 +1152,7 @@ function displayMilkData(data) {
             ${rows}
            
             <tr class="milk-summary-row">
-                <td class="milk-data-cell" colspan="2"><strong>🌅 সকাল (AM)</strong></td>
+                <td class="milk-data-cell" colspan="2"><strong>🌅 সকাল (Morning)</strong></td>
                 <td class="milk-data-cell"><strong>${avgFatAm}</strong></td>
                 <td class="milk-data-cell"><strong>${avgSnfAm}</strong></td>
                 <td class="milk-data-cell"><strong>₹${avgRateAm}</strong></td>
@@ -1136,7 +1160,15 @@ function displayMilkData(data) {
                 <td class="milk-data-cell"><strong>₹${amAmount.toFixed(0)}</strong></td>
             </tr>
             <tr class="milk-summary-row">
-                <td class="milk-data-cell" colspan="2"><strong>🌇 সন্ধ্যা (PM)</strong></td>
+                <td class="milk-data-cell" colspan="2"><strong>☀️ দুপুর (Afternoon)</strong></td>
+                <td class="milk-data-cell"><strong>${avgFatNoon}</strong></td>
+                <td class="milk-data-cell"><strong>${avgSnfNoon}</strong></td>
+                <td class="milk-data-cell"><strong>₹${avgRateNoon}</strong></td>
+                <td class="milk-data-cell"><strong>${noonKg.toFixed(2)} kg</strong></td>
+                <td class="milk-data-cell"><strong>₹${noonAmount.toFixed(0)}</strong></td>
+            </tr>
+            <tr class="milk-summary-row">
+                <td class="milk-data-cell" colspan="2"><strong>🌇 সন্ধ্যা (Evening)</strong></td>
                 <td class="milk-data-cell"><strong>${avgFatPm}</strong></td>
                 <td class="milk-data-cell"><strong>${avgSnfPm}</strong></td>
                 <td class="milk-data-cell"><strong>₹${avgRatePm}</strong></td>

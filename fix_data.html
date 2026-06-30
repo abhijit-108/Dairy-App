@@ -411,9 +411,9 @@
         }
 
         function getTimePeriod(hours) {
-            if (hours >= 3 && hours < 11) {
+            if (hours < 10) {
                 return "সকাল";
-            } else if (hours >= 12 && hours < 15) {
+            } else if (hours < 15) {
                 return "দুপুর";
             } else {
                 return "সন্ধ্যা";

@@ -703,6 +703,144 @@
         border: 2px solid #ffffff;
       }
     }
+
+    /* Custom Multi-select Dropdown styling */
+    .custom-select-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .custom-select-container label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .custom-select-trigger {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 38px;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    .custom-select-trigger:hover {
+      border-color: var(--primary-light);
+      background: var(--bg-primary);
+    }
+
+    .custom-select-trigger.active {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
+      background: var(--bg-primary);
+    }
+
+    .custom-select-trigger i {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      transition: transform 0.2s ease;
+    }
+
+    .custom-select-trigger.active i {
+      transform: rotate(180deg);
+    }
+
+    .custom-select-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-primary);
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      margin-top: 0.25rem;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -2px var(--shadow);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-5px);
+      transition: all 0.2s ease;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary-color) var(--bg-secondary);
+    }
+
+    .custom-select-options::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .custom-select-options::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+    }
+
+    .custom-select-options::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 3px;
+    }
+
+    .custom-select-options.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .custom-select-option {
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      user-select: none;
+    }
+
+    .custom-select-option:hover {
+      background: var(--bg-secondary);
+    }
+
+    .custom-select-option input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--primary-color);
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .custom-select-option label {
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      flex-grow: 1;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    @media screen and (max-width: 480px) {
+      .custom-select-trigger {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.75rem;
+        min-height: 32px;
+      }
+    }
   </style>
 </head>
 
@@ -735,36 +873,48 @@
 
   <!-- Main Filters -->
   <section class="filter-container" role="region" aria-label="Data filters">
-    <div class="select-wrapper">
-      <label for="monthFilter">Month</label>
-      <select id="monthFilter" aria-describedby="month-help">
-        <option value="all">All Months</option>
-      </select>
+    <div class="custom-select-container">
+      <label>Month</label>
+      <div class="custom-select-trigger" id="monthTrigger">
+        <span>All Months</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="custom-select-options" id="monthFilterDropdown">
+        <!-- Options populated dynamically -->
+      </div>
     </div>
 
-    <div class="select-wrapper">
-      <label for="yearFilter">Year</label>
-      <select id="yearFilter" aria-describedby="year-help">
-        <option value="all">All Years</option>
-      </select>
+    <div class="custom-select-container">
+      <label>Year</label>
+      <div class="custom-select-trigger" id="yearTrigger">
+        <span>All Years</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="custom-select-options" id="yearFilterDropdown">
+        <!-- Options populated dynamically -->
+      </div>
     </div>
 
-    <div class="select-wrapper">
-      <label for="dateRangeFilter">Date Range</label>
-      <select id="dateRangeFilter" aria-describedby="range-help">
-        <option value="all">All Dates</option>
-        <option value="1-7">1-7</option>
-        <option value="8-15">8-15</option>
-        <option value="16-23">16-23</option>
-        <option value="24-end">24-end</option>
-      </select>
+    <div class="custom-select-container">
+      <label>Date Range</label>
+      <div class="custom-select-trigger" id="dateRangeTrigger">
+        <span>All Dates</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="custom-select-options" id="dateRangeFilterDropdown">
+        <!-- Options populated dynamically -->
+      </div>
     </div>
 
-    <div class="select-wrapper">
-      <label for="nameFilter">Name</label>
-      <select id="nameFilter" aria-describedby="name-help">
-        <option value="all">All Names</option>
-      </select>
+    <div class="custom-select-container">
+      <label>Name</label>
+      <div class="custom-select-trigger" id="nameTrigger">
+        <span>All Names</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="custom-select-options" id="nameFilterDropdown">
+        <!-- Options populated dynamically -->
+      </div>
     </div>
   </section>
 
@@ -1018,6 +1168,182 @@
       }
     });
 
+    // Toggle dropdown logic
+    function setupDropdownTrigger(triggerId, dropdownId) {
+      const trigger = document.getElementById(triggerId);
+      const dropdown = document.getElementById(dropdownId);
+      
+      if (!trigger || !dropdown) return;
+      
+      trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isOpen = dropdown.classList.contains('open');
+        
+        // Close all dropdowns
+        document.querySelectorAll('.custom-select-options').forEach(d => {
+          if (d !== dropdown) d.classList.remove('open');
+        });
+        document.querySelectorAll('.custom-select-trigger').forEach(t => {
+          if (t !== trigger) t.classList.remove('active');
+        });
+        
+        dropdown.classList.toggle('open');
+        trigger.classList.toggle('active');
+      });
+    }
+
+    setupDropdownTrigger('monthTrigger', 'monthFilterDropdown');
+    setupDropdownTrigger('yearTrigger', 'yearFilterDropdown');
+    setupDropdownTrigger('dateRangeTrigger', 'dateRangeFilterDropdown');
+    setupDropdownTrigger('nameTrigger', 'nameFilterDropdown');
+
+    // Close dropdowns on clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.custom-select-container')) {
+        document.querySelectorAll('.custom-select-options').forEach(d => d.classList.remove('open'));
+        document.querySelectorAll('.custom-select-trigger').forEach(t => t.classList.remove('active'));
+      }
+    });
+
+    function populateCustomFilter(dropdownId, items, defaultText, valuePrefix) {
+      const dropdown = document.getElementById(dropdownId);
+      if (!dropdown) return;
+      
+      let html = `
+        <div class="custom-select-option">
+          <input type="checkbox" id="${valuePrefix}_all" value="all" checked>
+          <label for="${valuePrefix}_all">${defaultText}</label>
+        </div>
+      `;
+      
+      items.forEach((item, index) => {
+        const id = `${valuePrefix}_${index}`;
+        const val = item.value;
+        const label = item.label;
+        html += `
+          <div class="custom-select-option">
+            <input type="checkbox" id="${id}" value="${val}">
+            <label for="${id}">${label}</label>
+          </div>
+        `;
+      });
+      
+      dropdown.innerHTML = html;
+      setupCheckboxListeners(dropdownId, valuePrefix, defaultText);
+    }
+
+    function setupCheckboxListeners(dropdownId, valuePrefix, defaultText) {
+      const dropdown = document.getElementById(dropdownId);
+      if (!dropdown) return;
+      
+      const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
+      const allCheckbox = dropdown.querySelector(`#${valuePrefix}_all`);
+      
+      checkboxes.forEach(cb => {
+        cb.addEventListener('change', function(e) {
+          if (cb === allCheckbox) {
+            if (allCheckbox.checked) {
+              checkboxes.forEach(c => {
+                if (c !== allCheckbox) c.checked = false;
+              });
+            } else {
+              // Ensure at least one option is selected (default to All)
+              const anyChecked = Array.from(checkboxes).some(c => c !== allCheckbox && c.checked);
+              if (!anyChecked) {
+                allCheckbox.checked = true;
+              }
+            }
+          } else {
+            if (cb.checked) {
+              allCheckbox.checked = false;
+            } else {
+              const anyChecked = Array.from(checkboxes).some(c => c !== allCheckbox && c.checked);
+              if (!anyChecked) {
+                allCheckbox.checked = true;
+              }
+            }
+          }
+          
+          updateTriggerLabel(dropdownId, valuePrefix, defaultText);
+          debouncedUpdateTable();
+        });
+        
+        // Also allow clicking the option container to toggle checkbox
+        cb.parentElement.addEventListener('click', function(e) {
+          if (e.target !== cb && e.target.tagName !== 'LABEL') {
+            cb.checked = !cb.checked;
+            cb.dispatchEvent(new Event('change'));
+          }
+        });
+      });
+    }
+
+    function updateTriggerLabel(dropdownId, valuePrefix, defaultText) {
+      const dropdown = document.getElementById(dropdownId);
+      if (!dropdown) return;
+      
+      const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
+      const allCheckbox = dropdown.querySelector(`#${valuePrefix}_all`);
+      const trigger = dropdown.previousElementSibling;
+      if (!trigger) return;
+      const triggerLabel = trigger.querySelector('span');
+      if (!triggerLabel) return;
+      
+      if (allCheckbox && allCheckbox.checked) {
+        triggerLabel.textContent = defaultText;
+        return;
+      }
+      
+      const checkedLabels = [];
+      checkboxes.forEach(cb => {
+        if (cb !== allCheckbox && cb.checked) {
+          checkedLabels.push(cb.nextElementSibling.textContent);
+        }
+      });
+      
+      if (checkedLabels.length === 0) {
+        triggerLabel.textContent = defaultText;
+      } else if (checkedLabels.length <= 2) {
+        triggerLabel.textContent = checkedLabels.join(', ');
+      } else {
+        triggerLabel.textContent = `${checkedLabels.length} Selected`;
+      }
+    }
+
+    function getSelectedValues(dropdownId, valuePrefix) {
+      const dropdown = document.getElementById(dropdownId);
+      if (!dropdown) return ['all'];
+      
+      const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
+      const allCheckbox = dropdown.querySelector(`#${valuePrefix}_all`);
+      
+      if (!allCheckbox || allCheckbox.checked) {
+        return ['all'];
+      }
+      
+      const values = [];
+      checkboxes.forEach(cb => {
+        if (cb !== allCheckbox && cb.checked) {
+          values.push(cb.value);
+        }
+      });
+      
+      return values.length > 0 ? values : ['all'];
+    }
+
+    // Helper to check custom filter option programmatically
+    function checkFilterOption(dropdownId, valuePrefix, value, defaultText) {
+      const dropdown = document.getElementById(dropdownId);
+      if (!dropdown) return;
+      const cb = dropdown.querySelector(`input[value="${value}"]`);
+      if (cb) {
+        cb.checked = true;
+        const allCb = dropdown.querySelector(`#${valuePrefix}_all`);
+        if (allCb) allCb.checked = false;
+        updateTriggerLabel(dropdownId, valuePrefix, defaultText);
+      }
+    }
+
     function populateFilters(data) {
       const months = new Set();
       const years = new Set();
@@ -1049,40 +1375,50 @@
         })
         .sort((a, b) => b.year - a.year || b.month - a.month);
 
-      // Populate Month Filter with an "All Months" option first.
-      const monthFilter = document.getElementById('monthFilter');
-      monthFilter.innerHTML = `<option value="all">All Months</option>` +
-        sortedMonths.map(m => `<option value="${m.month}">${m.label}</option>`).join('');
-      monthFilter.value = queryMonth ? filterDate.getMonth() + 1 : filterDate.getMonth() + 1;
+      // Populate Month Filter
+      const monthItems = sortedMonths.map(m => ({ value: m.month.toString(), label: m.label }));
+      populateCustomFilter('monthFilterDropdown', monthItems, 'All Months', 'month');
 
-      // Populate Year Filter with an "All Years" option first.
-      const yearFilter = document.getElementById('yearFilter');
-      yearFilter.innerHTML = `<option value="all">All Years</option>` +
-        Array.from(years)
-          .sort((a, b) => b - a)
-          .map(year => `<option value="${year}">${year}</option>`)
-          .join('');
-      yearFilter.value = (queryMonth || queryName) ? filterDate.getFullYear() : filterDate.getFullYear();
+      // Populate Year Filter
+      const yearItems = Array.from(years)
+        .sort((a, b) => b - a)
+        .map(year => ({ value: year.toString(), label: year.toString() }));
+      populateCustomFilter('yearFilterDropdown', yearItems, 'All Years', 'year');
 
-      // Populate Name Filter with "All Names" as the default option.
-      const nameFilter = document.getElementById('nameFilter');
-      nameFilter.innerHTML = '<option value="all">All Names</option>' +
-        Array.from(names)
-          .sort()
-          .map(name => `<option value="${name}">${name}</option>`)
-          .join('');
-      nameFilter.value = queryName ? queryName : "all";
+      // Populate Name Filter
+      const nameItems = Array.from(names)
+        .sort()
+        .map(name => ({ value: name, label: name }));
+      populateCustomFilter('nameFilterDropdown', nameItems, 'All Names', 'name');
 
-      // Populate Date Range Filter.
-      const dateRangeFilter = document.getElementById('dateRangeFilter');
-      if (override) {
-        dateRangeFilter.value = "all";
-      } else {
+      // Populate Date Range Filter
+      const dateRangeItems = [
+        { value: '1-7', label: '1-7' },
+        { value: '8-15', label: '8-15' },
+        { value: '16-23', label: '16-23' },
+        { value: '24-end', label: '24-end' }
+      ];
+      populateCustomFilter('dateRangeFilterDropdown', dateRangeItems, 'All Dates', 'range');
+
+      // Set initial values based on current logic
+      const initialMonth = (filterDate.getMonth() + 1).toString();
+      const initialYear = filterDate.getFullYear().toString();
+      
+      checkFilterOption('monthFilterDropdown', 'month', initialMonth, 'All Months');
+      checkFilterOption('yearFilterDropdown', 'year', initialYear, 'All Years');
+      
+      if (queryName) {
+        const namesQuery = queryName.split(',');
+        namesQuery.forEach(n => checkFilterOption('nameFilterDropdown', 'name', n.trim(), 'All Names'));
+      }
+      
+      if (!override) {
         const day = filterDate.getDate();
-        if (day >= 1 && day <= 7) dateRangeFilter.value = "1-7";
-        else if (day >= 8 && day <= 15) dateRangeFilter.value = "8-15";
-        else if (day >= 16 && day <= 23) dateRangeFilter.value = "16-23";
-        else dateRangeFilter.value = "24-end";
+        let rangeVal = "24-end";
+        if (day >= 1 && day <= 7) rangeVal = "1-7";
+        else if (day >= 8 && day <= 15) rangeVal = "8-15";
+        else if (day >= 16 && day <= 23) rangeVal = "16-23";
+        checkFilterOption('dateRangeFilterDropdown', 'range', rangeVal, 'All Dates');
       }
     }
 
@@ -1097,10 +1433,10 @@
       const nameAggregates = {};
 
       // Read selected filters
-      const selectedMonth = document.getElementById('monthFilter').value;
-      const selectedYear = document.getElementById('yearFilter').value;
-      const selectedDateRange = document.getElementById('dateRangeFilter').value;
-      const selectedName = document.getElementById('nameFilter').value;
+      const selectedMonths = getSelectedValues('monthFilterDropdown', 'month');
+      const selectedYears = getSelectedValues('yearFilterDropdown', 'year');
+      const selectedDateRanges = getSelectedValues('dateRangeFilterDropdown', 'range');
+      const selectedNames = getSelectedValues('nameFilterDropdown', 'name');
 
       Object.keys(allData).forEach(dateKey => {
         const [dayStr, monthStr, yearStr] = dateKey.split('-');
@@ -1108,21 +1444,27 @@
         const month = parseInt(monthStr);
         const year = parseInt(yearStr);
 
-        // Apply month filter (if not "all")
-        if (selectedMonth !== 'all' && parseInt(selectedMonth) !== month) return;
-        // Apply year filter (if not "all")
-        if (selectedYear !== 'all' && parseInt(selectedYear) !== year) return;
+        // Apply month filter
+        if (!selectedMonths.includes('all') && !selectedMonths.includes(month.toString())) return;
+        
+        // Apply year filter
+        if (!selectedYears.includes('all') && !selectedYears.includes(year.toString())) return;
 
-        // Apply date range filter if not set to "all"
-        if (selectedDateRange !== 'all') {
-          const [start, end] = selectedDateRange.split('-');
-          if (end === 'end' && day < 24) return;
-          if (end !== 'end' && (day < parseInt(start) || day > parseInt(end))) return;
+        // Apply date range filter
+        if (!selectedDateRanges.includes('all')) {
+          const dayMatchesAnyRange = selectedDateRanges.some(range => {
+            const [start, end] = range.split('-');
+            if (end === 'end' && day >= 24) return true;
+            if (end !== 'end' && day >= parseInt(start) && day <= parseInt(end)) return true;
+            return false;
+          });
+          if (!dayMatchesAnyRange) return;
         }
 
         Object.values(allData[dateKey]).forEach(user => {
           Object.entries(user).forEach(([session, entry]) => {
-            if (selectedName !== 'all' && entry.name !== selectedName) return;
+            // Apply name filter
+            if (!selectedNames.includes('all') && !selectedNames.includes(entry.name)) return;
 
             const fatVal = parseFloat(entry.fat);
             const snfVal = parseFloat(entry.snf);
@@ -1218,10 +1560,6 @@
       document.getElementById('aggregateTotalTotal').textContent = aggregateSumTotal.toFixed(0);
     }
 
-    // Update table whenever a filter changes.
-    document.querySelectorAll('.filter-container select')
-      .forEach(filter => filter.addEventListener('change', updateTable));
-
     onAuthStateChanged(auth, (user) => {
       // Your authentication handling code (if any)
     });
@@ -1241,15 +1579,24 @@
 
     // Apply debounced filter updates
     const debouncedUpdateTable = debounce(updateTable, 300);
-    document.querySelectorAll('.filter-container select')
-      .forEach(filter => filter.addEventListener('change', debouncedUpdateTable));
 
     // Keyboard navigation enhancement
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         // Reset all filters to default
-        document.querySelectorAll('.filter-container select').forEach(select => {
-          select.selectedIndex = 0;
+        document.querySelectorAll('.custom-select-options').forEach(dropdown => {
+          const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
+          const allCheckbox = dropdown.querySelector('input[value="all"]');
+          checkboxes.forEach(cb => {
+            cb.checked = (cb === allCheckbox);
+          });
+          const valuePrefix = dropdown.id.includes('month') ? 'month' :
+                              dropdown.id.includes('year') ? 'year' :
+                              dropdown.id.includes('range') ? 'range' : 'name';
+          const defaultText = dropdown.id.includes('month') ? 'All Months' :
+                              dropdown.id.includes('year') ? 'All Years' :
+                              dropdown.id.includes('range') ? 'All Dates' : 'All Names';
+          updateTriggerLabel(dropdown.id, valuePrefix, defaultText);
         });
         updateTable();
       }
