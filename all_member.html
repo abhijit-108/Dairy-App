@@ -841,6 +841,16 @@
         min-height: 32px;
       }
     }
+
+    /* Constrain width of summary table total columns and allow wrapping */
+    #nameAggregateTable td:nth-child(3),
+    #nameAggregateTable td:nth-child(4),
+    #nameAggregateTable th:nth-child(3),
+    #nameAggregateTable th:nth-child(4) {
+      max-width: 180px;
+      word-wrap: break-word;
+      white-space: normal;
+    }
   </style>
 </head>
 
@@ -1493,10 +1503,12 @@
             // --- Aggregate by name for the second table ---
             const name = entry.name;
             if (!nameAggregates[name]) {
-              nameAggregates[name] = { totalKg: 0, totalTotal: 0 };
+              nameAggregates[name] = { totalKg: 0, totalTotal: 0, kgs: [], totals: [] };
             }
             nameAggregates[name].totalKg += kgVal;
             nameAggregates[name].totalTotal += totalVal;
+            nameAggregates[name].kgs.push(kgVal);
+            nameAggregates[name].totals.push(totalVal);
           });
         });
       });
@@ -1543,12 +1555,17 @@
         const aggregate = nameAggregates[name];
         // Calculate aggregated rate as totalTotal / totalKg (if available)
         const aggregatedRate = aggregate.totalKg > 0 ? (aggregate.totalTotal / aggregate.totalKg) : 0;
+        
+        // Format the detailed breakdown string for kg and total
+        const kgDisplay = aggregate.kgs.join(' + ') + ' = (' + aggregate.totalKg.toFixed(1) + ')';
+        const totalDisplay = aggregate.totals.join(' + ') + ' = (' + aggregate.totalTotal.toFixed(0) + ')';
+
         nameAggregateTbody.innerHTML += `
           <tr>
             <td>${name}</td>
             <td>${aggregatedRate.toFixed(1)}</td>
-            <td>${aggregate.totalKg.toFixed(1)}</td>
-            <td>${aggregate.totalTotal.toFixed(0)}</td>
+            <td>${kgDisplay}</td>
+            <td>${totalDisplay}</td>
           </tr>
         `;
         aggregateSumKg += aggregate.totalKg;
