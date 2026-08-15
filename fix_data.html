@@ -34,7 +34,7 @@
     
     #container {
         width: 100%;
-        max-width: 400px;
+        max-width: 600px;
         position: relative;
         transition: box-shadow 0.3s;
     }
@@ -47,6 +47,104 @@
         0% { box-shadow: 0 0 0 0 rgba(3, 218, 198, 0); }
         50% { box-shadow: 0 0 0 4px rgba(3, 218, 198, 0.5); }
         100% { box-shadow: 0 0 0 0 rgba(3, 218, 198, 0); }
+    }
+
+    .records-table-container {
+        margin-top: 25px;
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 18px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .records-table-title {
+        font-size: 15px;
+        font-weight: bold;
+        color: var(--accent-color);
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .records-badge {
+        font-size: 12px;
+        background: var(--input-bg);
+        color: var(--text-secondary);
+        padding: 3px 8px;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+    }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+    }
+
+    .records-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        color: var(--text-primary);
+        min-width: 460px;
+    }
+
+    .records-table th, .records-table td {
+        padding: 9px 8px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .records-table th {
+        background-color: var(--input-bg);
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 12px;
+        letter-spacing: 0.3px;
+    }
+
+    .records-table tbody tr {
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+    }
+
+    .records-table tbody tr:hover {
+        background-color: rgba(187, 134, 252, 0.12);
+    }
+
+    .session-badge {
+        padding: 3px 7px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .session-morning { background-color: rgba(255, 193, 7, 0.18); color: #ffd54f; }
+    .session-noon { background-color: rgba(33, 150, 243, 0.18); color: #64b5f6; }
+    .session-evening { background-color: rgba(156, 39, 176, 0.18); color: #ce93d8; }
+
+    .load-row-btn {
+        background-color: transparent;
+        color: var(--accent-color);
+        border: 1px solid var(--accent-color);
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .load-row-btn:hover {
+        background-color: var(--accent-color);
+        color: #000;
     }
     
     #backtomain {
@@ -266,6 +364,32 @@
                 <div class="alert">Data submitted successfully!</div>
                 <button type="submit" id="submit" class="submit-btn">Calculate</button>
             </form>
+
+            <div id="recentRecordsBox" class="records-table-container" style="display: none;">
+                <div class="records-table-title">
+                    <span id="recordsTitleText">📋 গত ১৫ দিনের রেকর্ড</span>
+                    <span id="recordsCountBadge" class="records-badge">0 টি এন্ট্রি</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="records-table">
+                        <thead>
+                            <tr>
+                                <th>তারিখ</th>
+                                <th>সময়</th>
+                                <th>Kg</th>
+                                <th>FAT</th>
+                                <th>SNF</th>
+                                <th>Rate</th>
+                                <th>Total</th>
+                                <th>Fix</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentRecordsBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
    
@@ -282,6 +406,12 @@
                     option.value = name;
                     option.text = name;
                     nameSelect.appendChild(option);
+                });
+
+                nameSelect.addEventListener('change', () => {
+                    if (typeof window.renderMemberRecentRecords === 'function') {
+                        window.renderMemberRecentRecords();
+                    }
                 });
             } catch (error) {
                 console.error('Error fetching names:', error);
@@ -356,7 +486,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -372,6 +502,176 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase();
         const auth = getAuth();
+
+        let allRecordsData = {};
+
+        // Real-time listener for all records
+        const recordsRef = ref(database, 'records');
+        onValue(recordsRef, (snapshot) => {
+            allRecordsData = snapshot.val() || {};
+            if (typeof window.renderMemberRecentRecords === 'function') {
+                window.renderMemberRecentRecords();
+            }
+        });
+
+        window.renderMemberRecentRecords = function() {
+            const nameSelect = document.getElementById('name');
+            const selectedName = nameSelect ? nameSelect.value.trim() : '';
+            const recordsBox = document.getElementById('recentRecordsBox');
+            const recordsBody = document.getElementById('recentRecordsBody');
+            const countBadge = document.getElementById('recordsCountBadge');
+            const titleText = document.getElementById('recordsTitleText');
+
+            if (!recordsBox || !recordsBody) return;
+
+            if (!selectedName) {
+                recordsBox.style.display = 'none';
+                return;
+            }
+
+            recordsBox.style.display = 'block';
+            if (titleText) {
+                titleText.textContent = `📋 ${selectedName} - গত ১৫ দিনের রেকর্ড`;
+            }
+
+            // Compute date window: today - 15 days
+            const now = new Date();
+            const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+            const fifteenDaysAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 15, 0, 0, 0, 0);
+
+            const matchedRecords = [];
+
+            if (allRecordsData) {
+                Object.keys(allRecordsData).forEach(dateKey => {
+                    const parts = dateKey.split('-').map(Number);
+                    if (parts.length === 3) {
+                        const [d, m, y] = parts;
+                        const recDate = new Date(y, m - 1, d);
+
+                        if (recDate >= fifteenDaysAgo && recDate <= todayEnd) {
+                            const dayData = allRecordsData[dateKey];
+                            if (dayData && typeof dayData === 'object') {
+                                Object.values(dayData).forEach(userRecord => {
+                                    if (userRecord && typeof userRecord === 'object') {
+                                        Object.entries(userRecord).forEach(([sessionKey, entry]) => {
+                                            if (entry && entry.name && entry.name.trim().toLowerCase() === selectedName.toLowerCase()) {
+                                                matchedRecords.push({
+                                                    dateKey: dateKey,
+                                                    day: d,
+                                                    month: m,
+                                                    year: y,
+                                                    recDate: recDate,
+                                                    session: sessionKey,
+                                                    kg: entry.kg !== undefined ? entry.kg : '',
+                                                    fat: entry.fat !== undefined ? entry.fat : '',
+                                                    snf: entry.snf !== undefined ? entry.snf : '',
+                                                    rate: entry.rate !== undefined ? entry.rate : '',
+                                                    total: entry.total !== undefined ? entry.total : '',
+                                                    timestamp: entry.timestamp || ''
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Sort descending by date (most recent first)
+            matchedRecords.sort((a, b) => {
+                if (b.recDate.getTime() !== a.recDate.getTime()) {
+                    return b.recDate.getTime() - a.recDate.getTime();
+                }
+                const sessionWeight = (s) => {
+                    if (s.includes('সকাল') || s.toLowerCase().includes('morn')) return 1;
+                    if (s.includes('দুপুর') || s.toLowerCase().includes('noon')) return 2;
+                    if (s.includes('সন্ধ্যা') || s.toLowerCase().includes('eve')) return 3;
+                    return 0;
+                };
+                return sessionWeight(b.session) - sessionWeight(a.session);
+            });
+
+            if (countBadge) {
+                countBadge.textContent = `${matchedRecords.length} টি এন্ট্রি`;
+            }
+
+            if (matchedRecords.length === 0) {
+                recordsBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 18px; color: var(--text-secondary);">গত ১৫ দিনে কোনো রেকর্ড পাওয়া যায়নি</td></tr>`;
+                return;
+            }
+
+            recordsBody.innerHTML = '';
+            matchedRecords.forEach(rec => {
+                const tr = document.createElement('tr');
+                const formattedDisplayDate = `${pad2(rec.day)}/${pad2(rec.month)}/${String(rec.year).slice(-2)}`;
+                
+                let sessionClass = 'session-morning';
+                if (rec.session.includes('দুপুর')) sessionClass = 'session-noon';
+                if (rec.session.includes('সন্ধ্যা')) sessionClass = 'session-evening';
+
+                tr.innerHTML = `
+                    <td style="font-weight: 500;">${formattedDisplayDate}</td>
+                    <td><span class="session-badge ${sessionClass}">${rec.session}</span></td>
+                    <td style="font-weight: 600; color: var(--success-color);">${rec.kg}</td>
+                    <td>${rec.fat}</td>
+                    <td>${rec.snf}</td>
+                    <td>${rec.rate}</td>
+                    <td style="font-weight: 600; color: #ffb74d;">₹${rec.total}</td>
+                    <td>
+                        <button type="button" class="load-row-btn" title="Load into form">✏️ Fix</button>
+                    </td>
+                `;
+
+                tr.addEventListener('click', () => {
+                    window.loadRecordIntoForm(rec);
+                });
+
+                recordsBody.appendChild(tr);
+            });
+        };
+
+        window.loadRecordIntoForm = function(rec) {
+            const dateInput = document.getElementById('customDate');
+            const timeInput = document.getElementById('customTime');
+            const kgInput = document.getElementById('kg');
+            const fatInput = document.getElementById('fat');
+            const snfInput = document.getElementById('snf');
+            const rateInput = document.getElementById('rate');
+            const totalInput = document.getElementById('total');
+
+            const yyyy = rec.year;
+            const mm = pad2(rec.month);
+            const dd = pad2(rec.day);
+            if (dateInput) {
+                dateInput.value = `${yyyy}-${mm}-${dd}`;
+                updateDatePreview();
+            }
+
+            if (timeInput) {
+                if (rec.session.includes('সকাল')) timeInput.value = '07:00';
+                else if (rec.session.includes('দুপুর')) timeInput.value = '13:00';
+                else if (rec.session.includes('সন্ধ্যা')) timeInput.value = '18:00';
+                else timeInput.value = '07:00';
+                updateTimePreview();
+            }
+
+            if (kgInput) kgInput.value = rec.kg;
+            if (fatInput) fatInput.value = rec.fat;
+            if (snfInput) snfInput.value = rec.snf;
+            if (rateInput) rateInput.value = rec.rate;
+            if (totalInput) totalInput.value = rec.total;
+
+            const formBox = document.getElementById('form-box');
+            if (formBox) {
+                formBox.scrollIntoView({ behavior: 'smooth' });
+                formBox.style.boxShadow = '0 0 15px var(--accent-color)';
+                setTimeout(() => {
+                    formBox.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.3)';
+                }, 1000);
+            }
+        };
 
         document.getElementById('registrationform').addEventListener('submit', formSubmit);
 

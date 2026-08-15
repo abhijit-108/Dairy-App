@@ -271,51 +271,6 @@ body {
     font-weight: bold;
 }
 
-/* Dark Mode Toggle */
-.dark-mode-toggle {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    margin-right: 15px;
-}
-
-.dark-mode-toggle:hover {
-    transform: translateY(-2px) scale(1.1);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-.dark-mode-toggle i {
-    font-size: 18px;
-    color: white;
-    transition: transform 0.3s ease;
-}
-
-.dark-mode-toggle.active i {
-    transform: rotate(180deg);
-}
-
-/* Dark Mode Toggle - Dark Theme */
-body.dark-mode .dark-mode-toggle {
-    background: linear-gradient(135deg, #60a5fa, #a78bfa);
-    box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
-}
-
-body.dark-mode .dark-mode-toggle:hover {
-    box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4);
-}
-
-body.dark-mode .dark-mode-toggle i {
-    color: #1a1a2e;
-}
-
 /* Main Content Component */
 .main {
     flex: 1;
@@ -341,6 +296,73 @@ body.dark-mode .dark-mode-toggle i {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Shift Details Chip */
+.shift-chip-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.shift-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13.5px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.25s ease;
+    user-select: none;
+    border: 1px solid transparent;
+}
+
+.shift-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.shift-chip i {
+    font-size: 17px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.shift-chip .shift-text {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+/* Morning Shift (সকাল - Green) */
+.shift-chip.shift-morning {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    color: #065f46;
+    border-color: #a7f3d0;
+}
+.shift-chip.shift-morning i {
+    color: #059669;
+}
+
+/* Afternoon Shift (দুপুর - Orange) */
+.shift-chip.shift-afternoon {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    color: #9a3412;
+    border-color: #fed7aa;
+}
+.shift-chip.shift-afternoon i {
+    color: #ea580c;
+}
+
+/* Evening Shift (সন্ধ্যা - Blue) */
+.shift-chip.shift-evening {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    color: #1e40af;
+    border-color: #bfdbfe;
+}
+.shift-chip.shift-evening i {
+    color: #2563eb;
 }
 
 .form-group {
@@ -1331,320 +1353,4 @@ input:focus {
 /* Disabled State */
 .disabled {
     display: none;
-}
-
-/* Dark Mode Styles */
-body.dark-mode {
-    /* Body and Background */
-    background: linear-gradient(135deg, #060111 0%, #43186f 100%);
-    color: #e2e8f0;
-
-    /* Navbar */
-    .navbar {
-        background: rgba(26, 26, 46, 0.95);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
-    }
-
-    .navbar-title {
-        background: linear-gradient(45deg, #60a5fa, #a78bfa);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .datetime {
-        color: #94a3b8;
-    }
-
-    .sidebar-overlay.active {
-        background: rgba(0, 0, 0, 0.6);
-    }
-
-    /* Container */
-    .container {
-        background: rgba(26, 26, 46, 0.95) !important;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    /* Form Elements */
-    label {
-        color: #cbd5e1 !important;
-    }
-
-    select,
-    input[type="number"] {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 2px solid rgba(255, 255, 255, 0.1) !important;
-        color: #e2e8f0 !important;
-    }
-
-    select:focus,
-    input:focus {
-        border-color: #60a5fa !important;
-        background: rgba(255, 255, 255, 0.08) !important;
-    }
-
-    /* Input specific colors */
-    #fat {
-        color: #a78bfa !important;
-    }
-
-    #snf {
-        color: #60a5fa !important;
-    }
-
-    #kg {
-        color: #34d399 !important;
-    }
-
-    /* Audio Toggle */
-    .audio-toggle label {
-        background: rgba(102, 126, 234, 0.2);
-        color: #e2e8f0;
-    }
-
-    .audio-toggle label:hover {
-        background: rgba(102, 126, 234, 0.3);
-    }
-
-    /* Popup Card */
-    .popup-overlay {
-        background: rgba(0, 0, 0, 0.9);
-    }
-
-    .popup-card {
-        background: #1e293b;
-        color: #e2e8f0;
-    }
-
-    .popup-title {
-        color: #e2e8f0;
-    }
-
-    .popup-details {
-        background: rgba(255, 255, 255, 0.05);
-    }
-
-    .popup-details div {
-        background: rgba(255, 255, 255, 0.05);
-    }
-
-    .popup-details strong {
-        color: #cbd5e1;
-    }
-
-    .popup-details span {
-        color: #60a5fa;
-    }
-
-    .popup-card.reprint {
-        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-        border-left: 5px solid #60a5fa;
-    }
-
-    .popup-card.reprint .popup-title {
-        background: linear-gradient(135deg, #60a5fa, #93c5fd);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .popup-card.reprint .popup-details {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(96, 165, 250, 0.2);
-    }
-
-    .popup-card.reprint .popup-details div {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .popup-card.reprint .popup-details strong {
-        color: #93c5fd;
-    }
-
-    .popup-card.reprint .print-btn {
-        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-        box-shadow: 0 4px 15px rgba(96, 165, 250, 0.4);
-    }
-
-    .popup-card.reprint .print-btn:hover {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        box-shadow: 0 6px 20px rgba(96, 165, 250, 0.6);
-    }
-
-    /* Existing Entry */
-    .existing-entry {
-        background: rgba(255, 255, 255, 0.05);
-    }
-
-    .existing-entry h3 {
-        color: #f87171;
-    }
-
-    /* Close Button */
-    .close-btn {
-        background: #991b1b;
-    }
-
-    .close-btn:hover {
-        background: #dc2626;
-    }
-
-    /* Login Button */
-    #loginBtn2 {
-        background: #991b1b;
-    }
-
-    #loginBtn2:hover {
-        background: #16a34a;
-    }
-
-    /* Milk Dashboard */
-    .milk-dashboard-container {
-        background: #1a1f2e !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    .milk-records-table {
-        background: #1a1f2e !important;
-    }
-
-    .milk-table-header {
-        background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%) !important;
-    }
-
-    .milk-header-cell {
-        color: #ffffff !important;
-        font-weight: 700 !important;
-    }
-
-    .milk-data-cell {
-        color: #f0f4f8 !important;
-        font-weight: 600 !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
-        background: transparent !important;
-    }
-
-    .milk-data-cell:nth-child(6),
-    .milk-data-cell:nth-child(7) {
-        font-weight: 800 !important;
-        font-size: 16px !important;
-    }
-
-    .milk-data-row {
-        background: transparent !important;
-    }
-
-    .milk-name-cell {
-        color: #60a5fa !important;
-        font-weight: 700 !important;
-    }
-
-    .milk-time-cell {
-        color: #a78bfa !important;
-        font-weight: 600 !important;
-    }
-
-    .milk-amount-cell {
-        color: #10b981 !important;
-        font-weight: 900 !important;
-    }
-
-    .milk-data-row:hover {
-        background-color: rgba(96, 165, 250, 0.15) !important;
-    }
-
-    .milk-date-dropdown {
-        background: rgba(255, 255, 255, 0.1) !important;
-        color: #f0f4f8 !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        font-weight: 600 !important;
-    }
-
-    .milk-metric-badge {
-        background: rgba(96, 165, 250, 0.15) !important;
-        color: #60a5fa !important;
-        font-weight: 700 !important;
-        border: 1px solid rgba(96, 165, 250, 0.2) !important;
-    }
-
-    .milk-metric-badge2 {
-        background: rgba(34, 211, 238, 0.15) !important;
-        color: #22d3ee !important;
-        font-weight: 700 !important;
-        border: 1px solid rgba(34, 211, 238, 0.2) !important;
-    }
-
-    .milk-loading-state,
-    .milk-error-state,
-    .milk-empty-state {
-        color: #94a3b8;
-    }
-
-    .milk-error-state {
-        color: #f87171;
-    }
-
-    .milk-metric-badge {
-        background: rgba(96, 165, 250, 0.2);
-        color: #93c5fd;
-    }
-
-    .milk-metric-badge2 {
-        background: rgba(34, 211, 238, 0.2);
-        color: #67e8f9;
-    }
-
-    .status-message.status-reprint {
-        background: linear-gradient(135deg, #1e3a8a, #1e40af);
-        color: #93c5fd;
-        border: 1px solid #3b82f6;
-    }
-
-    .status-success {
-        background: rgba(34, 197, 94, 0.2);
-        color: #4ade80;
-    }
-
-    .status-failed {
-        background: rgba(239, 68, 68, 0.2);
-        color: #f87171;
-    }
-
-    .status-warning {
-        background: rgba(239, 68, 68, 0.3);
-        color: #fca5a5;
-    }
-
-    .status-duplicate {
-        background: rgba(245, 158, 11, 0.2);
-        color: #fbbf24;
-    }
-
-    .print-status.connecting {
-        background: rgba(245, 158, 11, 0.2);
-        color: #fbbf24;
-        border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-
-    .print-status.success {
-        background: rgba(34, 197, 94, 0.2);
-        color: #4ade80;
-        border: 1px solid rgba(34, 197, 94, 0.3);
-    }
-
-    .print-status.error {
-        background: rgba(239, 68, 68, 0.2);
-        color: #f87171;
-        border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-    .milk-summary-row {
-        background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%) !important;
-    }
-
-    .milk-summary-row:hover {
-        background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%) !important;
-    }
 }

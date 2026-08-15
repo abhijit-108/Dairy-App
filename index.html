@@ -8,7 +8,217 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="logo.png" type="image/png">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/main_screen.css?v=7.0.4">
+    <link rel="stylesheet" href="css/main_screen.css?v=7.1.8">
+    <style>
+        .changelog-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            padding: 16px;
+            box-sizing: border-box;
+            animation: changelogFadeIn 0.3s ease-out;
+        }
+
+        @keyframes changelogFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .changelog-modal-card {
+            background: #1e1e24;
+            color: #f0f0f0;
+            border-radius: 16px;
+            max-width: 520px;
+            width: 100%;
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            animation: changelogSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes changelogSlideUp {
+            from {
+                transform: translateY(20px) scale(0.97);
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .changelog-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #2a2b36 0%, #1f2029 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .changelog-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .changelog-sparkle-icon {
+            font-size: 26px;
+            line-height: 1;
+        }
+
+        .changelog-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+
+        .changelog-subtitle {
+            font-size: 12px;
+            color: #a0a5b8;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .changelog-close-btn {
+            background: transparent;
+            border: none;
+            color: #a0a5b8;
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .changelog-close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .changelog-body {
+            padding: 16px 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .changelog-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+
+        .changelog-section-header {
+            margin-bottom: 8px;
+        }
+
+        .section-tag {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .tag-green {
+            background: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+        }
+
+        .tag-blue {
+            background: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+        }
+
+        .tag-purple {
+            background: rgba(192, 132, 252, 0.15);
+            color: #c084fc;
+        }
+
+        .changelog-list {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 13px;
+            line-height: 1.55;
+            color: #d1d5db;
+        }
+
+        .changelog-list li {
+            margin-bottom: 6px;
+        }
+
+        .changelog-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .changelog-list strong {
+            color: #fff;
+        }
+
+        .changelog-footer {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #17171c;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .changelog-expiry-note {
+            font-size: 11px;
+            color: #8a8f9d;
+        }
+
+        .changelog-confirm-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .changelog-confirm-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        .changelog-confirm-btn:active {
+            transform: translateY(0);
+        }
+    </style>
 </head>
 
 <body>
@@ -81,9 +291,6 @@
     <nav class="navbar">
         <button class="menu-btn">☰</button>
         <div class="navbar-title">Dairy App</div>
-        <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle Dark Mode">
-            <i class="bx bx-moon"></i>
-        </button>
         <div class="datetime" id="datetime"></div>
     </nav>
 
@@ -121,6 +328,13 @@
             </div>
 
             <form id="milkForm">
+
+                <div class="shift-chip-wrapper">
+                    <div id="shiftChip" class="shift-chip shift-morning">
+                        <i id="shiftIcon" class='bx bx-sun'></i>
+                        <span id="shiftText" class="shift-text">সকাল (6-10)</span>
+                    </div>
+                </div>
 
                 <div id="hide_names">
                     <div class="form-group">
@@ -338,10 +552,114 @@
                 }
             });
         }
-
     </script>
-    <script src="script.js?v=7.1.1"></script>
-    <script type="module" src="js/database.js?v=7.1.1"></script>
+
+    <!-- Changelog Popup Modal (Active until tomorrow: 16-Aug-2026 23:59:59) -->
+    <div id="changelogModal" class="changelog-modal-overlay" style="display: none;">
+        <div class="changelog-modal-card">
+            <div class="changelog-header">
+                <div class="changelog-header-left">
+                    <span class="changelog-sparkle-icon">✨</span>
+                    <div>
+                        <h2 class="changelog-title">What's New & Updates</h2>
+                        <span class="changelog-subtitle">আজকের সমস্ত নতুন ফিচার ও পরিবর্তনসমূহ (15-Aug-2026)</span>
+                    </div>
+                </div>
+                <button id="closeChangelogBtn" class="changelog-close-btn">&times;</button>
+            </div>
+
+            <div class="changelog-body">
+                <div class="changelog-section">
+                    <div class="changelog-section-header">
+                        <span class="section-tag tag-green">📄 Generate Bills</span>
+                    </div>
+                    <ul class="changelog-list">
+                        <li><strong>নতুন সদস্য তালিকা:</strong> সুজাতা ঘোষ ও রহিত মল্লিক যুক্ত করা হয়েছে এবং ক্রম
+                            সাজানো হয়েছে।</li>
+                        <li><strong>স্মুথ এডিটিং:</strong> এডিট মোডে নম্বর ট্যাপ করলেই সিলেক্ট হবে এবং একবারে সম্পূর্ণ
+                            নম্বর টাইপ করা যাবে।</li>
+                        <li><strong>Last_Bill বোতাম:</strong> গত মাসের ২৪ তারিখ থেকে শেষ দিন পর্যন্ত বিল এক ক্লিকে লোড
+                            করতে নতুন বাটন যোগ করা হয়েছে।</li>
+                        <li><strong>সঠিক প্রাথমিক মান:</strong> বিলের মোট পরিমাণ না দেওয়া পর্যন্ত প্রথম দুই জনের KG
+                            স্বাভাবিকভাবে 0.0 দেখাবে।</li>
+                    </ul>
+                </div>
+
+                <div class="changelog-section">
+                    <div class="changelog-section-header">
+                        <span class="section-tag tag-blue">👥 All Members</span>
+                    </div>
+                    <ul class="changelog-list">
+                        <li><strong>সামারি সবার উপরে:</strong> "Summary by Name" সেকশনটি এখন Daily Records-এর উপরে আসবে।
+                        </li>
+                        <li><strong>স্মার্ট অটো-হাইড:</strong> কোনো নির্দিষ্ট সদস্য সিলেক্ট করলে সামারি টেবিল নিজে থেকেই
+                            লুকিয়ে যাবে।</li>
+                    </ul>
+                </div>
+
+                <div class="changelog-section">
+                    <div class="changelog-section-header">
+                        <span class="section-tag tag-purple">🔧 Fix Data Page</span>
+                    </div>
+                    <ul class="changelog-list">
+                        <li><strong>১৫ দিনের রেকর্ড টেবিল:</strong> সদস্যর নাম সিলেক্ট করলেই নিচে গত ১৫ দিনের সম্পূর্ণ
+                            ডাটা চলে আসবে।</li>
+                        <li><strong>১-ক্লিক ফর্ম লোড:</strong> যেকোনো রেকর্ডে বা ✏️ Fix বাটনে ক্লিক করলেই ফর্মে ডাটা
+                            স্বয়ংক্রিয়ভাবে লোড হয়ে যাবে।</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="changelog-footer">
+                <span class="changelog-expiry-note">⏳ এই নোটিশটি আগামীকালের পর আর প্রদর্শিত হবে না</span>
+                <button id="dismissChangelogBtn" class="changelog-confirm-btn">Got it 👍</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkAndShowChangelog() {
+            const now = new Date();
+            // Expire after tomorrow: 16-Aug-2026 at 23:59:59 (Month is 0-indexed: 7 = August)
+            const expiryDate = new Date(2026, 7, 16, 23, 59, 59, 999);
+
+            // Automatically stop showing after tomorrow's date
+            if (now.getTime() > expiryDate.getTime()) {
+                return;
+            }
+
+            const modal = document.getElementById('changelogModal');
+            if (!modal) return;
+
+            // Check if dismissed in this session
+            if (sessionStorage.getItem('dairy_changelog_dismissed_20260815')) {
+                return;
+            }
+
+            // Show popup with slight delay for smooth appearance
+            setTimeout(() => {
+                modal.style.display = 'flex';
+            }, 500);
+
+            const closeModal = () => {
+                modal.style.display = 'none';
+                sessionStorage.setItem('dairy_changelog_dismissed_20260815', 'true');
+            };
+
+            const closeBtn = document.getElementById('closeChangelogBtn');
+            const confirmBtn = document.getElementById('dismissChangelogBtn');
+
+            if (closeBtn) closeBtn.onclick = closeModal;
+            if (confirmBtn) confirmBtn.onclick = closeModal;
+            modal.onclick = (e) => {
+                if (e.target === modal) closeModal();
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', checkAndShowChangelog);
+    </script>
+    <script src="script.js?v=7.1.8"></script>
+    <script type="module" src="js/database.js?v=7.1.2"></script>
 
 </body>
 

@@ -928,6 +928,35 @@
     </div>
   </section>
 
+  <!-- Aggregated Data Table by Name -->
+  <section class="table-container" id="summaryByNameSection" role="region" aria-label="Summary by name table">
+    <div class="table-header">
+      <h2><i class="fas fa-chart-pie" aria-hidden="true"></i> Summary by Name</h2>
+    </div>
+    <div class="table-wrapper">
+      <table id="nameAggregateTable" role="table" aria-label="Summary records by member name">
+        <thead>
+          <tr role="row">
+            <th scope="col">Name</th>
+            <th scope="col">Rate (Total/KG)</th>
+            <th scope="col">Total-KG</th>
+            <th scope="col">Total-total</th>
+          </tr>
+        </thead>
+        <tbody id="nameAggregateTableBody">
+          <!-- Aggregated rows by name will be inserted here -->
+        </tbody>
+        <tfoot>
+          <tr role="row">
+            <td colspan="2" scope="row">Total</td>
+            <td id="aggregateTotalKg">0</td>
+            <td id="aggregateTotalTotal">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
   <!-- Main Data Table -->
   <section class="table-container" role="region" aria-label="Daily records table">
     <div class="table-header">
@@ -957,35 +986,6 @@
             <td id="avgRate">0</td>
             <td id="totalKg">0</td>
             <td id="totalAmount">0</td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  </section>
-
-  <!-- Aggregated Data Table by Name -->
-  <section class="table-container" role="region" aria-label="Summary by name table">
-    <div class="table-header">
-      <h2><i class="fas fa-chart-pie" aria-hidden="true"></i> Summary by Name</h2>
-    </div>
-    <div class="table-wrapper">
-      <table id="nameAggregateTable" role="table" aria-label="Summary records by member name">
-        <thead>
-          <tr role="row">
-            <th scope="col">Name</th>
-            <th scope="col">Rate (Total/KG)</th>
-            <th scope="col">Total-KG</th>
-            <th scope="col">Total-total</th>
-          </tr>
-        </thead>
-        <tbody id="nameAggregateTableBody">
-          <!-- Aggregated rows by name will be inserted here -->
-        </tbody>
-        <tfoot>
-          <tr role="row">
-            <td colspan="2" scope="row">Total</td>
-            <td id="aggregateTotalKg">0</td>
-            <td id="aggregateTotalTotal">0</td>
           </tr>
         </tfoot>
       </table>
@@ -1447,6 +1447,13 @@
       const selectedYears = getSelectedValues('yearFilterDropdown', 'year');
       const selectedDateRanges = getSelectedValues('dateRangeFilterDropdown', 'range');
       const selectedNames = getSelectedValues('nameFilterDropdown', 'name');
+
+      // Hide "Summary by Name" section if a specific member is selected instead of "All Names"
+      const summarySection = document.getElementById('summaryByNameSection');
+      if (summarySection) {
+        const isAllNames = selectedNames.includes('all');
+        summarySection.style.display = isAllNames ? '' : 'none';
+      }
 
       Object.keys(allData).forEach(dateKey => {
         const [dayStr, monthStr, yearStr] = dateKey.split('-');

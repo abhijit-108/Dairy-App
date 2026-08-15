@@ -19,11 +19,50 @@ function updateDateTime() {
     document.getElementById('datetime').innerHTML = `${timeStr}<br>${weekday}, ${month} ${day}`;
 }
 
-// Initialize datetime on page load and update every minute
+// Update shift chip details (e.g. দুপুর (10-3))
+function updateShiftChip() {
+    const chip = document.getElementById('shiftChip');
+    const chipText = document.getElementById('shiftText');
+    const chipIcon = document.getElementById('shiftIcon');
+    if (!chip || !chipText || !chipIcon) return;
+
+    const hour = new Date().getHours();
+    let shiftName = '';
+    let timeRange = '';
+    let iconClass = '';
+    let shiftClass = '';
+
+    if (hour < 10) {
+        shiftName = 'সকাল';
+        timeRange = '6-10';
+        iconClass = 'bx bx-sun';
+        shiftClass = 'shift-morning';
+    } else if (hour < 15) {
+        shiftName = 'দুপুর';
+        timeRange = '10-3';
+        iconClass = 'bx bxs-sun';
+        shiftClass = 'shift-afternoon';
+    } else {
+        shiftName = 'সন্ধ্যা';
+        timeRange = '3-10';
+        iconClass = 'bx bx-moon';
+        shiftClass = 'shift-evening';
+    }
+
+    chip.className = `shift-chip ${shiftClass}`;
+    chipIcon.className = iconClass;
+    chipText.textContent = `${shiftName} (${timeRange})`;
+}
+
+// Initialize datetime & shift chip on page load and update every minute
 document.addEventListener('DOMContentLoaded', function() {
     updateDateTime();
+    updateShiftChip();
     // Update every minute
-    setInterval(updateDateTime, 60000);
+    setInterval(function() {
+        updateDateTime();
+        updateShiftChip();
+    }, 60000);
 });
 
 
@@ -103,36 +142,4 @@ function moveToNextField(currentInput) {
 // Apply rules with range validation
 enforceDecimals(document.getElementById("fat"), 1, 1.0, 10.0);  // FAT: 1.0-10.0 range
 enforceDecimals(document.getElementById("snf"), 1, 1.0, 12.0);  // SNF: 1.0-12.0 range
-enforceDecimals(document.getElementById("kg"), 2, 0.1, 100.0);  // KG: 0.1-100.0 range
-
-
-// Dark Mode Toggle Functionality
-const darkModeToggle = document.getElementById('darkModeToggle');
-const body = document.body;
-
-// Check for saved dark mode preference or default to light mode
-const isDarkMode = localStorage.getItem('darkMode') === 'true';
-
-// Apply the saved theme on page load
-if (isDarkMode) {
-    body.classList.add('dark-mode');
-    darkModeToggle.classList.add('active');
-}
-
-// Toggle dark mode
-function toggleDarkMode() {
-    const isDark = body.classList.toggle('dark-mode');
-
-    // Save preference to localStorage
-    localStorage.setItem('darkMode', isDark.toString());
-
-    // Update toggle button state
-    if (isDark) {
-        darkModeToggle.classList.add('active');
-    } else {
-        darkModeToggle.classList.remove('active');
-    }
-}
-
-// Add click event listener to toggle button
-darkModeToggle.addEventListener('click', toggleDarkMode); 
+enforceDecimals(document.getElementById("kg"), 2, 0.1, 100.0);  // KG: 0.1-100.0 range 

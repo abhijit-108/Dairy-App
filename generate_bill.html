@@ -322,6 +322,7 @@
         .date-range-buttons {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 20px;
         }
@@ -791,6 +792,7 @@
 
                 <div class="date-range-selector">
                     <div class="date-range-buttons">
+                        <button class="date-btn" data-range="last-bill">Last_Bill</button>
                         <button class="date-btn" data-range="1-7">1-7</button>
                         <button class="date-btn" data-range="8-15">8-15</button>
                         <button class="date-btn" data-range="16-23">16-23</button>
@@ -821,14 +823,16 @@
                 <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
                     <div>
                         <label for="billKg" style="margin-right: 4px;">মোট দুধ :</label>
-                        <input type="number" id="billKg" step="0.01" min="0" value="" onchange="updateTable() "
+                        <input type="number" id="billKg" step="0.01" min="0" value="" onchange="updateTable()"
                             placeholder="0 kg" oninput="updateTable()"
+                            onfocus="this.select()" onclick="this.select()"
                             style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 70px;font-size: 1.2rem;">
                     </div>
                     <div>
                         <label for="billTotalRupee" style="margin-right:4px;">মোট টাকা :</label>
                         <input type="number" id="billTotalRupee" step="0.01" min="0" value="" onchange="updateTable()"
                             placeholder="₹ 0" oninput="updateTable()"
+                            onfocus="this.select()" onclick="this.select()"
                             style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 70px;font-size: 1.2rem;">
                     </div>
                 </div>
@@ -1022,12 +1026,11 @@
             'মধুমিতা মন্ডল',
             'ঝর্না চচ্চড়ি',
             'বুল্টি দুলে',
-            'ফাইজুল মল্লিক',
-            'নাসিমা মল্লিক',
             'রাহেলা শেখ',
             'ভৈরব চচ্চড়ি',
-            'শ্যামসুরা খা',
-            'রজিনা শেখ'
+            'রজিনা শেখ',
+            'সুজাতা ঘোষ',
+            'রহিত মল্লিক'
         ];
 
         // --- Helpers ---
@@ -1044,10 +1047,11 @@
             let startDay, endDay;
 
             switch (currentDateRange) {
+                case 'last-bill':
+                case '24-rest': startDay = 24; endDay = new Date(year, month + 1, 0).getDate(); break;
                 case '1-7': startDay = 1; endDay = 7; break;
                 case '8-15': startDay = 8; endDay = 15; break;
                 case '16-23': startDay = 16; endDay = 23; break;
-                case '24-rest': startDay = 24; endDay = new Date(year, month + 1, 0).getDate(); break;
                 default:
                     const elEmpty = document.querySelector('.dated_bill');
                     if (elEmpty) elEmpty.textContent = '';
@@ -1074,10 +1078,11 @@
             let startDay, endDay;
 
             switch (range) {
+                case 'last-bill':
+                case '24-rest': startDay = 24; endDay = new Date(year, month + 1, 0).getDate(); break;
                 case '1-7': startDay = 1; endDay = 7; break;
                 case '8-15': startDay = 8; endDay = 15; break;
                 case '16-23': startDay = 16; endDay = 23; break;
-                case '24-rest': startDay = 24; endDay = new Date(year, month + 1, 0).getDate(); break;
                 default: return dates;
             }
 
@@ -1129,19 +1134,26 @@
             updateDatedBillDisplay();
         }
 
-        // --- Event wiring: while today's date <= 5 use adjustedBaseDate (previous month); after that use current month ---
+        // --- Event wiring: Last_Bill uses previous month; other buttons use current month (or adjustedBaseDate if day <= 5) ---
         function setupEventListeners() {
             document.querySelectorAll('.date-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
-                    const now = new Date();
-                    // if new month day is 1..5, keep using adjustedBaseDate (previous month). Otherwise use current month.
-                    if (now.getDate() <= 5 && adjustedBaseDate) {
-                        currentBaseDate = new Date(adjustedBaseDate);
+                    const range = this.dataset.range;
+                    if (range === 'last-bill') {
+                        const now = new Date();
+                        currentBaseDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                        currentDateRange = 'last-bill';
                     } else {
-                        currentBaseDate = new Date(); // real current month/year
+                        const now = new Date();
+                        // if new month day is 1..5, keep using adjustedBaseDate (previous month). Otherwise use current month.
+                        if (now.getDate() <= 5 && adjustedBaseDate) {
+                            currentBaseDate = new Date(adjustedBaseDate);
+                        } else {
+                            currentBaseDate = new Date(); // real current month/year
+                        }
+                        currentDateRange = range;
                     }
 
-                    currentDateRange = this.dataset.range;
                     updateDateRangeButtons();
                     updateDatedBillDisplay();
                     // update data without showing big overlay
@@ -1348,24 +1360,12 @@
             return Array.from(checkboxes).map(cb => cb.value);
         }
 
-        // --- Table rendering ---
-        function renderTable() {
-            const tableBody = document.getElementById('tableBody');
-            if (!tableBody) return;
-
-            // Capture focused element ID and cursor position to restore focus after re-render
-            const activeEl = document.activeElement;
-            const activeId = activeEl ? activeEl.id : null;
-            const selStart = activeEl ? activeEl.selectionStart : null;
-            const selEnd = activeEl ? activeEl.selectionEnd : null;
-
+        // --- Table rendering and dynamic calculation ---
+        function updateCalculationsOnly() {
             const selectedNames = getSelectedNames();
-            tableBody.innerHTML = '';
-
             const billKg = parseFloat(document.getElementById('billKg').value) || 0;
             const billTotalRupee = parseFloat(document.getElementById('billTotalRupee').value) || 0;
 
-            const databaseRows = [];
             let databasePeopleTotalKg = 0;
             let databasePeopleTotalTakaLess = 0;
             let databasePeopleTotalTakaMain = 0;
@@ -1373,28 +1373,26 @@
             // 1. Process Database Members
             selectedNames.forEach(name => {
                 if (!fixedNames.includes(name)) {
-                    // Check if deleted
                     if (manualOverrides[name] && manualOverrides[name].deleted) return;
 
                     const data = databaseData[name] || { kg: 0, takaMain: 0 };
-
                     const kg = (manualOverrides[name] && manualOverrides[name].kg !== undefined)
                         ? manualOverrides[name].kg
                         : (data.kg || 0);
                     const takaMain = (manualOverrides[name] && manualOverrides[name].takaMain !== undefined)
                         ? manualOverrides[name].takaMain
                         : (data.takaMain || 0);
-                    const displayName = (manualOverrides[name] && manualOverrides[name].name !== undefined)
-                        ? manualOverrides[name].name
-                        : name;
-
                     const takaLessInt = Math.ceil(takaMain * conversionFactor_ToMake_original_Less);
-
-                    databaseRows.push({ id: name, name: displayName, kg, takaMain, takaLess: takaLessInt });
 
                     databasePeopleTotalKg += kg;
                     databasePeopleTotalTakaLess += takaLessInt;
                     databasePeopleTotalTakaMain += takaMain;
+
+                    const sanitizedId = name.replace(/\s+/g, '_');
+                    const cellTakaLess = document.getElementById(`cell-${sanitizedId}-takaLess`);
+                    if (cellTakaLess) {
+                        cellTakaLess.textContent = Number(takaLessInt).toFixed(0);
+                    }
                 }
             });
 
@@ -1408,27 +1406,29 @@
                 const takaMain = (manualOverrides[member.id] && manualOverrides[member.id].takaMain !== undefined)
                     ? manualOverrides[member.id].takaMain
                     : member.takaMain;
-                const name = (manualOverrides[member.id] && manualOverrides[member.id].name !== undefined)
-                    ? manualOverrides[member.id].name
-                    : member.name;
-
                 const takaLessInt = Math.ceil(takaMain * conversionFactor_ToMake_original_Less);
-
-                databaseRows.push({ id: member.id, name, kg, takaMain, takaLess: takaLessInt });
 
                 databasePeopleTotalKg += kg;
                 databasePeopleTotalTakaLess += takaLessInt;
                 databasePeopleTotalTakaMain += takaMain;
+
+                const sanitizedId = member.id.replace(/\s+/g, '_');
+                const cellTakaLess = document.getElementById(`cell-${sanitizedId}-takaLess`);
+                if (cellTakaLess) {
+                    cellTakaLess.textContent = Number(takaLessInt).toFixed(0);
+                }
             });
 
-            const remainingKg = billKg - databasePeopleTotalKg;
-            let remainingTakaLess = Math.round(billTotalRupee - databasePeopleTotalTakaLess);
+            let remainingKg = billKg > 0 ? (billKg - databasePeopleTotalKg) : 0;
+            if (remainingKg < 0) remainingKg = 0;
+
+            let remainingTakaLess = billTotalRupee > 0 ? Math.round(billTotalRupee - databasePeopleTotalTakaLess) : 0;
+            if (remainingTakaLess < 0) remainingTakaLess = 0;
 
             const selectedFixed = fixedNames.filter(n => selectedNames.includes(n));
             const nFixed = selectedFixed.length;
 
-            if (remainingTakaLess < 0) {
-                remainingTakaLess = 0;
+            if (billKg <= 0 || billTotalRupee <= 0 || (billTotalRupee - databasePeopleTotalTakaLess < 0)) {
                 showError('Warning: Please input the bill KG & TOTAL.');
             } else {
                 clearError();
@@ -1477,26 +1477,25 @@
 
             selectedFixed.forEach(name => {
                 const alloc = fixedAlloc[name] || { takaLess: 0, takaMain: 0, kg: 0 };
-                const row = createTableRow(name, name, alloc.kg, alloc.takaMain, true, alloc.takaLess);
-                tableBody.appendChild(row);
                 totalKg += alloc.kg;
                 totalTakaLess += alloc.takaLess;
                 totalTakaMain += alloc.takaMain;
+
+                const sanitizedId = name.replace(/\s+/g, '_');
+                const row = document.getElementById(`row-${sanitizedId}`);
+                if (row) {
+                    const cells = row.children;
+                    if (cells.length >= 4) {
+                        cells[1].textContent = (alloc.kg || 0).toFixed(1);
+                        cells[2].textContent = Number(alloc.takaLess || 0).toFixed(0);
+                        cells[3].textContent = (alloc.takaMain || 0).toFixed(0);
+                    }
+                }
             });
 
-            databaseRows.forEach(item => {
-                const row = createTableRow(item.id, item.name, item.kg, item.takaMain, false, item.takaLess);
-                tableBody.appendChild(row);
-                totalKg += item.kg;
-                totalTakaLess += item.takaLess;
-                totalTakaMain += item.takaMain;
-            });
-
-            if (isEditMode) {
-                const addRow = document.createElement('tr');
-                addRow.innerHTML = `<td colspan="4" style="padding:0;"><button class="add-member-btn" onclick="handleAddMember()">+ Add Member</button></td>`;
-                tableBody.appendChild(addRow);
-            }
+            totalKg += databasePeopleTotalKg;
+            totalTakaLess += databasePeopleTotalTakaLess;
+            totalTakaMain += databasePeopleTotalTakaMain;
 
             const elTotalKg = document.getElementById('totalKg');
             const elTotalTakaLess = document.getElementById('totalTakaLess');
@@ -1505,20 +1504,81 @@
             if (elTotalKg) elTotalKg.textContent = totalKg.toFixed(1);
             if (elTotalTakaLess) elTotalTakaLess.textContent = Number(totalTakaLess).toFixed(0);
             if (elTotalTakaMain) elTotalTakaMain.textContent = totalTakaMain.toFixed(0);
+        }
 
-            if (activeId && isEditMode) {
-                const el = document.getElementById(activeId);
-                if (el) {
-                    el.focus();
-                    if (selStart !== null && selEnd !== null) {
-                        try { el.setSelectionRange(selStart, selEnd); } catch (e) { }
-                    }
+        function renderTable() {
+            const tableBody = document.getElementById('tableBody');
+            if (!tableBody) return;
+
+            const selectedNames = getSelectedNames();
+            tableBody.innerHTML = '';
+
+            const databaseRows = [];
+
+            // 1. Process Database Members
+            selectedNames.forEach(name => {
+                if (!fixedNames.includes(name)) {
+                    if (manualOverrides[name] && manualOverrides[name].deleted) return;
+
+                    const data = databaseData[name] || { kg: 0, takaMain: 0 };
+                    const kg = (manualOverrides[name] && manualOverrides[name].kg !== undefined)
+                        ? manualOverrides[name].kg
+                        : (data.kg || 0);
+                    const takaMain = (manualOverrides[name] && manualOverrides[name].takaMain !== undefined)
+                        ? manualOverrides[name].takaMain
+                        : (data.takaMain || 0);
+                    const displayName = (manualOverrides[name] && manualOverrides[name].name !== undefined)
+                        ? manualOverrides[name].name
+                        : name;
+                    const takaLessInt = Math.ceil(takaMain * conversionFactor_ToMake_original_Less);
+
+                    databaseRows.push({ id: name, name: displayName, kg, takaMain, takaLess: takaLessInt });
                 }
+            });
+
+            // 2. Process Manually Added Members
+            addedMembers.forEach(member => {
+                if (manualOverrides[member.id] && manualOverrides[member.id].deleted) return;
+
+                const kg = (manualOverrides[member.id] && manualOverrides[member.id].kg !== undefined)
+                    ? manualOverrides[member.id].kg
+                    : member.kg;
+                const takaMain = (manualOverrides[member.id] && manualOverrides[member.id].takaMain !== undefined)
+                    ? manualOverrides[member.id].takaMain
+                    : member.takaMain;
+                const name = (manualOverrides[member.id] && manualOverrides[member.id].name !== undefined)
+                    ? manualOverrides[member.id].name
+                    : member.name;
+                const takaLessInt = Math.ceil(takaMain * conversionFactor_ToMake_original_Less);
+
+                databaseRows.push({ id: member.id, name, kg, takaMain, takaLess: takaLessInt });
+            });
+
+            const selectedFixed = fixedNames.filter(n => selectedNames.includes(n));
+
+            selectedFixed.forEach(name => {
+                const row = createTableRow(name, name, 0, 0, true, 0);
+                tableBody.appendChild(row);
+            });
+
+            databaseRows.forEach(item => {
+                const row = createTableRow(item.id, item.name, item.kg, item.takaMain, false, item.takaLess);
+                tableBody.appendChild(row);
+            });
+
+            if (isEditMode) {
+                const addRow = document.createElement('tr');
+                addRow.innerHTML = `<td colspan="4" style="padding:0;"><button class="add-member-btn" onclick="handleAddMember()">+ Add Member</button></td>`;
+                tableBody.appendChild(addRow);
             }
+
+            updateCalculationsOnly();
         }
 
         function createTableRow(id, name, kg, takaMain, isFixed, providedTakaLess = null) {
             const row = document.createElement('tr');
+            const sanitizedId = id.replace(/\s+/g, '_');
+            row.id = `row-${sanitizedId}`;
             row.className = isFixed ? 'fixed-row' : 'database-row';
 
             if (!isFixed && isEditMode) {
@@ -1530,25 +1590,35 @@
                 : Math.ceil((takaMain || 0) * conversionFactor_ToMake_original_Less);
 
             if (!isFixed && isEditMode) {
-                const sanitizedId = id.replace(/\s+/g, '_');
+                const kgDisplay = (manualOverrides[id] && manualOverrides[id].rawKg !== undefined)
+                    ? manualOverrides[id].rawKg
+                    : ((kg !== undefined && kg !== null) ? (kg === 0 ? '0' : (Number.isInteger(kg) ? kg.toString() : kg.toFixed(1))) : '');
+
+                const takaMainDisplay = (manualOverrides[id] && manualOverrides[id].rawTakaMain !== undefined)
+                    ? manualOverrides[id].rawTakaMain
+                    : ((takaMain !== undefined && takaMain !== null) ? Math.round(takaMain).toString() : '');
+
                 row.innerHTML = `
                     <td style="display:flex; align-items:center;">
                         <button class="delete-btn" onclick="handleDeleteMember('${id}')" title="Delete row">×</button>
                         <input type="text" class="name-input" id="input-${sanitizedId}-name" 
-                            value="${name}" oninput="handleManualEdit('${id}', 'name', this.value)">
+                            value="${name}" oninput="handleManualEdit('${id}', 'name', this.value)"
+                            onfocus="this.select()">
                     </td>
                     <td class="numeric">
                         <input type="text" inputmode="decimal" class="edit-input" 
                             id="input-${sanitizedId}-kg"
-                            value="${kg.toFixed(1)}" 
-                            oninput="handleManualEdit('${id}', 'kg', this.value)">
+                            value="${kgDisplay}" 
+                            oninput="handleManualEdit('${id}', 'kg', this.value)"
+                            onfocus="this.select()">
                     </td>
-                    <td class="numeric">${Number(takaLess).toFixed(0)}</td>
+                    <td class="numeric" id="cell-${sanitizedId}-takaLess">${Number(takaLess).toFixed(0)}</td>
                     <td class="numeric">
                         <input type="text" inputmode="decimal" class="edit-input" 
                             id="input-${sanitizedId}-takaMain"
-                            value="${takaMain.toFixed(0)}" 
-                            oninput="handleManualEdit('${id}', 'takaMain', this.value)">
+                            value="${takaMainDisplay}" 
+                            oninput="handleManualEdit('${id}', 'takaMain', this.value)"
+                            onfocus="this.select()">
                     </td>
                 `;
             } else {
@@ -1581,11 +1651,16 @@
 
             if (field === 'name') {
                 manualOverrides[id].name = value;
-            } else {
+            } else if (field === 'kg') {
+                manualOverrides[id].rawKg = value;
                 const num = parseFloat(value);
-                manualOverrides[id][field] = isNaN(num) ? 0 : num;
+                manualOverrides[id].kg = isNaN(num) ? 0 : num;
+            } else if (field === 'takaMain') {
+                manualOverrides[id].rawTakaMain = value;
+                const num = parseFloat(value);
+                manualOverrides[id].takaMain = isNaN(num) ? 0 : num;
             }
-            renderTable();
+            updateCalculationsOnly();
         };
 
         window.handleAddMember = function () {
@@ -1696,7 +1771,7 @@
             addedMembers = [];
             loadData(showOverlay);
         };
-        window.updateTable = function () { renderTable(); };
+        window.updateTable = function () { updateCalculationsOnly(); };
 
         async function loadNamesFromFile() {
             try {
