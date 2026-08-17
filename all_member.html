@@ -1455,7 +1455,25 @@
         summarySection.style.display = isAllNames ? '' : 'none';
       }
 
-      Object.keys(allData).forEach(dateKey => {
+      const sessionOrder = (s) => {
+        if (!s) return 0;
+        const str = String(s).toLowerCase();
+        if (str.includes('সকাল') || str.includes('morn')) return 1;
+        if (str.includes('দুপুর') || str.includes('noon')) return 2;
+        if (str.includes('সন্ধ্যা') || str.includes('eve')) return 3;
+        return 4;
+      };
+
+      // Sort date keys chronologically
+      const sortedDateKeys = Object.keys(allData).sort((a, b) => {
+        const [d1, m1, y1] = a.split('-').map(Number);
+        const [d2, m2, y2] = b.split('-').map(Number);
+        const date1 = new Date(y1, m1 - 1, d1);
+        const date2 = new Date(y2, m2 - 1, d2);
+        return date1 - date2;
+      });
+
+      sortedDateKeys.forEach(dateKey => {
         const [dayStr, monthStr, yearStr] = dateKey.split('-');
         const day = parseInt(dayStr);
         const month = parseInt(monthStr);
@@ -1478,50 +1496,72 @@
           if (!dayMatchesAnyRange) return;
         }
 
+        // Collect and sort session entries chronologically (morning -> noon -> evening)
+        const userEntries = [];
         Object.values(allData[dateKey]).forEach(user => {
           Object.entries(user).forEach(([session, entry]) => {
-            // Apply name filter
-            if (!selectedNames.includes('all') && !selectedNames.includes(entry.name)) return;
+            userEntries.push({ session, entry });
+          });
+        });
+        userEntries.sort((a, b) => sessionOrder(a.session) - sessionOrder(b.session));
 
-            const fatVal = parseFloat(entry.fat);
-            const snfVal = parseFloat(entry.snf);
-            const rateVal = parseFloat(entry.rate);
-            const kgVal = parseFloat(entry.kg);
-            const totalVal = parseFloat(entry.total);
+        userEntries.forEach(({ session, entry }) => {
+          // Apply name filter
+          if (!selectedNames.includes('all') && !selectedNames.includes(entry.name)) return;
 
-            sumFat += fatVal;
-            sumSnf += snfVal;
-            sumRate += rateVal;
-            sumKg += kgVal;
-            sumTotal += totalVal;
-            countEntries++;
+          const fatVal = parseFloat(entry.fat);
+          const snfVal = parseFloat(entry.snf);
+          const rateVal = parseFloat(entry.rate);
+          const kgVal = parseFloat(entry.kg);
+          const totalVal = parseFloat(entry.total);
 
-            rows.push({
-              day: day,
-              dayStr: dayStr.padStart(2, '0'),
-              session: session,
-              fat: entry.fat,
-              snf: entry.snf,
-              rate: entry.rate,
-              kg: entry.kg,
-              total: entry.total
-            });
+          sumFat += fatVal;
+          sumSnf += snfVal;
+          sumRate += rateVal;
+          sumKg += kgVal;
+          sumTotal += totalVal;
+          countEntries++;
 
-            // --- Aggregate by name for the second table ---
-            const name = entry.name;
-            if (!nameAggregates[name]) {
-              nameAggregates[name] = { totalKg: 0, totalTotal: 0, kgs: [], totals: [] };
-            }
-            nameAggregates[name].totalKg += kgVal;
-            nameAggregates[name].totalTotal += totalVal;
-            nameAggregates[name].kgs.push(kgVal);
-            nameAggregates[name].totals.push(totalVal);
+          rows.push({
+            day: day,
+            month: month,
+            year: year,
+            dayStr: dayStr.padStart(2, '0'),
+            session: session,
+            fat: entry.fat,
+            snf: entry.snf,
+            rate: entry.rate,
+            kg: entry.kg,
+            total: entry.total
+          });
+
+          // --- Aggregate by name for the second table ---
+          const name = entry.name;
+          if (!nameAggregates[name]) {
+            nameAggregates[name] = { totalKg: 0, totalTotal: 0, entries: [] };
+          }
+          nameAggregates[name].totalKg += kgVal;
+          nameAggregates[name].totalTotal += totalVal;
+          nameAggregates[name].entries.push({
+            day: day,
+            month: month,
+            year: year,
+            session: session,
+            rawKg: entry.kg,
+            rawTotal: entry.total
           });
         });
       });
 
-      // Sort rows by day in increasing order for the main table
-      rows.sort((a, b) => a.day - b.day);
+      // Sort rows by full date and session for the main table
+      rows.sort((a, b) => {
+        const dateA = new Date(a.year, a.month - 1, a.day);
+        const dateB = new Date(b.year, b.month - 1, b.day);
+        if (dateA.getTime() !== dateB.getTime()) {
+          return dateA.getTime() - dateB.getTime();
+        }
+        return sessionOrder(a.session) - sessionOrder(b.session);
+      });
 
       // Append rows to the main table body
       rows.forEach(row => {
@@ -1563,9 +1603,22 @@
         // Calculate aggregated rate as totalTotal / totalKg (if available)
         const aggregatedRate = aggregate.totalKg > 0 ? (aggregate.totalTotal / aggregate.totalKg) : 0;
         
-        // Format the detailed breakdown string for kg and total
-        const kgDisplay = aggregate.kgs.join(' + ') + ' = (' + aggregate.totalKg.toFixed(1) + ')';
-        const totalDisplay = aggregate.totals.join(' + ') + ' = (' + aggregate.totalTotal.toFixed(0) + ')';
+        // Ensure individual entries are sorted chronologically by date and session
+        aggregate.entries.sort((a, b) => {
+          const dateA = new Date(a.year, a.month - 1, a.day);
+          const dateB = new Date(b.year, b.month - 1, b.day);
+          if (dateA.getTime() !== dateB.getTime()) {
+            return dateA.getTime() - dateB.getTime();
+          }
+          return sessionOrder(a.session) - sessionOrder(b.session);
+        });
+
+        // Format the detailed breakdown string for kg and total in sorted chronological order
+        const kgsList = aggregate.entries.map(e => e.rawKg);
+        const totalsList = aggregate.entries.map(e => e.rawTotal);
+
+        const kgDisplay = kgsList.join(' + ') + ' = (' + aggregate.totalKg.toFixed(1) + ')';
+        const totalDisplay = totalsList.join(' + ') + ' = (' + aggregate.totalTotal.toFixed(0) + ')';
 
         nameAggregateTbody.innerHTML += `
           <tr>
