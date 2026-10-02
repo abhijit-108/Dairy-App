@@ -429,6 +429,29 @@
 
         .numeric {
             text-align: right;
+            white-space: nowrap;
+        }
+
+        .rate-tag {
+            display: inline-block;
+            font-size: 0.78em;
+            font-weight: 600;
+            color: #0b5ed7;
+            background: #e8f0fe;
+            padding: 1px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            border: 1px solid #c2d7fa;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+            vertical-align: middle;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .footer-row .rate-tag {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.45);
         }
 
         .loading {
@@ -622,6 +645,18 @@
                 background: #2c3e50;
                 color: #e0e0e0;
                 border-color: #3498db;
+            }
+
+            .rate-tag {
+                color: #93c5fd;
+                background: rgba(14, 116, 144, 0.25);
+                border-color: rgba(56, 189, 248, 0.35);
+            }
+
+            .footer-row .rate-tag {
+                color: #ffffff;
+                background: rgba(255, 255, 255, 0.2);
+                border-color: rgba(255, 255, 255, 0.4);
             }
         }
 
@@ -847,7 +882,7 @@
                                 <th>নাম</th>
                                 <th>পরিমাণ (Kg)</th>
                                 <th>29 টাকা</th>
-                                <th>40.50 টাকা</th>
+                                <th id="mainRateHeader">45 টাকা</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody">
@@ -1014,9 +1049,10 @@
         let addedMembers = []; // [{ id: string, name: string, kg: number, takaMain: number }]
         let namesFromFile = []; // names loaded from name.md
 
-        // Conversion factors
-        const conversionFactor_ToMake_original = 40.50 / 29;
-        const conversionFactor_ToMake_original_Less = 29 / 40.50;
+        // Dynamic rate and conversion factors (adapted from rate.md)
+        let mainRate = 45;
+        let conversionFactor_ToMake_original = mainRate / 29;
+        let conversionFactor_ToMake_original_Less = 29 / mainRate;
 
         // Fixed names always appear first
         const fixedNames = ['চন্দনা ঘোষ.', 'রাজেন্দ্র ঘোষ'];
@@ -1168,6 +1204,7 @@
         // showOverlay: boolean - when true show the big loading overlay; otherwise only show small inline "Loading data..." row
         async function loadData(showOverlay = false) {
             try {
+                await loadRateFromRateMd();
                 // small inline table loading placeholder always
                 showLoading();
                 clearError();
@@ -1488,7 +1525,8 @@
                     if (cells.length >= 4) {
                         cells[1].textContent = (alloc.kg || 0).toFixed(1);
                         cells[2].textContent = Number(alloc.takaLess || 0).toFixed(0);
-                        cells[3].textContent = (alloc.takaMain || 0).toFixed(0);
+                        const rateText = (alloc.kg > 0) ? ` <span class="rate-tag">${((alloc.takaMain || 0) / alloc.kg).toFixed(2)}</span>` : '';
+                        cells[3].innerHTML = `${(alloc.takaMain || 0).toFixed(0)}${rateText}`;
                     }
                 }
             });
@@ -1503,7 +1541,10 @@
 
             if (elTotalKg) elTotalKg.textContent = totalKg.toFixed(1);
             if (elTotalTakaLess) elTotalTakaLess.textContent = Number(totalTakaLess).toFixed(0);
-            if (elTotalTakaMain) elTotalTakaMain.textContent = totalTakaMain.toFixed(0);
+            if (elTotalTakaMain) {
+                const totalRateText = (totalKg > 0) ? ` <span class="rate-tag">${(totalTakaMain / totalKg).toFixed(2)}</span>` : '';
+                elTotalTakaMain.innerHTML = `${totalTakaMain.toFixed(0)}${totalRateText}`;
+            }
         }
 
         function renderTable() {
@@ -1622,11 +1663,12 @@
                     </td>
                 `;
             } else {
+                const rateText = (kg > 0) ? ` <span class="rate-tag">${((takaMain || 0) / kg).toFixed(2)}</span>` : '';
                 row.innerHTML = `
                     <td>${name}</td>
                     <td class="numeric">${(kg || 0).toFixed(1)}</td>
                     <td class="numeric">${Number(takaLess).toFixed(0)}</td>
-                    <td class="numeric">${(takaMain || 0).toFixed(0)}</td>
+                    <td class="numeric">${(takaMain || 0).toFixed(0)}${rateText}</td>
                 `;
             }
             return row;
@@ -1773,6 +1815,70 @@
         };
         window.updateTable = function () { updateCalculationsOnly(); };
 
+        async function loadRateFromRateMd() {
+            try {
+                const response = await fetch('rate.md');
+                if (!response.ok) throw new Error('Could not fetch rate.md file');
+                const content = await response.text();
+
+                const lines = content.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+
+                let latestFormula = null;
+
+                for (const line of lines) {
+                    if (/\{\s*latest\s*\}/i.test(line)) {
+                        latestFormula = line;
+                        break;
+                    }
+                }
+
+                if (!latestFormula) {
+                    const formulaLines = lines.filter(line =>
+                        line.includes('var Rate') ||
+                        (line.includes('fat') && line.includes('snf'))
+                    );
+                    if (formulaLines.length > 0) {
+                        latestFormula = formulaLines[formulaLines.length - 1];
+                    }
+                }
+
+                if (latestFormula) {
+                    const fatMatch = latestFormula.match(/fat\s*\*\s*([\d.]+)/i);
+                    const snfMatch = latestFormula.match(/snf\s*\*\s*([\d.]+)/i);
+
+                    if (fatMatch && snfMatch) {
+                        const fatMultiplier = parseFloat(fatMatch[1]);
+                        const snfMultiplier = parseFloat(snfMatch[1]);
+
+                        const defaultFat = 4.5;
+                        const defaultSnf = 8.5;
+                        const rawRate = (defaultFat * fatMultiplier) + (defaultSnf * snfMultiplier);
+                        mainRate = Math.round(rawRate * 100) / 100;
+                        conversionFactor_ToMake_original = mainRate / 29;
+                        conversionFactor_ToMake_original_Less = 29 / mainRate;
+
+                        updateMainRateHeader(mainRate);
+                    } else {
+                        console.warn('Could not parse fat/snf multipliers from rate formula:', latestFormula);
+                    }
+                } else {
+                    console.warn('No rate formula found in rate.md');
+                }
+            } catch (error) {
+                console.error('Error loading rate from rate.md:', error);
+            }
+        }
+
+        function updateMainRateHeader(rate) {
+            const headerEl = document.getElementById('mainRateHeader');
+            if (headerEl) {
+                const formatted = (rate % 1 !== 0) ? rate.toFixed(2) : rate.toFixed(0);
+                headerEl.textContent = `${formatted} টাকা`;
+            }
+        }
+
         async function loadNamesFromFile() {
             try {
                 const response = await fetch('name.md');
@@ -1791,7 +1897,7 @@
         window.onload = async function () {
             setDefaultDateRange();   // default uses today - 5 as reference month/year
             setupEventListeners();   // clicking buttons uses adjustedBaseDate while day <= 5
-            await loadNamesFromFile();
+            await Promise.all([loadRateFromRateMd(), loadNamesFromFile()]);
             // Show overlay only on initial page load:
             loadData(true);
         };
