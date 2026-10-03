@@ -435,13 +435,13 @@
         .rate-tag {
             display: inline-block;
             font-size: 0.78em;
-            font-weight: 600;
-            color: #0b5ed7;
-            background: #e8f0fe;
-            padding: 1px 6px;
+            font-weight: 700;
+            color: #084298;
+            background: #e7f1ff;
+            padding: 2px 6px;
             border-radius: 4px;
             margin-left: 5px;
-            border: 1px solid #c2d7fa;
+            border: 1px solid #b6d4fe;
             letter-spacing: 0.2px;
             white-space: nowrap;
             vertical-align: middle;
@@ -452,6 +452,14 @@
             color: #ffffff;
             background: rgba(255, 255, 255, 0.22);
             border: 1px solid rgba(255, 255, 255, 0.45);
+        }
+
+        .editing-row .rate-tag {
+            color: #ffffff !important;
+            background-color: #0d6efd !important;
+            border: 1px solid #0a58ca !important;
+            font-weight: 700 !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
         }
 
         .loading {
@@ -648,9 +656,16 @@
             }
 
             .rate-tag {
-                color: #93c5fd;
-                background: rgba(14, 116, 144, 0.25);
-                border-color: rgba(56, 189, 248, 0.35);
+                color: #ffffff;
+                background: #0d6efd;
+                border-color: #3b82f6;
+            }
+
+            .editing-row .rate-tag {
+                color: #ffffff !important;
+                background-color: #0d6efd !important;
+                border: 1px solid #0a58ca !important;
+                font-weight: 700 !important;
             }
 
             .footer-row .rate-tag {
@@ -719,6 +734,7 @@
             border-radius: 4px;
             font-size: 14px;
             text-align: right;
+            vertical-align: middle;
         }
 
         .editing-row {
@@ -859,15 +875,13 @@
                     <div>
                         <label for="billKg" style="margin-right: 4px;">মোট দুধ :</label>
                         <input type="number" id="billKg" step="0.01" min="0" value="" onchange="updateTable()"
-                            placeholder="0 kg" oninput="updateTable()"
-                            onfocus="this.select()" onclick="this.select()"
+                            placeholder="0 kg" oninput="updateTable()" onfocus="this.select()" onclick="this.select()"
                             style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 70px;font-size: 1.2rem;">
                     </div>
                     <div>
                         <label for="billTotalRupee" style="margin-right:4px;">মোট টাকা :</label>
                         <input type="number" id="billTotalRupee" step="0.01" min="0" value="" onchange="updateTable()"
-                            placeholder="₹ 0" oninput="updateTable()"
-                            onfocus="this.select()" onclick="this.select()"
+                            placeholder="₹ 0" oninput="updateTable()" onfocus="this.select()" onclick="this.select()"
                             style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 70px;font-size: 1.2rem;">
                     </div>
                 </div>
@@ -1062,11 +1076,10 @@
             'মধুমিতা মন্ডল',
             'ঝর্না চচ্চড়ি',
             'বুল্টি দুলে',
-            'রাহেলা শেখ',
-            'ভৈরব চচ্চড়ি',
             'রজিনা শেখ',
             'সুজাতা ঘোষ',
-            'রহিত মল্লিক'
+            'রহিত মল্লিক',
+            'সুলোচনা ঘোষ'
         ];
 
         // --- Helpers ---
@@ -1430,6 +1443,16 @@
                     if (cellTakaLess) {
                         cellTakaLess.textContent = Number(takaLessInt).toFixed(0);
                     }
+                    const rateSpan = document.getElementById(`cell-${sanitizedId}-rate`);
+                    if (rateSpan) {
+                        if (kg > 0) {
+                            rateSpan.textContent = ((takaMain || 0) / kg).toFixed(2);
+                            rateSpan.style.display = 'inline-block';
+                        } else {
+                            rateSpan.textContent = '';
+                            rateSpan.style.display = 'none';
+                        }
+                    }
                 }
             });
 
@@ -1453,6 +1476,16 @@
                 const cellTakaLess = document.getElementById(`cell-${sanitizedId}-takaLess`);
                 if (cellTakaLess) {
                     cellTakaLess.textContent = Number(takaLessInt).toFixed(0);
+                }
+                const rateSpan = document.getElementById(`cell-${sanitizedId}-rate`);
+                if (rateSpan) {
+                    if (kg > 0) {
+                        rateSpan.textContent = ((takaMain || 0) / kg).toFixed(2);
+                        rateSpan.style.display = 'inline-block';
+                    } else {
+                        rateSpan.textContent = '';
+                        rateSpan.style.display = 'none';
+                    }
                 }
             });
 
@@ -1639,6 +1672,14 @@
                     ? manualOverrides[id].rawTakaMain
                     : ((takaMain !== undefined && takaMain !== null) ? Math.round(takaMain).toString() : '');
 
+                const effectiveKg = (manualOverrides[id] && manualOverrides[id].kg !== undefined)
+                    ? manualOverrides[id].kg
+                    : (kg || 0);
+                const effectiveTakaMain = (manualOverrides[id] && manualOverrides[id].takaMain !== undefined)
+                    ? manualOverrides[id].takaMain
+                    : (takaMain || 0);
+                const rateVal = (effectiveKg > 0) ? (effectiveTakaMain / effectiveKg).toFixed(2) : '';
+
                 row.innerHTML = `
                     <td style="display:flex; align-items:center;">
                         <button class="delete-btn" onclick="handleDeleteMember('${id}')" title="Delete row">×</button>
@@ -1660,6 +1701,7 @@
                             value="${takaMainDisplay}" 
                             oninput="handleManualEdit('${id}', 'takaMain', this.value)"
                             onfocus="this.select()">
+                        <span class="rate-tag" id="cell-${sanitizedId}-rate" style="display: ${effectiveKg > 0 ? 'inline-block' : 'none'};">${rateVal}</span>
                     </td>
                 `;
             } else {
