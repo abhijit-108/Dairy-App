@@ -15,8 +15,11 @@ function updateDateTime() {
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'
     const timeStr = `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
-    // Set as two lines: Bengali weekday, English month day \n time
-    document.getElementById('datetime').innerHTML = `${timeStr}<br>${weekday}, ${month} ${day}`;
+    // Set as two lines: Bengali weekday, English month day with clean icons
+    const dtEl = document.getElementById('datetime');
+    if (dtEl) {
+        dtEl.innerHTML = `<div class="dt-row"><i class='bx bx-time-five'></i> <span>${timeStr}</span></div><div class="dt-row"><i class='bx bx-calendar'></i> <span>${weekday}, ${month} ${day}</span></div>`;
+    }
 }
 
 // Update shift chip details (e.g. দুপুর (10-3))

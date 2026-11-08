@@ -170,7 +170,7 @@ let rate = calculateRate(fat, snf);
 const fixRateEl = document.getElementById("fix_rate");
 if (fixRateEl) fixRateEl.textContent = "Current Rate : " + rate;
 const fixRateEl1 = document.getElementById("fix_rate1");
-if (fixRateEl1) fixRateEl1.textContent = "Current Rate : " + rate;
+if (fixRateEl1) fixRateEl1.innerHTML = `<i class='bx bx-coin-stack'></i> Current Rate : ${rate}`;
 
 function generateKey(name) {
     return name.trim().replace(/\s+/g, '-');
@@ -545,69 +545,87 @@ function showPopup(type, title, data, statusText, existingData = null) {
     const existingEntryDetails = document.getElementById('existingEntryDetails');
     const updateBtn = document.getElementById('updateBtn');
     const printBtn = document.getElementById('printBtn');
+    const standardCloseBtn = document.getElementById('closeBtn');
 
     if (!overlay || !card || !statusMessage || !popupTitle || !popupDetails) return;
 
-    card.className = 'popup-card';
+    card.className = 'popup-card ' + type;
     if (existingEntry) existingEntry.style.display = 'none';
     if (updateBtn) {
         updateBtn.style.display = 'none';
         updateBtn.disabled = false;
+        updateBtn.innerHTML = "<i class='bx bx-edit-alt'></i> Update Entry";
     }
     if (printBtn) {
         printBtn.style.display = 'none';
+    }
+    if (standardCloseBtn) {
+        standardCloseBtn.style.display = 'none';
     }
 
     // Hide print status when opening new popup
     const printStatus = document.getElementById('printStatus');
     if (printStatus) printStatus.classList.remove('show');
 
+    // Pick badge icon based on popup type
+    let badgeIcon = 'bx-check';
+    if (type === 'duplicate') badgeIcon = 'bx-error-circle';
+    else if (type === 'reprint') badgeIcon = 'bx-printer';
+    else if (type === 'warning') badgeIcon = 'bx-error';
+    else if (type === 'failed') badgeIcon = 'bx-x';
+
+    statusMessage.className = `status-message status-${type}`;
+    statusMessage.innerHTML = `
+        <span class="notice-badge"><i class='bx ${badgeIcon}'></i></span>
+        <span class="notice-text">${statusText}</span>
+        <button class="status-close-btn" id="statusCloseBtn" type="button" aria-label="Close">&times;</button>
+    `;
+
+    setTimeout(() => {
+        document.getElementById('statusCloseBtn')?.addEventListener('click', hidePopup);
+    }, 50);
+
+    popupTitle.textContent = title;
+
     if (type === 'duplicate') {
-        card.classList.add('duplicate');
-        statusMessage.className = 'status-message status-duplicate';
         if (existingEntry) existingEntry.style.display = 'block';
-        if (updateBtn) updateBtn.style.display = 'inline-block';
+        if (updateBtn) updateBtn.style.display = 'inline-flex';
 
         if (existingData && existingEntryDetails) {
+            const oldKg = !isNaN(parseFloat(existingData.kg)) ? Number(existingData.kg).toFixed(2) : existingData.kg;
+            const oldRate = (existingData.rate === '' || existingData.rate === undefined) ? '' : existingData.rate;
+            const oldTotal = (existingData.total === '' || existingData.total === undefined) ? '' : existingData.total;
             existingEntryDetails.innerHTML = `
-                <div><strong>Name:</strong> <span>${existingData.name}</span></div>
-                <div><strong>Date & Time:</strong> <span>${existingData.timestamp}</span></div>
-                <div><strong>KG:</strong> <span>${existingData.kg}</span></div>
-                <div><strong>FAT:</strong> <span>${existingData.fat}</span></div>
-                <div><strong>SNF:</strong> <span>${existingData.snf}</span></div>
-                <div><strong>Rate:</strong> <span>${existingData.rate}</span></div>
-                <div><strong>Total:</strong> <span>${existingData.total}</span></div>
+                <div class="reprint-row"><span class="row-label"><i class='bx bx-user'></i> Name:</span> <strong class="row-val">${existingData.name}</strong></div>
+                <div class="reprint-row"><span class="row-label"><i class='bx bx-calendar'></i> Date & Time:</span> <strong class="row-val">${existingData.timestamp}</strong></div>
+                <div class="reprint-row"><span class="row-label"><i class='bx bx-shopping-bag'></i> KG:</span> <strong class="row-val">${oldKg}</strong></div>
+                <div class="reprint-row"><span class="row-label"><i class='bx bx-droplet'></i> FAT:</span> <strong class="row-val">${existingData.fat}</strong></div>
+                <div class="reprint-row"><span class="row-label"><i class='bx bx-layer'></i> SNF:</span> <strong class="row-val">${existingData.snf}</strong></div>
+                <div class="reprint-row"><span class="row-label"><i class='bx bx-tag'></i> Rate:</span> <strong class="row-val">${oldRate}</strong></div>
+                <div class="reprint-row"><span class="row-label"><i class='bx bx-coin-stack'></i> Total:</span> <strong class="reprint-total-badge badge-amber" style="background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%) !important; color: #ffffff !important;">₹${oldTotal}</strong></div>
             `;
         }
-    } else if (type === 'reprint') {
-        card.classList.add('reprint');
-        statusMessage.className = 'status-message status-reprint';
-    } else {
-        card.classList.add(type);
-        statusMessage.className = `status-message status-${type === 'success' ? 'success' : type === 'failed' ? 'failed' : 'warning'}`;
     }
-
-    statusMessage.textContent = statusText;
-    popupTitle.textContent = title;
 
     if (data) {
         const displayRate = (data.rate === '' || data.rate === undefined) ? '' : data.rate;
         const displayTotal = (data.total === '' || data.total === undefined) ? '' : data.total;
+        const displayKg = !isNaN(parseFloat(data.kg)) ? Number(data.kg).toFixed(2) : data.kg;
 
         popupDetails.innerHTML = `
-            <div><strong>Name:</strong> <span>${data.name}</span></div>
-            <div><strong>Date & Time:</strong> <span>${data.timestamp}</span></div>
-            <div><strong>KG:</strong> <span>${data.kg}</span></div>
-            <div><strong>FAT:</strong> <span>${data.fat}</span></div>
-            <div><strong>SNF:</strong> <span>${data.snf}</span></div>
-            <div><strong>Rate:</strong> <span>${displayRate}</span></div>
-            <div><strong>Total:</strong> <span>${displayTotal}</span></div>
+            <div class="reprint-row"><span class="row-label"><i class='bx bx-user'></i> Name:</span> <strong class="row-val">${data.name}</strong></div>
+            <div class="reprint-row"><span class="row-label"><i class='bx bx-calendar'></i> Date & Time:</span> <strong class="row-val">${data.timestamp}</strong></div>
+            <div class="reprint-row"><span class="row-label"><i class='bx bx-shopping-bag'></i> KG:</span> <strong class="row-val">${displayKg}</strong></div>
+            <div class="reprint-row"><span class="row-label"><i class='bx bx-droplet'></i> FAT:</span> <strong class="row-val">${data.fat}</strong></div>
+            <div class="reprint-row"><span class="row-label"><i class='bx bx-layer'></i> SNF:</span> <strong class="row-val">${data.snf}</strong></div>
+            <div class="reprint-row"><span class="row-label"><i class='bx bx-tag'></i> Rate:</span> <strong class="row-val">${displayRate}</strong></div>
+            <div class="reprint-row"><span class="row-label"><i class='bx bx-coin-stack'></i> Total:</span> <strong class="reprint-total-badge" style="color: #ffffff !important;">₹${displayTotal}</strong></div>
         `;
 
         // Store current data for printing and show print button for success/duplicate/reprint with valid data
         if ((type === 'success' || type === 'duplicate' || type === 'reprint') && data.name && data.rate && data.total !== '😒') {
             currentPrintData = data;
-            if (printBtn) printBtn.style.display = 'inline-block';
+            if (printBtn) printBtn.style.display = 'inline-flex';
         } else {
             currentPrintData = null;
         }
@@ -725,7 +743,7 @@ Promise.all([
         const fixRateEl1 = document.getElementById("fix_rate1");
         const currentRate = calculateRate(fat, snf);
         if (fixRateEl) fixRateEl.textContent = "Current Rate : " + currentRate;
-        if (fixRateEl1) fixRateEl1.textContent = "Current Rate : " + currentRate;
+        if (fixRateEl1) fixRateEl1.innerHTML = `<i class='bx bx-coin-stack'></i> Current Rate : ${currentRate}`;
     } catch (e) {
         // ignore
     }
@@ -940,10 +958,30 @@ function extractMilkTime(timestamp) {
     return `${match[1]} ${match[2].toUpperCase()}`;
 }
 
+function formatMilkTimeDisplay(timestamp) {
+    const timeStr = extractMilkTime(timestamp);
+    if (!timeStr) return '';
+    const parts = timeStr.trim().split(/\s+/);
+    if (parts.length === 2) {
+        return `<div class="milk-time-val">${parts[0]}</div> <div class="milk-ampm-val">${parts[1]}</div>`;
+    }
+    return timeStr;
+}
+
 async function fetchMilkDataForDate(selectedDateParam) {
     // note: we renamed the param to selectedDateParam to avoid confusion with global
     const dataContainer = document.getElementById('milkDataContainer');
     if (!dataContainer) return;
+
+    // Fast-path: Check in-memory DairyStore first for instant 0ms rendering
+    if (window.DairyStore && window.DairyStore.records) {
+        const cachedDay = window.DairyStore.getDateRecords(selectedDateParam);
+        if (cachedDay && Object.keys(cachedDay).length > 0) {
+            dataContainer.innerHTML = displayMilkData(cachedDay);
+            addTableRowClickListeners(selectedDateParam);
+            return;
+        }
+    }
 
     dataContainer.innerHTML = `
         <div class="milk-loading-state">
@@ -1083,13 +1121,13 @@ function displayMilkData(data) {
 
         rows += `
         <tr class="milk-data-row">
-            <td class="milk-data-cell milk-time-cell">${extractMilkTime(record.timestamp)}</td>
+            <td class="milk-data-cell milk-time-cell">${formatMilkTimeDisplay(record.timestamp)}</td>
             <td class="milk-data-cell milk-name-cell">${record.name}</td>
-            <td class="milk-data-cell"><span class="milk-metric-badge">${record.fat}</span></td>
-            <td class="milk-data-cell"><span class="milk-metric-badge">${record.snf}</span></td>
-            <td class="milk-data-cell milk-rate-cell"><span class="milk-metric-badge">${record.rate ? '₹' + record.rate : ''}</span></td>
-            <td class="milk-data-cell"><span class="milk-metric-badge2">${Number(record.kg).toFixed(2)} kg</span></td>
-            <td class="milk-data-cell milk-amount-cell"><span class="milk-metric-badge2">${record.total ? '₹' + record.total : ''}</span></td>
+            <td class="milk-data-cell"><span class="milk-metric-badge badge-fat">${record.fat}</span></td>
+            <td class="milk-data-cell"><span class="milk-metric-badge badge-snf">${record.snf}</span></td>
+            <td class="milk-data-cell milk-rate-cell"><span class="milk-metric-badge badge-rate">${record.rate ? '₹' + record.rate : ''}</span></td>
+            <td class="milk-data-cell"><span class="milk-metric-badge2 badge-weight">${Number(record.kg).toFixed(2)} kg</span></td>
+            <td class="milk-data-cell milk-amount-cell"><span class="milk-metric-badge2 badge-total">${record.total ? '₹' + record.total : ''}</span></td>
         </tr>`;
 
         totalKg += kg;
@@ -1139,19 +1177,19 @@ function displayMilkData(data) {
     <table class="milk-records-table">
         <thead class="milk-table-header">
             <tr>
-                <th class="milk-header-cell">⏰ Time</th>
-                <th class="milk-header-cell">👤 Name</th>
-                <th class="milk-header-cell">🧈 FAT</th>
-                <th class="milk-header-cell">🥛 SNF</th>
-                <th class="milk-header-cell">💰 Rate</th>
-                <th class="milk-header-cell">⚖️ Weight</th>
-                <th class="milk-header-cell">💵 Total</th>
+                <th class="milk-header-cell"><i class='bx bx-time-five'></i> TIME</th>
+                <th class="milk-header-cell"><i class='bx bx-user'></i> NAME</th>
+                <th class="milk-header-cell"><i class='bx bx-droplet'></i> FAT</th>
+                <th class="milk-header-cell"><i class='bx bx-layer'></i> SNF</th>
+                <th class="milk-header-cell">₹ RATE</th>
+                <th class="milk-header-cell"><i class='bx bx-shopping-bag'></i> WEIGHT</th>
+                <th class="milk-header-cell"><i class='bx bx-coin-stack'></i> TOTAL</th>
             </tr>
         </thead>
         <tbody>
             ${rows}
            
-            <tr class="milk-summary-row">
+            <tr class="milk-summary-row milk-summary-shift milk-summary-morning">
                 <td class="milk-data-cell" colspan="2"><strong>🌅 সকাল (Morning)</strong></td>
                 <td class="milk-data-cell"><strong>${avgFatAm}</strong></td>
                 <td class="milk-data-cell"><strong>${avgSnfAm}</strong></td>
@@ -1159,7 +1197,7 @@ function displayMilkData(data) {
                 <td class="milk-data-cell"><strong>${amKg.toFixed(2)} kg</strong></td>
                 <td class="milk-data-cell"><strong>₹${amAmount.toFixed(0)}</strong></td>
             </tr>
-            <tr class="milk-summary-row">
+            <tr class="milk-summary-row milk-summary-shift milk-summary-afternoon">
                 <td class="milk-data-cell" colspan="2"><strong>☀️ দুপুর (Afternoon)</strong></td>
                 <td class="milk-data-cell"><strong>${avgFatNoon}</strong></td>
                 <td class="milk-data-cell"><strong>${avgSnfNoon}</strong></td>
@@ -1167,7 +1205,7 @@ function displayMilkData(data) {
                 <td class="milk-data-cell"><strong>${noonKg.toFixed(2)} kg</strong></td>
                 <td class="milk-data-cell"><strong>₹${noonAmount.toFixed(0)}</strong></td>
             </tr>
-            <tr class="milk-summary-row">
+            <tr class="milk-summary-row milk-summary-shift milk-summary-evening">
                 <td class="milk-data-cell" colspan="2"><strong>🌇 সন্ধ্যা (Evening)</strong></td>
                 <td class="milk-data-cell"><strong>${avgFatPm}</strong></td>
                 <td class="milk-data-cell"><strong>${avgSnfPm}</strong></td>
@@ -1175,7 +1213,7 @@ function displayMilkData(data) {
                 <td class="milk-data-cell"><strong>${pmKg.toFixed(2)} kg</strong></td>
                 <td class="milk-data-cell"><strong>₹${pmAmount.toFixed(0)}</strong></td>
             </tr>
-            <tr class="milk-summary-row">
+            <tr class="milk-summary-row milk-summary-total">
                 <td class="milk-data-cell" colspan="2"><strong>📊 Total(All)</strong></td>
                 <td class="milk-data-cell"><strong>${avgFat}</strong></td>
                 <td class="milk-data-cell"><strong>${avgSnf}</strong></td>
@@ -1186,6 +1224,14 @@ function displayMilkData(data) {
         </tbody>
     </table>`;
 }
+
+window.renderDashboardDailyRecords = () => {
+    const ds = document.getElementById('milkDateSelector');
+    if (ds) {
+        selectedDate = ds.value;
+        fetchMilkDataForDate(ds.value);
+    }
+};
 
 document.addEventListener('DOMContentLoaded', function () {
     populateMilkDateDropdown();

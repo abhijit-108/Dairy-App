@@ -3,496 +3,1009 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dairy CaL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Kangsabati</title>
+    <meta name="theme-color" content="#040e1c">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="logo.png" type="image/png">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/main_screen.css?v=7.1.8">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/main_screen.css?v=7.2.0">
+    <link rel="stylesheet" href="css/spa.css">
+    <link rel="stylesheet" href="css/themes.css">
     <style>
-        .changelog-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 99999;
-            padding: 16px;
-            box-sizing: border-box;
-            animation: changelogFadeIn 0.3s ease-out;
+        /* Immediate root canvas background matching active theme to prevent any white flash during fast scroll or overscroll */
+        html, body {
+            background-color: #040e1c;
+            min-height: 100%;
         }
-
-        @keyframes changelogFadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .changelog-modal-card {
-            background: #1e1e24;
-            color: #f0f0f0;
-            border-radius: 16px;
-            max-width: 520px;
-            width: 100%;
-            max-height: 88vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-            animation: changelogSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes changelogSlideUp {
-            from {
-                transform: translateY(20px) scale(0.97);
-            }
-
-            to {
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .changelog-header {
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(135deg, #2a2b36 0%, #1f2029 100%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .changelog-header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .changelog-sparkle-icon {
-            font-size: 26px;
-            line-height: 1;
-        }
-
-        .changelog-title {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: -0.3px;
-        }
-
-        .changelog-subtitle {
-            font-size: 12px;
-            color: #a0a5b8;
-            display: block;
-            margin-top: 2px;
-        }
-
-        .changelog-close-btn {
-            background: transparent;
-            border: none;
-            color: #a0a5b8;
-            font-size: 24px;
-            cursor: pointer;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-
-        .changelog-close-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-
-        .changelog-body {
-            padding: 16px 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .changelog-section {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 12px 14px;
-        }
-
-        .changelog-section-header {
-            margin-bottom: 8px;
-        }
-
-        .section-tag {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 3px 8px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-
-        .tag-green {
-            background: rgba(52, 211, 153, 0.15);
-            color: #34d399;
-        }
-
-        .tag-blue {
-            background: rgba(96, 165, 250, 0.15);
-            color: #60a5fa;
-        }
-
-        .tag-purple {
-            background: rgba(192, 132, 252, 0.15);
-            color: #c084fc;
-        }
-
-        .changelog-list {
-            margin: 0;
-            padding-left: 18px;
-            font-size: 13px;
-            line-height: 1.55;
-            color: #d1d5db;
-        }
-
-        .changelog-list li {
-            margin-bottom: 6px;
-        }
-
-        .changelog-list li:last-child {
-            margin-bottom: 0;
-        }
-
-        .changelog-list strong {
-            color: #fff;
-        }
-
-        .changelog-footer {
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #17171c;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .changelog-expiry-note {
-            font-size: 11px;
-            color: #8a8f9d;
-        }
-
-        .changelog-confirm-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #fff;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.15s;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        .changelog-confirm-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
-        }
-
-        .changelog-confirm-btn:active {
-            transform: translateY(0);
+        [data-theme="light-azure"],
+        [data-theme="light"] {
+            background-color: #e0f2fe;
         }
     </style>
+    <script>
+        // Apply saved theme or auto system theme immediately to prevent any flicker
+        (function() {
+            try {
+                const saved = localStorage.getItem('dairy_app_theme');
+                let effective = saved;
+                if (!effective || effective === 'auto' || (effective !== 'dark-ocean' && effective !== 'light-azure')) {
+                    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    effective = isDark ? 'dark-ocean' : 'light-azure';
+                }
+                document.documentElement.setAttribute('data-theme', effective);
+            } catch(e) {}
+        })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 
 <body>
+    <!-- Unified Floating Liquid Glass Sidebar -->
     <aside id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <div class="title-block">
-                <div class="title-main">Dairy App</div>
-                <div class="title-sub" id="fix_rate1"></div>
+            <div class="title-left">
+                <svg class="cow-icon" viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M7 10C5 6 4 3 6 2C8 1 9 4 10 7" />
+                    <path d="M25 10C27 6 28 3 26 2C24 1 23 4 22 7" />
+                    <path d="M5 11C2 12 1 14 3 15C5 16 8 14 9 12" />
+                    <path d="M27 11C30 12 31 14 29 15C27 16 24 14 23 12" />
+                    <path d="M9 7h14c1.5 0 3 1.5 3 4v7c0 2-1.5 4-3 5h-14c-1.5 0-3-3-3-5v-7c0-2.5 1.5-4 3-4z" />
+                    <ellipse cx="16" cy="22" rx="7" ry="4.5" />
+                    <circle cx="13" cy="22" r="1.2" fill="currentColor" />
+                    <circle cx="19" cy="22" r="1.2" fill="currentColor" />
+                    <ellipse cx="12" cy="13" rx="1.5" ry="1.8" fill="currentColor" />
+                    <ellipse cx="20" cy="13" rx="1.5" ry="1.8" fill="currentColor" />
+                </svg>
+                <div class="title-block">
+                    <div class="title-main"><span class="brand-dairy">Kangsabati</span>
+                    </div>
+                    <div class="title-sub" id="fix_rate1"><i class='bx bx-coin-stack'></i> Current Rate : 45.00</div>
+                </div>
             </div>
 
             <button id="sidebarClose" class="sidebar-close">&times;</button>
         </div>
         <ul class="sidebar-list">
             <li>
-                <a href="all_member.html">
-                    <i class='bx bx-group'></i>
-                    <span class="sidebar-text">All Members</span>
+                <a href="#/all-members">
+                    <div class="item-left">
+                        <span class="item-icon-badge"><i class='bx bx-group'></i></span>
+                        <span class="sidebar-text">All Members</span>
+                    </div>
+                    <i class='bx bx-chevron-right item-arrow'></i>
                 </a>
             </li>
             <li>
-                <a href="generate_bill.html">
-                    <i class='bx bx-file'></i>
-                    <span class="sidebar-text">Generate bills</span>
+                <a href="#/generate-bill">
+                    <div class="item-left">
+                        <span class="item-icon-badge"><i class='bx bx-file'></i></span>
+                        <span class="sidebar-text">Generate bills</span>
+                    </div>
+                    <i class='bx bx-chevron-right item-arrow'></i>
                 </a>
             </li>
             <li>
-                <a href="storage_page.html">
-                    <i class='bx bx-images'></i>
-                    <span class="sidebar-text">Old Bills Photos</span>
+                <a href="#/storage">
+                    <div class="item-left">
+                        <span class="item-icon-badge"><i class='bx bx-images'></i></span>
+                        <span class="sidebar-text">Old Bills Photos</span>
+                    </div>
+                    <i class='bx bx-chevron-right item-arrow'></i>
                 </a>
             </li>
             <li id="hide_fix_data">
-                <a href="fix_data.html">
-                    <i class='bx bx-wrench'></i>
-                    <span class="sidebar-text">Fix Data</span>
+                <a href="#/fix-data">
+                    <div class="item-left">
+                        <span class="item-icon-badge"><i class='bx bx-wrench'></i></span>
+                        <span class="sidebar-text">Fix Data</span>
+                    </div>
+                    <i class='bx bx-chevron-right item-arrow'></i>
                 </a>
             </li>
             <li>
-                <a href="https://abhijit-delsgade.vercel.app/internet_usage_page.html">
-                    <i class='bx bx-wifi'></i>
-                    <span class="sidebar-text">Wifi Usage</span>
+                <a href="#/weather">
+                    <div class="item-left">
+                        <span class="item-icon-badge"><i class='bx bx-cloud'></i></span>
+                        <span class="sidebar-text">Weather</span>
+                    </div>
+                    <i class='bx bx-chevron-right item-arrow'></i>
                 </a>
             </li>
             <li>
-                <a href="https://delsgade-bgmi-team.vercel.app/" target="_blank">
-                    <i class='bx bx-globe'></i>
-                    <span class="sidebar-text">All Guide Website</span>
+                <a href="#/themes">
+                    <div class="item-left">
+                        <span class="item-icon-badge"><i class='bx bx-palette'></i></span>
+                        <span class="sidebar-text">Themes</span>
+                    </div>
+                    <i class='bx bx-chevron-right item-arrow'></i>
                 </a>
             </li>
             <li>
-                <a href="weather.html" target="_blank">
-                    <i class='bx bx-cloud'></i>
-                    <span class="sidebar-text">Weather</span>
+                <a href="login.html" onclick="logout()" class="logout-link">
+                    <div class="item-left">
+                        <span class="item-icon-badge"><i class='bx bx-log-out'></i></span>
+                        <span class="sidebar-text" id="logoutButton">Logout</span>
+                    </div>
                 </a>
             </li>
-            <li>
-                <a href="login.html" onclick="logout()">
-                    <i class='bx bx-log-out'></i>
-                    <span class="sidebar-text" id="logoutButton">Logout</span>
-                </a>
-            </li>
-
         </ul>
         <div class="sidebar-footer">
-            <div class="sidebar-footer-text">&copy; 2025 Delsgade. All rights reserved.</div>
+            <div class="sidebar-footer-pill">&copy; 2025 Delsgade. All rights reserved.</div>
         </div>
     </aside>
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
+    <!-- Unified Liquid Glass Navbar -->
     <nav class="navbar">
-        <button class="menu-btn">☰</button>
-        <div class="navbar-title">Dairy App</div>
-        <div class="datetime" id="datetime"></div>
+        <div class="navbar-left">
+            <button class="menu-btn" aria-label="Menu">
+                <i class='bx bx-menu'></i>
+            </button>
+            <div class="navbar-brand">
+                <svg class="cow-icon" viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M7 10C5 6 4 3 6 2C8 1 9 4 10 7" />
+                    <path d="M25 10C27 6 28 3 26 2C24 1 23 4 22 7" />
+                    <path d="M5 11C2 12 1 14 3 15C5 16 8 14 9 12" />
+                    <path d="M27 11C30 12 31 14 29 15C27 16 24 14 23 12" />
+                    <path d="M9 7h14c1.5 0 3 1.5 3 4v7c0 2-1.5 4-3 5h-14c-1.5 0-3-3-3-5v-7c0-2.5 1.5-4 3-4z" />
+                    <ellipse cx="16" cy="22" rx="7" ry="4.5" />
+                    <circle cx="13" cy="22" r="1.2" fill="currentColor" />
+                    <circle cx="19" cy="22" r="1.2" fill="currentColor" />
+                    <ellipse cx="12" cy="13" rx="1.5" ry="1.8" fill="currentColor" />
+                    <ellipse cx="20" cy="13" rx="1.5" ry="1.8" fill="currentColor" />
+                </svg>
+                <div class="navbar-title">
+                    <span class="brand-dairy">Kangsabati</span>
+                    <span class="navbar-subtitle">Lalgora Dairy</span>
+                </div>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <!-- Topbar Weather Widget (Right-Aligned with Time) -->
+            <div class="topbar-weather-widget" id="topbarWeatherWidget">
+                <div class="topbar-weather-row topbar-weather-row-top">
+                    <span id="topbarWeatherIcon" class="topbar-weather-icon-wrap">
+                        <i class="fa-solid fa-sun" style="color: #f59e0b; font-size: 11px;"></i>
+                    </span>
+                    <span id="topbarWeatherTemp" class="topbar-weather-temp">--°C</span>
+                </div>
+                <div class="topbar-weather-row topbar-weather-row-bottom">
+                    <span id="topbarWeatherDesc" class="topbar-weather-desc">Clear Sky</span>
+                    <span id="topbarWeatherCity" style="display: none;">Baliarpur</span>
+                </div>
+            </div>
+            <div class="datetime" id="datetime"></div>
+            <button id="navBackBtn" class="nav-back-btn" style="display: none;" title="Back">
+                <i class='bx bx-left-arrow-alt'></i>
+                <span>Back</span>
+            </button>
+        </div>
     </nav>
 
+    <!-- SPA VIEWPORT -->
+    <main id="app-viewport" class="app-viewport">
 
-    <main class="main" id="mainContent">
-        <div class="container">
+        <!-- ======================================================== -->
+        <!-- VIEW 1: DASHBOARD (MAIN ENTRY & DAILY RECORDS) -->
+        <!-- ======================================================== -->
+        <section id="view-dashboard" class="app-view active">
+            <div class="container">
+                <button id="loginBtn2" onclick="window.location.href='login.html'">
+                    <i class="bx bx-lock"></i> Login
+                </button>
 
-            <button id="loginBtn2" onclick="window.location.href='login.html'">
-                <i class="bx bx-lock"></i> Login
-            </button>
+                <div id="audio">
+                    <div class="audio-elements">
+                        <audio id="successAudio" preload="auto">
+                            <source src="success.mp3" type="audio/mpeg">
+                        </audio>
+                        <audio id="existsAudio" preload="auto">
+                            <source src="already_exist.mp3" type="audio/mpeg">
+                        </audio>
+                        <audio id="failedAudio" preload="auto">
+                            <source src="failed.mp3" type="audio/mpeg">
+                        </audio>
+                        <audio id="warningAudio" preload="auto">
+                            <source src="warning.mp3" type="audio/mpeg">
+                        </audio>
+                    </div>
 
-            <div id="audio">
-                <div class="audio-elements">
-                    <audio id="successAudio" preload="auto">
-                        <source src="success.mp3" type="audio/mpeg">
-                    </audio>
-                    <audio id="existsAudio" preload="auto">
-                        <source src="already_exist.mp3" type="audio/mpeg">
-                    </audio>
-                    <audio id="failedAudio" preload="auto">
-                        <source src="failed.mp3" type="audio/mpeg">
-                    </audio>
-                    <audio id="warningAudio" preload="auto">
-                        <source src="warning.mp3" type="audio/mpeg">
-                    </audio>
-                </div>
-
-
-                <div class="audio-toggle">
-                    <label>
-                        <input type="checkbox" id="audioEnabled" checked>
-                        🔊 Audio Feedback
-                    </label>
-                </div>
-            </div>
-
-            <form id="milkForm">
-
-                <div class="shift-chip-wrapper">
-                    <div id="shiftChip" class="shift-chip shift-morning">
-                        <i id="shiftIcon" class='bx bx-sun'></i>
-                        <span id="shiftText" class="shift-text">সকাল (6-10)</span>
+                    <div class="audio-toggle">
+                        <label>
+                            <input type="checkbox" id="audioEnabled" checked>
+                            <i class='bx bx-volume-full'></i> Audio Feedback
+                        </label>
                     </div>
                 </div>
 
-                <div id="hide_names">
-                    <div class="form-group">
-                        <label for="nameSelect">Select Name:</label>
-                        <select id="nameSelect">
-                            <option value="" class="loading">Loading names...</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <div class="form-group">
-                        <label for="kg">KG:</label>
-                        <input type="number" id="kg" step="0.001" placeholder="" oninput="updateCalculationResults()">
+                <form id="milkForm">
+                    <div class="shift-chip-wrapper">
+                        <div id="shiftChip" class="shift-chip shift-morning">
+                            <i id="shiftIcon" class='bx bx-sun'></i>
+                            <span id="shiftText" class="shift-text">সকাল (6-10)</span>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="fat">FAT:</label>
-                        <input type="number" id="fat" step="0.1" placeholder="" oninput="updateCalculationResults()">
+                    <div id="hide_names">
+                        <div class="form-group">
+                            <label for="nameSelect"><i class='bx bx-user'></i> Select Name:</label>
+                            <div class="select-box-wrap">
+                                <select id="nameSelect">
+                                    <option value="" class="loading">Choose a name...</option>
+                                </select>
+                                <i class='bx bx-chevron-down select-chevron'></i>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="snf">SNF:</label>
-                        <input type="number" id="snf" step="0.1" placeholder="" oninput="updateCalculationResults()">
+                    <div class="input-group">
+                        <div class="form-group">
+                            <label for="kg"><i class='bx bx-shopping-bag'></i> KG:</label>
+                            <input type="number" id="kg" step="0.001" placeholder=""
+                                oninput="updateCalculationResults()">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fat"><i class='bx bx-droplet'></i> FAT:</label>
+                            <input type="number" id="fat" step="0.1" placeholder=""
+                                oninput="updateCalculationResults()">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="snf"><i class='bx bx-layer'></i> SNF:</label>
+                            <input type="number" id="snf" step="0.1" placeholder=""
+                                oninput="updateCalculationResults()">
+                        </div>
                     </div>
-                </div>
 
-                <button type="submit" class="submit-btn">Save Entry <div id="calculationResults"></div> <span
-                        style="color: rgb(21, 219, 206);" id="ratePerKg"></span>
-        </div></button>
-        </form>
-        </div>
-
-        <div id="popupOverlay" class="popup-overlay">
-            <div id="popupCard" class="popup-card">
-                <button id="closeBtn" class="close-btn">×</button>
-                <div id="statusMessage" class="status-message"></div>
-                <h2 id="popupTitle" class="popup-title"></h2>
-                <div id="popupDetails" class="popup-details"></div>
-                <div id="existingEntry" class="existing-entry" style="display: none;">
-                    <h3>Old Entry:</h3>
-                    <div id="existingEntryDetails"></div>
-                </div>
-                <div id="actionButtons" class="action-buttons">
-                    <button id="updateBtn" class="update-btn" style="display: none;">Update Entry</button>
-                    <button id="printBtn" class="print-btn" style="display: none;">
-                        <i class='bx bx-printer'></i>
-                        Print Receipt
+                    <button type="submit" class="submit-btn">
+                        <i class='bx bx-save'></i> Save Entry
+                        <div id="calculationResults"></div>
+                        <span id="ratePerKg" class="rate-preview-badge"></span>
                     </button>
-                </div>
-                <div id="printStatus" class="print-status"></div>
+                </form>
             </div>
-        </div>
+
+            <div id="popupOverlay" class="popup-overlay">
+                <div id="popupCard" class="popup-card">
+                    <button id="closeBtn" class="close-btn" style="display: none;">&times;</button>
+                    <div id="statusMessage" class="status-message"></div>
+                    <h2 id="popupTitle" class="popup-title"></h2>
+                    <div id="popupDetails" class="popup-details"></div>
+                    <div id="existingEntry" class="existing-entry" style="display: none;">
+                        <div class="existing-entry-header">
+                            <i class='bx bx-history'></i>
+                            <span>Old Entry (Already in Records)</span>
+                        </div>
+                        <div id="existingEntryDetails"></div>
+                    </div>
+                    <div id="actionButtons" class="action-buttons">
+                        <button id="updateBtn" class="update-btn" style="display: none;">
+                            <i class='bx bx-edit-alt'></i> Update Entry
+                        </button>
+                        <button id="printBtn" class="print-btn" style="display: none;">
+                            <i class='bx bx-printer'></i>
+                            Print Receipt
+                        </button>
+                    </div>
+                    <div id="printStatus" class="print-status"></div>
+                </div>
+            </div>
+
+            <div class="milk-dashboard-container">
+                <div class="milk-header-section">
+                    <div class="milk-date-controls">
+                        <i class='bx bx-calendar milk-date-icon'></i>
+                        <select id="milkDateSelector" class="milk-date-dropdown"></select>
+                        <i class='bx bx-chevron-down milk-date-chevron'></i>
+                    </div>
+                </div>
+
+                <div class="milk-table-wrapper">
+                    <div id="milkDataContainer">
+                        <div class="milk-loading-state">
+                            <div class="milk-loading-spinner"></div>
+                            <div>Loading records...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 2: ALL MEMBERS -->
+        <!-- ======================================================== -->
+        <section id="view-all-members" class="app-view">
+            <div class="view-header-banner">
+                <div class="header-line"></div>
+                <div class="header-content">
+                    <div class="title-badge"><i class='bx bx-group'></i></div>
+                    <h1 class="title">All <span class="title-purple">Members</span></h1>
+                </div>
+                <div class="header-line"></div>
+            </div>
+
+            <!-- Filters -->
+            <section class="filter-container" role="region" aria-label="Data filters">
+                <div class="custom-select-container">
+                    <label>Month</label>
+                    <div class="custom-select-trigger" id="monthTrigger">
+                        <span>All Months</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-select-options" id="monthFilterDropdown"></div>
+                </div>
+
+                <div class="custom-select-container">
+                    <label>Year</label>
+                    <div class="custom-select-trigger" id="yearTrigger">
+                        <span>All Years</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-select-options" id="yearFilterDropdown"></div>
+                </div>
+
+                <div class="custom-select-container">
+                    <label>Date Range</label>
+                    <div class="custom-select-trigger" id="dateRangeTrigger">
+                        <span>All Dates</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-select-options" id="dateRangeFilterDropdown"></div>
+                </div>
+
+                <div class="custom-select-container">
+                    <label>Name</label>
+                    <div class="custom-select-trigger" id="nameTrigger">
+                        <span>All Names</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-select-options" id="nameFilterDropdown"></div>
+                </div>
+            </section>
+
+            <!-- Aggregated Data Table by Name -->
+            <section class="table-container" id="summaryByNameSection" role="region" aria-label="Summary by name table">
+                <div class="table-header">
+                    <h2><i class="fas fa-chart-pie" aria-hidden="true"></i> Summary by Name</h2>
+                </div>
+                <div class="table-wrapper">
+                    <table id="nameAggregateTable" role="table">
+                        <thead>
+                            <tr role="row">
+                                <th scope="col" class="agg-col-name">Name</th>
+                                <th scope="col" class="agg-col-rate">Rate</th>
+                                <th scope="col" class="agg-col-kg">Total-KG</th>
+                                <th scope="col" class="agg-col-total">Total-total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nameAggregateTableBody">
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 1.5rem; color: var(--text-secondary, #94a3b8);">Loading
+                                    summary...</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr role="row">
+                                <td colspan="2" scope="row">Total</td>
+                                <td id="aggregateTotalKg">0</td>
+                                <td id="aggregateTotalTotal">0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Main Data Table -->
+            <section class="table-container" role="region" aria-label="Daily records table">
+                <div class="table-header">
+                    <h2><i class="fas fa-calendar-day" aria-hidden="true"></i> Daily Records</h2>
+                </div>
+                <div class="table-wrapper">
+                    <table id="dataTable" role="table">
+                        <thead>
+                            <tr role="row">
+                                <th scope="col">Day</th>
+                                <th scope="col">Session</th>
+                                <th scope="col">Fat</th>
+                                <th scope="col">SNF</th>
+                                <th scope="col">Rate</th>
+                                <th scope="col">Kg</th>
+                                <th scope="col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allMemberTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 1.5rem; color: var(--text-secondary, #94a3b8);">Loading
+                                    records...</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr role="row">
+                                <td colspan="2" scope="row">Total</td>
+                                <td id="allMemberAvgFat">0</td>
+                                <td id="allMemberAvgSnf">0</td>
+                                <td id="allMemberAvgRate">0</td>
+                                <td id="allMemberTotalKg">0</td>
+                                <td id="allMemberTotalAmount">0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 3: GENERATE BILL -->
+        <!-- ======================================================== -->
+        <section id="view-generate-bill" class="app-view">
+            <div class="view-header-banner">
+                <div class="header-line"></div>
+                <div class="header-content">
+                    <div class="title-badge"><i class='bx bx-file-blank'></i></div>
+                    <h1 class="title">Generate <span class="title-purple">Bills</span></h1>
+                </div>
+                <div class="header-line"></div>
+            </div>
+
+            <div class="responsive-pair">
+                <div class="panel panel-left">
+                    <div class="bill-left-card">
+                        <div class="date-range-buttons">
+                            <button class="date-btn" data-range="last-bill">Last_Bill</button>
+                            <button class="date-btn" data-range="1-7">1-7</button>
+                            <button class="date-btn" data-range="8-15">8-15</button>
+                            <button class="date-btn" data-range="16-23">16-23</button>
+                            <button class="date-btn" data-range="24-rest">24-Rest</button>
+                        </div>
+
+                        <div class="checkbox-section">
+                            <h3><i class='bx bx-user-check'></i> Select Names</h3>
+                            <div class="checkbox-grid" id="nameCheckboxes">
+                                <!-- Populated dynamically -->
+                            </div>
+                            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                                <button class="refresh-btn" id="billRefreshBtn"><i class='bx bx-refresh'></i> Refresh
+                                    Data</button>
+                                <button class="edit-mode-btn" id="editModeBtn">Edit Mode: OFF</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-right">
+                    <div class="bill-right-card">
+                        <div id="errorMessage"></div>
+                        <div class="bill-inputs-bar">
+                            <div class="bill-input-pill">
+                                <label for="billKg"><i class='bx bx-archive-in' style="color: #60a5fa;"></i> মোট দুধ
+                                    :</label>
+                                <input type="number" id="billKg" step="0.01" min="0" placeholder="0 kg"
+                                    onfocus="this.select()" onclick="this.select()">
+                            </div>
+                            <div class="bill-input-pill">
+                                <label for="billTotalRupee"><i class='bx bx-rupee' style="color: #34d399;"></i> মোট টাকা
+                                    :</label>
+                                <input type="number" id="billTotalRupee" step="0.01" min="0" placeholder="₹ 0"
+                                    onfocus="this.select()" onclick="this.select()">
+                            </div>
+                        </div>
+
+                        <div id="tableContainer">
+                            <div class="dated_bill">--/--/-- - --/--/--</div>
+                            <table id="billTable">
+                                <thead>
+                                    <tr>
+                                        <th>নাম</th>
+                                        <th class="numeric">পরিমাণ (Kg)</th>
+                                        <th class="numeric">29 টাকা</th>
+                                        <th class="numeric" id="mainRateHeader">45 টাকা</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="billTableBody">
+                                    <tr class="loading">
+                                        <td colspan="4" style="text-align: center; padding: 1.5rem; color: var(--text-secondary, #94a3b8);">
+                                            Loading data...</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="footer-row">
+                                        <td><strong>Total</strong></td>
+                                        <td class="numeric" id="billTotalKg">0.0</td>
+                                        <td class="numeric" id="billTotalTakaLess">0</td>
+                                        <td class="numeric" id="billTotalTakaMain">0.00</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <button class="download-btn" id="downloadBtn">
+                            <i class='bx bx-camera'></i> Download Table Screenshot
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 4: STORAGE (OLD BILLS PHOTOS) -->
+        <!-- ======================================================== -->
+        <section id="view-storage" class="app-view">
+            <div class="view-header-banner">
+                <div class="header-line"></div>
+                <div class="header-content">
+                    <div class="title-badge"><i class='bx bx-images'></i></div>
+                    <h1 class="title">Bills <span class="title-purple">Storage</span></h1>
+                </div>
+                <div class="header-line"></div>
+            </div>
+
+            <div id="storageContentBox" class="content-box">
+                <input type="file" id="storageFileInput" accept="image/*">
+                <select id="storageCommentInput">
+                    <option value="01_currentmonth_currentyear-07_currentmonth_currentyear">1 to 7</option>
+                    <option value="08_currentmonth_currentyear-15_currentmonth_currentyear">8 to 15</option>
+                    <option value="16_currentmonth_currentyear-23_currentmonth_currentyear">16 to 23</option>
+                    <option value="24_currentmonth_currentyear-rest">24 to rest</option>
+                </select>
+                <div style="display: flex; gap: 8px;">
+                    <select id="storageMonthSelect" style="flex: 1;">
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                    <select id="storageYearSelect" style="flex: 1;"></select>
+                </div>
+
+                <button id="storageUploadBtn" class="glass-btn-primary"><i class='bx bx-upload'></i> Upload</button>
+                <p id="storageUploadStatus" style="font-size: 13px; text-align: center; color: var(--text-secondary, #cbd5e1); margin: 2px 0;">
+                </p>
+                <div id="storageProgressBar" class="progress-bar">
+                    <div id="storageProgress" class="progress"></div>
+                </div>
+                <div id="storageUploadSpeed"></div>
+            </div>
+
+            <div id="storagePhotoContainer">
+                <div class="display-box" id="storageDisplayBox"></div>
+                <div class="scroll-loader" id="storageScrollLoader">
+                    <p><i class='bx bx-loader-alt bx-spin'></i> Loading more photos...</p>
+                </div>
+            </div>
+
+            <!-- Custom Overwrite Modal -->
+            <div id="overwriteModal" class="modal-overlay"
+                style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+                <div class="modal-card"
+                    style="background: var(--bg-glass-modal, rgba(20, 16, 32, 0.96)); border: 1.5px solid var(--border-card, rgba(192, 132, 252, 0.5)); border-radius: 20px; padding: 20px; max-width: 440px; width: 100%; box-shadow: var(--card-shadow, 0 0 35px rgba(168, 85, 247, 0.5));">
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div style="text-align: center;">
+                            <img id="modalExistingImage" src="" alt="Existing Bill"
+                                style="max-height: 180px; width: auto; border-radius: 12px; border: 1px solid var(--border-subtle, rgba(255,255,255,0.2));">
+                        </div>
+                        <h3 style="margin: 0; font-size: 18px; color: var(--text-primary, #fff); text-align: center;">Overwrite Bill?</h3>
+                        <p style="margin: 0; font-size: 13px; color: var(--text-secondary, #cbd5e1); text-align: center;">A bill for this
+                            period already exists. Would you like to replace it with the new one?</p>
+                        <div style="display: flex; gap: 10px; margin-top: 6px;">
+                            <button id="modalCancelBtn"
+                                style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-subtle, rgba(255,255,255,0.2)); background: var(--chip-bg, rgba(255,255,255,0.1)); color: var(--text-primary, #fff); font-weight: 600; cursor: pointer;">Cancel</button>
+                            <button id="modalUpdateBtn"
+                                style="flex: 1; padding: 10px; border-radius: 10px; border: none; background: var(--btn-primary-bg, linear-gradient(135deg, #7c3aed, #a855f7)); color: #fff; font-weight: 700; cursor: pointer;">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Photo Popup Viewer Modal -->
+            <div id="photoViewerModal" class="photo-viewer-overlay" style="display: none;">
+                <div class="photo-viewer-card">
+                    <!-- Top Bar with Title and Dismiss Button -->
+                    <div class="photo-viewer-header">
+                        <div class="photo-viewer-title-wrap">
+                            <i class='bx bx-image-alt'></i>
+                            <span id="photoViewerTitle" class="photo-viewer-title">Bill Photo</span>
+                        </div>
+                        <button type="button" id="photoViewerDismissBtn" class="photo-viewer-dismiss-btn" title="Dismiss">
+                            <i class='bx bx-x'></i>
+                            <span>Dismiss</span>
+                        </button>
+                    </div>
+
+                    <!-- Center Image Stage -->
+                    <div class="photo-viewer-body">
+                        <div id="photoViewerSpinner" class="photo-viewer-spinner">
+                            <i class='bx bx-loader-alt bx-spin'></i>
+                        </div>
+                        <img id="photoViewerImg" src="" alt="Bill Photo" class="photo-viewer-img">
+                    </div>
+
+                    <!-- Bottom Bar with Download Button -->
+                    <div class="photo-viewer-footer">
+                        <a id="photoViewerDownloadBtn" href="" download="" target="_blank" class="photo-viewer-download-btn">
+                            <i class='bx bx-download'></i>
+                            <span>Download Bill</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 5: FIX DATA -->
+        <!-- ======================================================== -->
+        <section id="view-fix-data" class="app-view">
+            <div class="view-header-banner">
+                <div class="header-line"></div>
+                <div class="header-content">
+                    <div class="title-badge"><i class='bx bx-wrench'></i></div>
+                    <h1 class="title">Fix <span class="title-purple">Database</span></h1>
+                </div>
+                <div class="header-line"></div>
+            </div>
+
+            <div class="fix-data-container">
+                <form id="fixDataForm">
+                    <!-- Date & Time Row -->
+                    <div class="input-row equal-2">
+                        <div class="form-group">
+                            <label for="fix_customDate"><i class='bx bx-calendar'></i> Date</label>
+                            <div class="glass-input-wrap">
+                                <input type="date" id="fix_customDate" required>
+                                <i class='bx bx-chevron-down input-chevron'></i>
+                            </div>
+                            <span class="preview-chip" id="fix_datePreview">--/--/--</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="fix_customTime"><i class='bx bx-time'></i> Time</label>
+                            <div class="glass-input-wrap">
+                                <input type="time" id="fix_customTime" required>
+                                <i class='bx bx-chevron-down input-chevron'></i>
+                            </div>
+                            <span class="preview-chip" id="fix_timePreview">--:--</span>
+                        </div>
+                    </div>
+
+                    <!-- Name Row -->
+                    <div class="form-group">
+                        <label for="fix_name"><i class='bx bx-user'></i> সদস্যর নাম</label>
+                        <div class="glass-input-wrap">
+                            <select id="fix_name" required>
+                                <option value="">Choose a name...</option>
+                            </select>
+                            <i class='bx bx-chevron-down input-chevron'></i>
+                        </div>
+                    </div>
+
+                    <!-- KG, FAT, SNF Row -->
+                    <div class="input-row equal-3">
+                        <div class="form-group">
+                            <label for="fix_kg"><i class='bx bx-shopping-bag'></i> KG</label>
+                            <div class="glass-input-wrap">
+                                <input type="number" placeholder="Kg" id="fix_kg" step="any" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fix_fat"><i class='bx bx-droplet'></i> FAT</label>
+                            <div class="glass-input-wrap">
+                                <input type="number" placeholder="FAT" id="fix_fat" step="any">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fix_snf"><i class='bx bx-layer'></i> SNF</label>
+                            <div class="glass-input-wrap">
+                                <input type="number" placeholder="SNF" id="fix_snf" step="any" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rate, Total Row -->
+                    <div class="input-row equal-2">
+                        <div class="form-group">
+                            <label for="fix_rate"><i class='bx bx-tag'></i> Rate</label>
+                            <div class="glass-input-wrap">
+                                <input type="number" id="fix_rate" step="any" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fix_total"><i class='bx bx-coin-stack'></i> Total</label>
+                            <div class="glass-input-wrap">
+                                <input type="number" id="fix_total" step="any" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert" id="fix_alert">Data updated successfully!</div>
+                    <button type="submit" id="fix_submit" class="fix-submit-btn">
+                        <i class='bx bx-calculator'></i> Calculate & Save
+                    </button>
+                </form>
+
+                <div id="fix_recentRecordsBox" class="records-table-container" style="display: none;">
+                    <div class="records-table-title">
+                        <span id="fix_recordsTitleText">📋 গত ১৫ দিনের রেকর্ড</span>
+                        <span id="fix_recordsCountBadge" class="records-badge">0 টি এন্ট্রি</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="records-table">
+                            <thead>
+                                <tr>
+                                    <th>তারিখ</th>
+                                    <th>সময়</th>
+                                    <th>Kg</th>
+                                    <th>FAT</th>
+                                    <th>SNF</th>
+                                    <th>Rate</th>
+                                    <th>Total</th>
+                                    <th>Fix</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fix_recentRecordsBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 6: WEATHER -->
+        <!-- ======================================================== -->
+        <section id="view-weather" class="app-view">
+            <div class="view-header-banner">
+                <div class="header-line"></div>
+                <div class="header-content">
+                    <div class="title-badge"><i class='bx bx-cloud'></i></div>
+                    <h1 class="title">Live <span class="title-purple">Weather</span></h1>
+                </div>
+                <div class="header-line"></div>
+            </div>
+
+            <div class="weather-dashboard-container">
+                <!-- Search & Quick Chips Header -->
+                <div class="weather-search-wrapper">
+                    <div class="weather-search-bar">
+                        <div class="weather-input-lead">
+                            <i class='bx bx-search'></i>
+                            <input id="weatherCityInput" type="text" placeholder="Search city or location (e.g. Baliarpur)..." autocomplete="off">
+                        </div>
+                        <div class="weather-search-actions">
+                            <button id="weatherSearchBtn" class="weather-btn weather-search-btn" title="Search City">
+                                <i class='bx bx-search'></i>
+                                <span class="btn-text">Search</span>
+                            </button>
+                            <button id="weatherGeoBtn" class="weather-btn weather-geo-btn" title="Detect Current GPS Location">
+                                <i class='bx bx-current-location'></i>
+                                <span class="btn-text">My Location</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Quick Location Chips -->
+                    <div class="weather-quick-chips" id="weatherQuickChips">
+                        <button type="button" class="weather-chip active" data-city="Baliarpur"><i class='bx bx-map-pin'></i> Baliarpur</button>
+                        <button type="button" class="weather-chip" data-city="Dhanbad">Dhanbad</button>
+                        <button type="button" class="weather-chip" data-city="Purulia">Purulia</button>
+                        <button type="button" class="weather-chip" data-city="Kolkata">Kolkata</button>
+                        <button type="button" class="weather-chip" data-city="Ranchi">Ranchi</button>
+                    </div>
+                </div>
+
+                <div id="weatherStatus" class="weather-status-banner" style="display: none;"></div>
+
+                <!-- Responsive Weather 2-Column Dashboard on Desktop, 1-Column Flow on Mobile -->
+                <div class="weather-grid">
+                    <!-- PRIMARY COLUMN: Hero Card & Hourly Timeline -->
+                    <div class="weather-col-primary">
+                        <!-- Hero Weather Showcase Card -->
+                        <div class="weather-hero-card">
+                            <div class="weather-hero-header">
+                                <div class="weather-hero-location">
+                                    <div class="weather-city-badge">
+                                        <i class='bx bxs-map'></i>
+                                        <span id="weatherCityName">Baliarpur</span>
+                                    </div>
+                                    <div class="weather-meta-row">
+                                        <span id="weatherLiveDate">Sun, Nov 8</span>
+                                        <span class="meta-separator">•</span>
+                                        <span id="weatherLiveTime" class="weather-live-clock">--:--:--</span>
+                                    </div>
+                                </div>
+                                <div class="weather-live-indicator">
+                                    <span class="pulse-dot"></span>
+                                    <span>LIVE</span>
+                                </div>
+                            </div>
+
+                            <div class="weather-hero-body">
+                                <div class="weather-hero-temp-group">
+                                    <div class="weather-hero-temp-wrap">
+                                        <span id="weatherHeroTemp" class="weather-hero-temp">--</span>
+                                        <span class="weather-hero-unit">°C</span>
+                                    </div>
+                                    <div id="weatherHeroDesc" class="weather-hero-condition">Loading weather...</div>
+                                    <div class="weather-hero-range" id="weatherHeroRangeWrap">
+                                        <span class="range-chip range-high"><i class='bx bx-up-arrow-alt'></i> H: <strong id="weatherTempMax">--°</strong></span>
+                                        <span class="range-chip range-low"><i class='bx bx-down-arrow-alt'></i> L: <strong id="weatherTempMin">--°</strong></span>
+                                    </div>
+                                </div>
+                                <div class="weather-hero-visual">
+                                    <img id="weatherHeroIcon" class="weather-hero-icon-img" src="https://openweathermap.org/img/wn/01d@2x.png" alt="Weather condition">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hourly Forecast Section -->
+                        <div class="weather-card weather-hourly-card">
+                            <div class="weather-card-header">
+                                <div class="card-header-left">
+                                    <i class='bx bx-time-five'></i>
+                                    <h3>Hourly Forecast</h3>
+                                </div>
+                                <span class="card-header-sub">Next 24 Hours</span>
+                            </div>
+                            <div class="weather-hourly-track" id="weatherHourCards">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECONDARY COLUMN: Bento Highlights & 5-Day Extended Forecast -->
+                    <div class="weather-col-secondary">
+                        <!-- Bento Highlights Grid (2x2) -->
+                        <div class="weather-bento-grid">
+                            <div class="weather-bento-card bento-feels">
+                                <div class="bento-header">
+                                    <span class="bento-icon-badge badge-amber"><i class='bx bx-thermometer'></i></span>
+                                    <span class="bento-title">Feels Like</span>
+                                </div>
+                                <div class="bento-value" id="weatherFeel">--°C</div>
+                                <div class="bento-sub" id="weatherFeelDesc">Thermal sensation</div>
+                            </div>
+
+                            <div class="weather-bento-card bento-humidity">
+                                <div class="bento-header">
+                                    <span class="bento-icon-badge badge-cyan"><i class='bx bx-droplet'></i></span>
+                                    <span class="bento-title">Humidity</span>
+                                </div>
+                                <div class="bento-value" id="weatherHum">--%</div>
+                                <div class="bento-sub" id="weatherHumDesc">Relative humidity</div>
+                            </div>
+
+                            <div class="weather-bento-card bento-wind">
+                                <div class="bento-header">
+                                    <span class="bento-icon-badge badge-emerald"><i class='bx bx-wind'></i></span>
+                                    <span class="bento-title">Wind Speed</span>
+                                </div>
+                                <div class="bento-value" id="weatherWind">-- km/h</div>
+                                <div class="bento-sub" id="weatherWindDesc">Atmospheric airflow</div>
+                            </div>
+
+                            <div class="weather-bento-card bento-rain">
+                                <div class="bento-header">
+                                    <span class="bento-icon-badge badge-purple"><i class='bx bx-cloud-rain'></i></span>
+                                    <span class="bento-title">Precipitation</span>
+                                </div>
+                                <div class="bento-value" id="weatherPop">--%</div>
+                                <div class="bento-sub" id="weatherPopDesc">Chance of rain</div>
+                            </div>
+                        </div>
+
+                        <!-- 5-Day Extended Outlook Card -->
+                        <div class="weather-card weather-daily-card">
+                            <div class="weather-card-header">
+                                <div class="card-header-left">
+                                    <i class='bx bx-calendar-event'></i>
+                                    <h3>5-Day Outlook</h3>
+                                </div>
+                                <span class="card-header-sub">Daily Range</span>
+                            </div>
+                            <div class="weather-daily-list" id="weatherFutureCards">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Weather Footer Meta -->
+                        <div class="weather-footer-bar">
+                            <div class="weather-updated-pill">
+                                <i class='bx bx-refresh'></i>
+                                <span id="weatherUpdatedTime">Updated: --</span>
+                            </div>
+                            <span class="weather-api-source"><i class='bx bx-check-shield'></i> Live Data</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 7: THEMES & COLOR PALETTES -->
+        <!-- ======================================================== -->
+        <section id="view-themes" class="app-view">
+            <!-- Dynamically populated by themesView.js -->
+        </section>
+
     </main>
 
-    <div class="milk-dashboard-container">
-        <div class="milk-header-section">
-            <div class="milk-date-controls">
-                <select id="milkDateSelector" class="milk-date-dropdown">
-                </select>
-            </div>
-        </div>
-
-        <div class="milk-table-wrapper">
-            <div id="milkDataContainer">
-                <div class="milk-loading-state">
-                    <div class="milk-loading-spinner"></div>
-                    <div>Loading records...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
+    <!-- Firebase SDK Compat (kept for FCM Notifications) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
 
     <script>
-        let currentRateFormula = null;
-
-        // Fetch and parse the latest rate formula from rate.md
-        async function loadLatestRateFormula() {
-            try {
-                const response = await fetch('rate.md');
-                if (!response.ok) throw new Error('Could not fetch rate.md file');
-                const content = await response.text();
-
-                const lines = content.split('\n')
-                    .map(line => line.trim())
-                    .filter(line => line.length > 0);
-
-                let latestFormula = null;
-
-                // First try to find a line with {Latest} tag
-                for (const line of lines) {
-                    if (line.includes('{Latest}')) {
-                        latestFormula = line;
-                        break;
-                    }
-                }
-
-                // If no {Latest} tag, use the last valid formula
-                if (!latestFormula) {
-                    const formulaLines = lines.filter(line =>
-                        line.includes('var Rate = ') ||
-                        (line.includes('fat') && line.includes('snf'))
-                    );
-                    if (formulaLines.length > 0) {
-                        latestFormula = formulaLines[formulaLines.length - 1];
-                    }
-                }
-
-                if (latestFormula) {
-                    // Clean up the formula string
-                    let formulaStr = latestFormula
-                        .replace('var Rate = ', '')
-                        .replace(';', '')
-                        .replace('{Latest}', '')
-                        .trim();
-
-                    // Create a function from the formula string
-                    currentRateFormula = new Function('fat', 'snf', `return ${formulaStr};`);
-                    console.log('Loaded rate formula:', formulaStr);
-
-                    // Update calculations if we have values in the form
-                    updateCalculationResults();
-                } else {
-                    throw new Error('No valid rate formula found in rate.md');
-                }
-            } catch (error) {
-                console.error('Error loading rate formula:', error);
-                alert('Error: Could not load rate formula. Please check the rate.md file.');
-            }
-        }
-
-        // Load the latest formula when the page loads
-        document.addEventListener('DOMContentLoaded', loadLatestRateFormula);
-
         function updateCalculationResults() {
-            if (!currentRateFormula) return; // Don't calculate if formula isn't loaded yet
+            const fatInput = document.getElementById('fat');
+            const snfInput = document.getElementById('snf');
 
-            const fat = parseFloat(document.getElementById('fat').value) || 0;
-            const snf = parseFloat(document.getElementById('snf').value) || 0;
-            const kg = parseFloat(document.getElementById('kg').value) || 0;
+            const fatRaw = fatInput ? fatInput.value.trim() : '';
+            const snfRaw = snfInput ? snfInput.value.trim() : '';
 
-            // Use the current rate formula (either default or loaded from rate.md)
-            const rate = currentRateFormula(fat, snf);
-            const total = rate * kg;
+            const fat = parseFloat(fatRaw);
+            const snf = parseFloat(snfRaw);
+
+            const hasFat = fatRaw !== '' && !isNaN(fat) && fat > 0;
+            const hasSnf = snfRaw !== '' && !isNaN(snf) && snf > 0;
 
             const resultsDiv = document.getElementById('calculationResults');
-            if (fat > 0 || snf > 0) {
-                document.getElementById('ratePerKg').textContent = '₹' + rate.toFixed(2);
-                resultsDiv.style.display = 'block';
+            const ratePerKg = document.getElementById('ratePerKg');
+
+            if (!ratePerKg) return;
+
+            if (hasFat && hasSnf) {
+                // Both numbers entered: show the calculated rate
+                let calculatedRate = null;
+                if (window.DairyStore && typeof window.DairyStore.calculateRate === 'function') {
+                    calculatedRate = window.DairyStore.calculateRate(fat, snf);
+                } else if (typeof calculateRate === 'function') {
+                    calculatedRate = parseFloat(calculateRate(fat, snf));
+                }
+
+                if (calculatedRate !== null && !isNaN(calculatedRate)) {
+                    ratePerKg.className = 'rate-preview-badge';
+                    ratePerKg.textContent = '₹' + calculatedRate.toFixed(2);
+                    if (resultsDiv) resultsDiv.style.display = 'block';
+                }
+            } else if (hasFat && !hasSnf) {
+                // Only FAT is entered -> SNF is missing: show SNF ? in red error style
+                ratePerKg.className = 'rate-preview-badge badge-error';
+                ratePerKg.innerHTML = "<i class='bx bx-error-circle'></i> SNF ?";
+                if (resultsDiv) resultsDiv.style.display = 'none';
+            } else if (!hasFat && hasSnf) {
+                // Only SNF is entered -> FAT is missing: show FAT ? in red error style
+                ratePerKg.className = 'rate-preview-badge badge-error';
+                ratePerKg.innerHTML = "<i class='bx bx-error-circle'></i> FAT ?";
+                if (resultsDiv) resultsDiv.style.display = 'none';
             } else {
-                resultsDiv.style.display = 'none';
+                // Neither is entered: clear and hide the badge
+                ratePerKg.className = 'rate-preview-badge';
+                ratePerKg.textContent = '';
+                if (resultsDiv) resultsDiv.style.display = 'none';
             }
         }
+
+        window.updateCalculationResults = updateCalculationResults;
+
+        // Auto-clear preview badge when the milk entry form is reset
+        document.getElementById('milkForm')?.addEventListener('reset', function () {
+            setTimeout(updateCalculationResults, 0);
+        });
     </script>
 
+    <!-- FCM Push Notification Registration -->
     <script type="module">
         const firebaseConfig = {
             apiKey: "AIzaSyAuhNKygw6dv8jqfNY8qnmIrX-TsLy2jvI",
@@ -504,163 +1017,47 @@
             appId: "1:196152880143:web:bec02170e30932a7d5877a"
         };
 
-        const app = firebase.initializeApp(firebaseConfig);
-        const messaging = firebase.messaging();
-
-        async function requestNotificationPermission() {
+        if (typeof firebase !== 'undefined' && firebase.initializeApp) {
             try {
-                const registration = await navigator.serviceWorker.ready;
+                const app = firebase.initializeApp(firebaseConfig);
+                const messaging = firebase.messaging();
 
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    console.log('Notification permission granted.');
-
-                    const token = await messaging.getToken({
-                        vapidKey: 'BEnkubqEyRwtU2PPOwhcOGWYZY3xkSHANRDMEIhJ7kxB9Zo4uwk7S8TK8VZAZNUvnTfl8rMH7YZmrxlaPQjWqKY',
-                        serviceWorkerRegistration: registration
-                    });
-
-                    console.log('FCM Token:', token);
-                } else {
-                    console.log('Unable to get permission to notify.');
-                }
-            } catch (error) {
-                console.error('Error requesting notification permission:', error);
-            }
-        }
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                try {
-                    const registration = await navigator.serviceWorker.register('/Dairy-App/firebase-messaging-sw.js');
-                    console.log('Service Worker registered with scope:', registration.scope);
-
-                    if (registration.active) {
-                        console.log('Service worker is active');
-                        requestNotificationPermission();
-                    } else if (registration.installing) {
-                        console.log('Service worker is installing');
-                        registration.installing.addEventListener('statechange', (event) => {
-                            if (event.target.state === 'activated') {
-                                console.log('Service worker is now active');
-                                requestNotificationPermission();
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', async () => {
+                        try {
+                            const registration = await navigator.serviceWorker.register('/Dairy-App/firebase-messaging-sw.js');
+                            if (registration.active) {
+                                const permission = await Notification.requestPermission();
+                                if (permission === 'granted') {
+                                    await messaging.getToken({
+                                        vapidKey: 'BEnkubqEyRwtU2PPOwhcOGWYZY3xkSHANRDMEIhJ7kxB9Zo4uwk7S8TK8VZAZNUvnTfl8rMH7YZmrxlaPQjWqKY',
+                                        serviceWorkerRegistration: registration
+                                    });
+                                }
                             }
-                        });
-                    }
-                } catch (error) {
-                    console.error('Service Worker registration failed:', error);
+                        } catch (e) {
+                            // Service worker / push notification silent fallback
+                        }
+                    });
                 }
-            });
+            } catch (e) {
+                // Ignore initialization errors if duplicate
+            }
         }
     </script>
 
-    <!-- Changelog Popup Modal (Active until tomorrow: 16-Aug-2026 23:59:59) -->
-    <div id="changelogModal" class="changelog-modal-overlay" style="display: none;">
-        <div class="changelog-modal-card">
-            <div class="changelog-header">
-                <div class="changelog-header-left">
-                    <span class="changelog-sparkle-icon">✨</span>
-                    <div>
-                        <h2 class="changelog-title">What's New & Updates</h2>
-                        <span class="changelog-subtitle">আজকের সমস্ত নতুন ফিচার ও পরিবর্তনসমূহ (15-Aug-2026)</span>
-                    </div>
-                </div>
-                <button id="closeChangelogBtn" class="changelog-close-btn">&times;</button>
-            </div>
+    <!-- CORE SCRIPTS -->
+    <script src="script.js?v=7.2.0"></script>
+    <script src="js/nav.js"></script>
 
-            <div class="changelog-body">
-                <div class="changelog-section">
-                    <div class="changelog-section-header">
-                        <span class="section-tag tag-green">📄 Generate Bills</span>
-                    </div>
-                    <ul class="changelog-list">
-                        <li><strong>নতুন সদস্য তালিকা:</strong> সুজাতা ঘোষ ও রহিত মল্লিক যুক্ত করা হয়েছে এবং ক্রম
-                            সাজানো হয়েছে।</li>
-                        <li><strong>স্মুথ এডিটিং:</strong> এডিট মোডে নম্বর ট্যাপ করলেই সিলেক্ট হবে এবং একবারে সম্পূর্ণ
-                            নম্বর টাইপ করা যাবে।</li>
-                        <li><strong>Last_Bill বোতাম:</strong> গত মাসের ২৪ তারিখ থেকে শেষ দিন পর্যন্ত বিল এক ক্লিকে লোড
-                            করতে নতুন বাটন যোগ করা হয়েছে।</li>
-                        <li><strong>সঠিক প্রাথমিক মান:</strong> বিলের মোট পরিমাণ না দেওয়া পর্যন্ত প্রথম দুই জনের KG
-                            স্বাভাবিকভাবে 0.0 দেখাবে।</li>
-                    </ul>
-                </div>
+    <!-- Central Data Store (Firebase Modular SDK In-Memory Cache) -->
+    <script type="module" src="js/store.js"></script>
 
-                <div class="changelog-section">
-                    <div class="changelog-section-header">
-                        <span class="section-tag tag-blue">👥 All Members</span>
-                    </div>
-                    <ul class="changelog-list">
-                        <li><strong>সামারি সবার উপরে:</strong> "Summary by Name" সেকশনটি এখন Daily Records-এর উপরে আসবে।
-                        </li>
-                        <li><strong>স্মার্ট অটো-হাইড:</strong> কোনো নির্দিষ্ট সদস্য সিলেক্ট করলে সামারি টেবিল নিজে থেকেই
-                            লুকিয়ে যাবে।</li>
-                    </ul>
-                </div>
+    <!-- SPA Router & View Controllers -->
+    <script type="module" src="js/router.js"></script>
 
-                <div class="changelog-section">
-                    <div class="changelog-section-header">
-                        <span class="section-tag tag-purple">🔧 Fix Data Page</span>
-                    </div>
-                    <ul class="changelog-list">
-                        <li><strong>১৫ দিনের রেকর্ড টেবিল:</strong> সদস্যর নাম সিলেক্ট করলেই নিচে গত ১৫ দিনের সম্পূর্ণ
-                            ডাটা চলে আসবে।</li>
-                        <li><strong>১-ক্লিক ফর্ম লোড:</strong> যেকোনো রেকর্ডে বা ✏️ Fix বাটনে ক্লিক করলেই ফর্মে ডাটা
-                            স্বয়ংক্রিয়ভাবে লোড হয়ে যাবে।</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="changelog-footer">
-                <span class="changelog-expiry-note">⏳ এই নোটিশটি আগামীকালের পর আর প্রদর্শিত হবে না</span>
-                <button id="dismissChangelogBtn" class="changelog-confirm-btn">Got it 👍</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function checkAndShowChangelog() {
-            const now = new Date();
-            // Expire after tomorrow: 16-Aug-2026 at 23:59:59 (Month is 0-indexed: 7 = August)
-            const expiryDate = new Date(2026, 7, 16, 23, 59, 59, 999);
-
-            // Automatically stop showing after tomorrow's date
-            if (now.getTime() > expiryDate.getTime()) {
-                return;
-            }
-
-            const modal = document.getElementById('changelogModal');
-            if (!modal) return;
-
-            // Check if dismissed in this session
-            if (sessionStorage.getItem('dairy_changelog_dismissed_20260815')) {
-                return;
-            }
-
-            // Show popup with slight delay for smooth appearance
-            setTimeout(() => {
-                modal.style.display = 'flex';
-            }, 500);
-
-            const closeModal = () => {
-                modal.style.display = 'none';
-                sessionStorage.setItem('dairy_changelog_dismissed_20260815', 'true');
-            };
-
-            const closeBtn = document.getElementById('closeChangelogBtn');
-            const confirmBtn = document.getElementById('dismissChangelogBtn');
-
-            if (closeBtn) closeBtn.onclick = closeModal;
-            if (confirmBtn) confirmBtn.onclick = closeModal;
-            modal.onclick = (e) => {
-                if (e.target === modal) closeModal();
-            };
-        }
-
-        document.addEventListener('DOMContentLoaded', checkAndShowChangelog);
-    </script>
-    <script src="script.js?v=7.1.8"></script>
-    <script type="module" src="js/database.js?v=7.1.2"></script>
-
+    <!-- Dashboard Milk Operations & RTDB Integration -->
+    <script type="module" src="js/database.js?v=7.2.0"></script>
 </body>
 
 </html>
