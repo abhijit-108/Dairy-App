@@ -2141,6 +2141,14 @@
     font-weight: 800 !important;
 }
 
+[data-theme="light-azure"] .row-val.metric-val,
+[data-theme="light"] .row-val.metric-val,
+[data-theme^="light"] .row-val.metric-val,
+:root:not([data-theme="dark-ocean"]):not([data-theme="dark"]) .row-val.metric-val {
+    color: #0f172a !important;
+    text-shadow: none !important;
+}
+
 [data-theme="light-azure"] .reprint-total-badge,
 [data-theme="light"] .reprint-total-badge,
 [data-theme^="light"] .reprint-total-badge,

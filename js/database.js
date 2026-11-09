@@ -598,10 +598,10 @@ function showPopup(type, title, data, statusText, existingData = null) {
             existingEntryDetails.innerHTML = `
                 <div class="reprint-row"><span class="row-label"><i class='bx bx-user'></i> Name:</span> <strong class="row-val">${existingData.name}</strong></div>
                 <div class="reprint-row"><span class="row-label"><i class='bx bx-calendar'></i> Date & Time:</span> <strong class="row-val">${existingData.timestamp}</strong></div>
-                <div class="reprint-row"><span class="row-label"><i class='bx bx-shopping-bag'></i> KG:</span> <strong class="row-val">${oldKg}</strong></div>
-                <div class="reprint-row"><span class="row-label"><i class='bx bx-droplet'></i> FAT:</span> <strong class="row-val">${existingData.fat}</strong></div>
-                <div class="reprint-row"><span class="row-label"><i class='bx bx-layer'></i> SNF:</span> <strong class="row-val">${existingData.snf}</strong></div>
-                <div class="reprint-row"><span class="row-label"><i class='bx bx-tag'></i> Rate:</span> <strong class="row-val">${oldRate}</strong></div>
+                <div class="reprint-row"><span class="row-label"><i class='bx bx-shopping-bag'></i> KG:</span> <strong class="row-val metric-val">${oldKg}</strong></div>
+                <div class="reprint-row"><span class="row-label"><i class='bx bx-droplet'></i> FAT:</span> <strong class="row-val metric-val">${existingData.fat}</strong></div>
+                <div class="reprint-row"><span class="row-label"><i class='bx bx-layer'></i> SNF:</span> <strong class="row-val metric-val">${existingData.snf}</strong></div>
+                <div class="reprint-row"><span class="row-label"><i class='bx bx-tag'></i> Rate:</span> <strong class="row-val metric-val">${oldRate}</strong></div>
                 <div class="reprint-row"><span class="row-label"><i class='bx bx-coin-stack'></i> Total:</span> <strong class="reprint-total-badge badge-amber" style="background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%) !important; color: #ffffff !important;">₹${oldTotal}</strong></div>
             `;
         }
@@ -615,10 +615,10 @@ function showPopup(type, title, data, statusText, existingData = null) {
         popupDetails.innerHTML = `
             <div class="reprint-row"><span class="row-label"><i class='bx bx-user'></i> Name:</span> <strong class="row-val">${data.name}</strong></div>
             <div class="reprint-row"><span class="row-label"><i class='bx bx-calendar'></i> Date & Time:</span> <strong class="row-val">${data.timestamp}</strong></div>
-            <div class="reprint-row"><span class="row-label"><i class='bx bx-shopping-bag'></i> KG:</span> <strong class="row-val">${displayKg}</strong></div>
-            <div class="reprint-row"><span class="row-label"><i class='bx bx-droplet'></i> FAT:</span> <strong class="row-val">${data.fat}</strong></div>
-            <div class="reprint-row"><span class="row-label"><i class='bx bx-layer'></i> SNF:</span> <strong class="row-val">${data.snf}</strong></div>
-            <div class="reprint-row"><span class="row-label"><i class='bx bx-tag'></i> Rate:</span> <strong class="row-val">${displayRate}</strong></div>
+            <div class="reprint-row"><span class="row-label"><i class='bx bx-shopping-bag'></i> KG:</span> <strong class="row-val metric-val">${displayKg}</strong></div>
+            <div class="reprint-row"><span class="row-label"><i class='bx bx-droplet'></i> FAT:</span> <strong class="row-val metric-val">${data.fat}</strong></div>
+            <div class="reprint-row"><span class="row-label"><i class='bx bx-layer'></i> SNF:</span> <strong class="row-val metric-val">${data.snf}</strong></div>
+            <div class="reprint-row"><span class="row-label"><i class='bx bx-tag'></i> Rate:</span> <strong class="row-val metric-val">${displayRate}</strong></div>
             <div class="reprint-row"><span class="row-label"><i class='bx bx-coin-stack'></i> Total:</span> <strong class="reprint-total-badge" style="color: #ffffff !important;">₹${displayTotal}</strong></div>
         `;
 
