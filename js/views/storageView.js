@@ -11,8 +11,64 @@ let storageInitialized = false;
 const appwriteConfig = {
     endpoint: 'https://nyc.cloud.appwrite.io/v1',
     project: '69ba34d0002986608c9c',
-    bucket: '69c40e2b000dd3147211'
+    bucket: '69c40e2b000dd3147211',
+    overviewUrl: 'https://appwrite.io/projects/69ba34d0002986608c9c/overview'
 };
+
+export const APPWRITE_PROJECT_URL = appwriteConfig.overviewUrl;
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function updateAppwriteBannerStatus(state, message) {
+    const dot = document.getElementById('storagePulseDot');
+    const label = document.getElementById('storageAppwriteLabel');
+    const link = document.getElementById('storageAppwriteHeaderLink');
+
+    if (dot) {
+        dot.className = `storage-pulse-dot ${state}`;
+    }
+
+    if (label) {
+        if (state === 'online') {
+            label.textContent = 'Appwrite Connected';
+        } else if (state === 'offline' || state === 'paused') {
+            label.textContent = message || 'Appwrite Paused / Stopped';
+        } else if (state === 'checking') {
+            label.textContent = 'Connecting to Appwrite...';
+        }
+    }
+
+    if (link) {
+        if (state === 'offline' || state === 'paused') {
+            link.classList.add('alert-resume');
+            link.innerHTML = `<i class='bx bx-play-circle'></i> <span>Resume in Chrome</span> <i class='bx bx-link-external'></i>`;
+        } else {
+            link.classList.remove('alert-resume');
+            link.innerHTML = `<i class='bx bx-server'></i> <span>Console / Resume</span> <i class='bx bx-link-external'></i>`;
+        }
+    }
+}
+
+function setupFocusReloadHint() {
+    window.addEventListener('focus', () => {
+        const errorState = document.querySelector('#view-storage .storage-error-state');
+        const retryBtn = document.getElementById('storageRetryBtn');
+        if (errorState && retryBtn) {
+            retryBtn.classList.add('pulse-attention');
+            setTimeout(() => {
+                retryBtn.classList.remove('pulse-attention');
+            }, 3000);
+        }
+    });
+}
 
 const client = new Client();
 client.setEndpoint(appwriteConfig.endpoint).setProject(appwriteConfig.project);
@@ -33,6 +89,7 @@ export function initStorageView() {
     setupOverwriteModal();
     setupPhotoViewerModal();
     setupInfiniteScroll();
+    setupFocusReloadHint();
 
     fetchStorageFiles();
     storageInitialized = true;
@@ -194,7 +251,17 @@ async function performUpload(file, fileName, oldFileIdToDelete = null) {
         fetchStorageFiles();
     } catch (err) {
         console.error('Upload error:', err);
-        if (statusEl) statusEl.textContent = 'Upload failed: ' + err.message;
+        updateAppwriteBannerStatus('offline', 'Project Paused / Stopped');
+        if (statusEl) {
+            statusEl.innerHTML = `
+                <div class="storage-upload-err">
+                    <span style="color: #ef4444; font-weight: 600;">Upload failed: ${escapeHtml(err.message || 'Server error')}</span>
+                    <a href="${appwriteConfig.overviewUrl}" target="_blank" rel="noopener noreferrer" class="storage-inline-resume-btn">
+                        <i class='bx bx-play-circle'></i> Resume Project on Appwrite <i class='bx bx-link-external'></i>
+                    </a>
+                </div>
+            `;
+        }
     } finally {
         if (uploadBtn) uploadBtn.disabled = false;
     }
@@ -278,16 +345,47 @@ function renderEmptyState(displayBox) {
 
 function renderErrorState(displayBox, err) {
     if (!displayBox) return;
+
+    const isPaused = !err || err.code === 503 || err.code === 400 ||
+        (err.message && (
+            err.message.toLowerCase().includes('pause') ||
+            err.message.toLowerCase().includes('fetch') ||
+            err.message.toLowerCase().includes('network') ||
+            err.message.toLowerCase().includes('service unavailable')
+        ));
+
+    const errMessage = err?.message ? err.message : 'Unable to connect to Appwrite storage.';
+
     displayBox.innerHTML = `
         <div class="storage-error-state">
-            <div class="error-icon-circle"><i class='bx bx-wifi-off'></i></div>
-            <h3 class="error-title">Could Not Load Bill Photos</h3>
-            <p class="error-desc">${err?.message ? err.message : 'Please check your internet connection and try again.'}</p>
-            <button class="storage-retry-btn" id="storageRetryBtn">
-                <i class='bx bx-refresh'></i> Try Again
-            </button>
+            <div class="error-icon-circle ${isPaused ? 'paused-circle' : ''}">
+                <i class='bx ${isPaused ? 'bx-pause-circle' : 'bx-wifi-off'}'></i>
+            </div>
+            <h3 class="error-title">${isPaused ? 'Appwrite Project Paused / Stopped' : 'Could Not Load Bill Photos'}</h3>
+            <p class="error-desc">
+                Appwrite cloud projects stop after 7 days of inactivity. If the project has stopped, click <strong>Resume on Appwrite</strong> to open Chrome, resume your project, and return here.
+            </p>
+
+            <div class="storage-error-actions">
+                <a href="${appwriteConfig.overviewUrl}" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="storage-resume-btn" 
+                   id="storageResumeBtn">
+                    <i class='bx bx-play-circle'></i> Resume on Appwrite <i class='bx bx-link-external'></i>
+                </a>
+                <button class="storage-retry-btn" id="storageRetryBtn">
+                    <i class='bx bx-refresh'></i> Try Again
+                </button>
+            </div>
+
+            <div class="storage-error-details">
+                <span class="storage-error-label"><i class='bx bx-info-circle'></i> Status:</span>
+                <span class="storage-error-text">${escapeHtml(errMessage)}</span>
+            </div>
         </div>
     `;
+
     const retryBtn = document.getElementById('storageRetryBtn');
     if (retryBtn) {
         retryBtn.addEventListener('click', () => fetchStorageFiles());
@@ -297,6 +395,8 @@ function renderErrorState(displayBox, err) {
 async function fetchStorageFiles() {
     const displayBox = document.getElementById('storageDisplayBox');
     if (!displayBox) return;
+
+    updateAppwriteBannerStatus('checking');
 
     // Immediately show skeleton loaders and active loading banner
     renderLoadingState(displayBox);
@@ -311,6 +411,8 @@ async function fetchStorageFiles() {
         currentIndex = 0;
         displayBox.innerHTML = '';
 
+        updateAppwriteBannerStatus('online');
+
         if (allItems.length === 0) {
             renderEmptyState(displayBox);
             return;
@@ -319,6 +421,7 @@ async function fetchStorageFiles() {
         loadMoreItems();
     } catch (err) {
         console.error('Failed to fetch storage files:', err);
+        updateAppwriteBannerStatus('offline', 'Project Paused / Stopped');
         if (displayBox) {
             renderErrorState(displayBox, err);
         }

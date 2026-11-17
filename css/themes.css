@@ -1747,6 +1747,28 @@
     background: rgba(2, 132, 199, 0.22) !important;
 }
 
+[data-theme="light-azure"] #view-storage .storage-appwrite-banner,
+[data-theme="light"] #view-storage .storage-appwrite-banner,
+[data-theme^="light"] #view-storage .storage-appwrite-banner {
+    background: #ffffff !important;
+    border: 1.5px solid rgba(2, 132, 199, 0.25) !important;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.08) !important;
+}
+
+[data-theme="light-azure"] #view-storage .storage-appwrite-status,
+[data-theme="light"] #view-storage .storage-appwrite-status,
+[data-theme^="light"] #view-storage .storage-appwrite-status {
+    color: #082f49 !important;
+}
+
+[data-theme="light-azure"] #view-storage .storage-error-details,
+[data-theme="light"] #view-storage .storage-error-details,
+[data-theme^="light"] #view-storage .storage-error-details {
+    background: rgba(2, 132, 199, 0.06) !important;
+    border-color: rgba(2, 132, 199, 0.2) !important;
+    color: #475569 !important;
+}
+
 [data-theme="light-azure"] #view-storage .storage-empty-state,
 [data-theme="light"] #view-storage .storage-empty-state,
 [data-theme^="light"] #view-storage .storage-empty-state,
